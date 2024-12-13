@@ -22,6 +22,7 @@ export async function getAllPosts() {
 
 export async function getPageFieldsByName(name) {
   const url = `${process.env.PUBLIC_WORDPRESS_API_URL}pages?slug=${name}`;
+  console.log(url)
 
   try {
     // Fetch data from the REST API

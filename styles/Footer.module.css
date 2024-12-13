@@ -1,0 +1,128 @@
+.footer {
+  padding: 40px 30px 25px 30px;
+  background: var(--green);
+  color: var(--beige);
+  font-family: "Roboto";
+  font-size: 14px;
+}
+
+.columns {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.footerCol {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  margin: 0 20px;
+}
+
+.footerCol:first-child {
+  flex: 0 0 auto; /* The logo column can be fixed width if desired */
+}
+
+/* Logo styling */
+.footerLogo {
+  max-width: 150px; /* Adjust as needed */
+  height: auto;
+}
+
+/* Links section */
+.linkWrapper {
+  display: flex;
+  margin-bottom: 20px;
+}
+
+.linkColumn {
+  display: flex;
+  flex-direction: column;
+  margin-right: 20px;
+}
+
+.linkColumn a {
+  text-decoration: none;
+  color: var(--beige);
+  margin: 5px 0;
+}
+
+.linkColumn a:hover {
+  text-decoration: underline;
+}
+
+/* Social and address */
+.socialAndAddress {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.iconsWrapper {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.iconsWrapper img {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}
+
+.address {
+  color: var(--beige);
+  white-space: pre-wrap;
+}
+
+/* Newsletter */
+.newsletterWrapper {
+  margin-top: auto;
+}
+
+.newsletterTitle {
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.newsletterForm {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.newsletterInput {
+  padding: 5px 10px;
+  flex: 1;
+  background: var(--beige);
+  color: var(--green);
+  border-radius: 4px;
+}
+
+.newsletterButton {
+  padding: 5px 10px;
+  background: var(--beige);
+  color: var(--green);
+  font-weight: bold;
+  border: none;
+  border-radius: 5px;
+  border: 3px solid var(--green);
+  border-color: var(--green);
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.newsletterButton:hover {
+  background: var(--green);
+  color: var(--beige);
+  border: 3px solid var(--beige);
+}
+
+.copyright {
+  text-align: center;
+  font-size: 12px;
+  color: grey;
+  margin-top: 10px; /* Space above the copyright */
+}

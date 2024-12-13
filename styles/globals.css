@@ -1,6 +1,16 @@
+@import './fonts.css';
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --green: #24311B;
+  --red: #A22D22;
+  --beige: #F5F0E1;
+  --orange: #D17829;
+  --pink: #C17C74;
+  --blue: #153C66;
+
+  --header-height: 60px;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -19,7 +29,7 @@ body {
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Roboto';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }

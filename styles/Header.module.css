@@ -1,0 +1,116 @@
+.header {
+  font-family: 'Roboto';
+  font-weight: 300;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  height: var(--header-height);
+  background-color: var(--green);
+  background-color: var(--green);
+  position: fixed; /* Make the header fixed */
+  top: 0;
+  width: 100%;
+  transition: transform 0.3s ease;
+  z-index: 10;
+}
+.hidden {
+  transform: translateY(-100%); /* Move header out of view */
+}
+
+.logoContainer {
+  display: inline-block;
+  position: relative;
+  width: auto; /* Match the image width */
+  height: 40px; /* Match the image height */
+}
+
+.logoWrapper {
+  position: relative; /* To overlap images */
+  width: 100%; /* Ensure the wrapper takes the full width of its content */
+  height: 100%; /* Ensure the wrapper takes the full height of its content */
+}
+
+.logo {
+  position: absolute; /* Overlapping the second image */
+  top: 0;
+  left: 0;
+  width: auto; /* Ensure both images have the same size */
+  height: 40px;
+  object-fit: contain; /* Maintains aspect ratio */
+  transition: opacity 0.3s ease; /* Smooth transition on hover */
+  z-index: 2; /* Keeps the normal logo on top */
+}
+
+.logoRed {
+  position: absolute; /* Overlapping the first image */
+  top: 0;
+  left: 0;
+  width: auto; /* Ensure both images have the same size */
+  height: 40px;
+  object-fit: contain; /* Maintains aspect ratio */
+  opacity: 0; /* Initially hidden */
+  transition: opacity 0.3s ease; /* Smooth transition on hover */
+  z-index: 1; /* Below the normal logo */
+}
+
+.logoContainer:hover .logo {
+  opacity: 0; /* Hide the normal logo on hover */
+}
+
+.logoContainer:hover .logoRed {
+  opacity: 1; /* Show the red logo on hover */
+}
+
+.nav {
+  display: flex;
+  gap: 7vw;
+}
+
+.nav a {
+  position: relative; /* Needed for the pseudo-element */
+  text-decoration: none; /* Remove default underline */
+  color: var(--beige); /* Default text color */
+  font-weight: thin;
+  font-size: 20px;
+  transition: font-weight 0.5s ease; /* Smooth transition for both color and weight */
+}
+
+.nav a::after {
+  content: ""; /* Empty content for the line */
+  position: absolute;
+  left: 0;
+  bottom: -2px; /* Position the line just below the text */
+  width: 0; /* Start with no width */
+  height: 2px; /* Line thickness */
+  background-color: var(--beige); /* Line color */
+  transition: width 0.3s ease; /* Smooth line drawing effect */
+}
+
+.nav a:hover {
+  font-weight: bold; /* Change to bold on hover */
+}
+
+.nav a:hover::after {
+  width: 100%; /* Expand the line on hover */
+}
+
+.nav a.disabled {
+  color: grey;
+  pointer-events: none;
+  cursor: default;
+}
+
+.cart img {
+  height: 30px;
+}
+
+/* Media queries */
+@media screen and (max-width: 991px) {
+
+}
+
+@media screen and (max-width: 479px) {
+
+}
+

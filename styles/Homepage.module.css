@@ -1,0 +1,4 @@
+body {
+  height: 2000px; /* Makes the body long enough to scroll */
+  padding-top: var(--header-height);
+}
