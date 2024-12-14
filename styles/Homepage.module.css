@@ -1,4 +1,4 @@
-body {
+homepageBody {
   padding-top: var(--header-height);
   overflow-y: hidden;
   z-index: 0;
