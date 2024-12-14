@@ -4,7 +4,7 @@ export default function Footer({ pageData }) {
   const pageContent = pageData.acfFields;
   
   // debugging
-  console.log("Footer content:", pageContent);
+  // console.log("Footer content:", pageContent);
 
   return (
     <footer className={styles.footer}>

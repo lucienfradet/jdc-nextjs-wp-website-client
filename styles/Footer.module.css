@@ -1,9 +1,12 @@
 .footer {
+  position: relative;
+  width: 100%;
   padding: 40px 30px 25px 30px;
   background: var(--green);
   color: var(--beige);
   font-family: "Roboto";
   font-size: 14px;
+  z-index: 0;
 }
 
 .columns {

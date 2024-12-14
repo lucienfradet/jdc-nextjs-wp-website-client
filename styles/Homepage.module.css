@@ -1,4 +1,421 @@
 body {
-  height: 2000px; /* Makes the body long enough to scroll */
   padding-top: var(--header-height);
+  overflow-y: hidden;
+  z-index: 0;
+  background: var(--green);
+}
+
+/* Title section */
+.titleSection {
+  position: relative; /* To position elements inside the section */
+  background-color: var(--green); /* Section background color */
+  color: var(--beige); /* Text color */
+  height: 43vw; /* Fixed height for the section */
+  overflow: hidden; /* Ensures the last image partially goes outside the section */
+  display: flex;
+  flex-direction: column; /* Stack the images and the catchphrase vertically */
+  justify-content: flex-start; /* Align elements to the top */
+  align-items: center; /* Center elements horizontally */
+  z-index: 1; /* Keep above other elements */
+}
+
+.logoWrapper {
+  position: relative; /* Enable positioning for child elements */
+  display: flex;
+  flex-direction: column; /* Stack the logos vertically */
+  align-items: center; /* Center logos horizontally */
+}
+
+.h1Logo {
+  width: 70vw;
+  position: relative; /* Relative to the wrapper */
+  z-index: 2; /* Ensure it's above the hollow logos */
+}
+
+.h1LogoHollow {
+  width: 70vw;
+  position: relative; /* Relative to the wrapper */
+  z-index: 1; /* Below the main logo */
+  margin-top: -5px; /* Add overlap effect */
+}
+
+.catchPhrase {
+  position: absolute;
+  background: var(--green);
+  padding: 20px;
+  right: 10%;
+  top: 60%;
+  transform: translateY(-50%);
+  text-align: left;
+  z-index: 2;
+  font-family: 'Maname';
+  font-size: 2vw;
+  max-width: 30%;
+  line-height: 1.5;
+}
+
+.catchPhrase p {
+  position: relative; /* Allows fine-tuning its position */
+  top: -10px; /* Adjust this value to move the text upward */
+}
+
+.catchPhrase .secondLine {
+  font-size: 2.6vw;
+}
+
+
+/* Intro Section */
+.introSection {
+  position: relative; /* Enable positioning for child elements */
+  background: var(--beige); /* Background color */
+  color: var(--green); /* Default text color */
+}
+
+/* Container for Centered Content */
+.introContainer {
+  max-width: 1000px; /* Limit the width of the content */
+  margin: 0 auto; /* Center the container horizontally */
+  padding: 60px 60px; /* Adjust padding for the section content */
+  position: relative; /* Enable positioning for child elements */
+}
+
+.imgCrewContainer {
+  position: absolute;
+  top: 0; /* Move it halfway outside the top of the section */
+  transform: translateY(-50%);
+  display: inline-block; /* Make the container size match its content */
+  z-index: 2; /* Keep above other elements */
+}
+
+/* First Image */
+.imgCrew {
+  width: 30vw; /* Adjust size */
+  max-width: 450px; /* Ensure it's not too large */
+}
+
+/* Label Image */
+.labelImg {
+  position: absolute;
+  top: 0; /* Near the top of the image */
+  left: -5%; /* Slightly left-aligned */
+  transform: rotate(-10deg); /* Angled to the left */
+  background: var(--red);
+  padding: 5px 15px; /* Add spacing around the text */
+  color: var(--beige);
+  font-size: 1.5vw; /* Adjust font size */
+  font-weight: bold; /* Bold label text */
+  border-radius: 5px; /* Optional: rounded edges for the label */
+  z-index: 3;
+}
+
+/* Intro Text Container */
+.introTextContainer {
+  position: relative;
+  margin: auto; /* Add spacing from the top */
+  padding: 20px; /* Padding around the text */
+  background: rgba(245, 240, 225, 0.8); /* Semi-transparent --beige background */
+  left: 25%;
+  border-radius: 5px; /* Optional: rounded edges */
+  max-width: 80%; /* Limit the width of the container */
+  font-family: 'Maname';
+  font-size: 20px;
+  text-align: justify;
+  max-width: 330px;
+  z-index: 2;
+}
+
+.introTextContainer p {
+  margin: 0 0 10px; /* Space between paragraphs */
+}
+
+.introTextContainer .introBold {
+  font-family: 'Roboto';
+  font-weight: bold; /* Bold for the second paragraph */
+}
+
+/* Logo with Text */
+.imgLogoText {
+  display: block;
+  margin: 20px auto; /* Center the logo horizontally */
+  width: 100%; /* Adjust size */
+  max-width: 200px; /* Ensure it's not too large */
+  z-index: 2;
+}
+
+/* Side Image */
+.imageSide {
+  position: absolute;
+  bottom: 0; /* Place halfway outside the section at the bottom */
+  transform: translateY(50%);
+  left: 0; /* Hug the left side of the viewport */
+  width: 35vw; /* Adjust size */
+  max-width: 400px; /* Ensure it's not too large */
+  z-index: 5; /* Place it below the main content */
+}
+
+/* Background SVG */
+.backgroundSVG {
+  position: absolute;
+  top: 0; /* Center vertically within the section */
+  left: -25%; /* Center horizontally within the viewport */
+  transform: translate(15vw, -20%); /* Adjust to center the SVG */
+  max-width: 700px; /* Ensure it's not too large */
+  opacity: 0.8; /* Make it subtle */
+  z-index: 0; /* Place it below all other content */
+}
+
+
+/* 
+* Produits Section 
+*/
+.produitsSection {
+  position: relative; /* Enable positioning for child elements */
+  background-color: var(--orange); /* Section background color */
+  color: var(--beige); /* Text color */
+}
+
+.produitsContainer {
+  position: relative;
+  max-width: 1000px; /* Limit the width of the content */
+  padding: 60px;
+  text-align: left; /* Align text to the left */
+  display: flex;
+  align-items: flex-start; /* Align children at the top */
+  justify-content: space-between; /* Distribute children evenly */
+  flex-direction: column; /* Stack heading and columns vertically */
+  gap: 20px; /* Space between children */
+
+  max-width: 1000px; /* Limit the width of the content */
+  margin: 0 auto; /* Center the container horizontally */
+  padding: 60px 60px; /* Adjust padding for the section content */
+  position: relative; /* Enable positioning for child elements */
+}
+
+.produitsContainer h2 {
+  position: relative;
+  font-size: clamp(35px, 3vw, 40px);
+  margin-bottom: 20px;
+  left: 45%
+}
+
+.columnsWrapper {
+  display: flex; /* Display columns side by side */
+  gap: 2px; /* Space between columns */
+  margin-top: 50px;
+}
+
+.column {
+  flex: 1; /* Equal width for both columns */
+  display: flex;
+  flex-direction: column;
+  gap: 5px; /* Space between heading and paragraph */
+}
+
+.column h3 {
+  font-size: clamp(22px, 2.2vw, 30px);
+  font-weight: bold;
+}
+
+.column p {
+  font-size: clamp(12px, 1.2vw, 15px);
+  line-height: 1.1; /* Improve readability */
+}
+
+.imgProduits {
+  position: absolute;
+  bottom: 0; /* Hug the bottom edge of the section */
+  right: 20px; /* Slight padding from the right edge */
+  width: clamp(270px, 25vw, 300px);
+  max-height: 90%; /* Ensure image doesn't overflow */
+  object-fit: contain; /* Maintain aspect ratio */
+  z-index: 1; /* Ensure it stays above the background */
+}
+
+/* 
+* Collab Section 
+*/
+
+.collabSection {
+  position: relative;
+  padding: 50px 20px;
+  overflow: visible; /* Allow elements to overflow */
+}
+
+.collabContainer {
+  max-width: 1000px;
+  margin: 150px auto 150px auto;
+  position: relative;
+  z-index: 2; /* Set it above the SVG */
+}
+
+.collabTextContainer {
+  background-color: var(--beige);
+  border-radius: 15px;
+  padding: 30px 70px 55px 70px;
+  max-width: 600px;
+  text-align: left;
+  position: relative;
+  z-index: 3; /* Ensure it is above the SVG */
+  line-height: 2.1; /* Improve readability */
+  margin: 0 auto;
+}
+
+.collabTextContainer h2 {
+  font-size: 3.3rem;
+  text-align: center;
+  color: var(--green);
+}
+
+.collabTextContainer p {
+  margin: 10px 0;
+  font-size: 1rem;
+  color: var(--green);
+}
+
+.collabTextContainer a {
+  text-decoration: underline;
+}
+
+/* Logo image (bottom-left corner of the rectangle) */
+.imgLogoNFriends {
+  position: absolute;
+  bottom: -150px;
+  left: clamp(-220px, -15vw, -150px);
+  width: clamp(200px, 25vw, 300px);
+  height: auto;
+  z-index: 4; /* Ensure it's above the beige rectangle */
+}
+
+/* SVG styling */
+.collabSVG {
+  position: absolute;
+  top: -10%; /* Center vertically within the section */
+  left: -25%; /* Center horizontally within the viewport */
+  transform: translate(15vw, -20%); /* Adjust to center the SVG */
+  width: 115vw;
+  height: auto;
+  z-index: 1; /* Place it below the container */
+  pointer-events: none;
+}
+
+/* Background image */
+.imgCollabBackground {
+  position: absolute;
+  top: -20vw;
+  left: -300px;
+  width: calc(120vw + 30%); /* Dynamically increase the width */
+  height: auto;
+  z-index: -1;
+  pointer-events: none;
+  object-fit: contain; /* Maintain aspect ratio */
+}
+
+/*
+* Abonnements Section
+*/
+.abonnSection {
+  position: relative;
+  background-color: var(--beige);
+  color: var(--green);
+  height: 50vw;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 0 5vw;
+  z-index: 10;
+}
+
+.abonnContainer {
+  position: relative;
+  width: 100%;
+  margin: 0 0 0 clamp(100px, 14vw, 240px);
+}
+
+.abonnContainer h2 {
+  font-weight: black;
+  position: relative;
+  font-size: 3vw;
+  margin-bottom: 1vw;
+  max-width: 20vw;
+  z-index: 6;
+}
+
+.abonnContainer p {
+  position: relative;
+  font-size: 1.5vw;
+  line-height: 1.6;
+  font-weight: bold;
+  text-align: justify;
+  max-width: 22vw;
+  z-index: 6;
+}
+
+.abonnButton {
+  display: inline-block; /* Makes the button inline but still block-like */
+  margin: 20px auto 0; /* Center the button horizontally and add spacing */
+  padding: 10px 20px; /* Adjust padding for button size */
+  font-size: 1.2rem; /* Adjust font size */
+  font-weight: bold;
+  color: var(--red); /* Text color */
+  background-color: var(--beige); /* Background color */
+  border: 5px solid var(--red); /* Border color */
+  border-radius: 10px; /* Rounded corners */
+  cursor: pointer; /* Change cursor to pointer */
+  text-align: center; /* Center text inside the button */
+  transition: all 0.3s ease; /* Smooth transition for hover effect */
+}
+
+.abonnButton:hover {
+  color: var(--beige); /* Flip text color */
+  background-color: var(--red); /* Flip background color */
+}
+
+/* Absolute content cluster on the right */
+.absolutesWrapper {
+  position: absolute;
+  top: 50%;
+  right: 25%;
+  transform: translateY(-50%);
+  width: 40%;
+  height: 100%;
+  z-index: 1;
+}
+
+.abonnSVG1 {
+  height: auto;
+  margin-bottom: -50px;
+  transform: rotate(0deg);
+  z-index: 2;
+  position: absolute;
+  top: 14%;
+  right: 40%;
+  width: 25vw;
+  height: auto;
+}
+
+.abonnSVG2 {
+  position: absolute;
+  bottom: -7%;
+  right: 0;
+  width: 30vw;
+  height: auto;
+  z-index: 3;
+}
+
+.absolutesWrapper .imgAbonn1 {
+  position: absolute;
+  top: 5%;
+  left: 32%;
+  width: 15vw;
+  z-index: 5;
+  border-radius: 10%;
+}
+
+.absolutesWrapper .imgAbonn2 {
+  position: absolute;
+  bottom: 20%;
+  right: -5%;
+  width: 20vw;
+  z-index: 4;
+  border-radius: 10%;
 }
