@@ -1,5 +1,7 @@
 import { useEffect, useRef } from "react";
 import CustomHead from '../components/CustomHead';
+import Header from "../components/Header";
+import Footer from "../components/Footer";
 import styles from '../styles/Homepage.module.css';
 import { getPageFieldsByName } from './api/api';
 import { convertLineBreaksToHtml } from '../utils/textUtils';
@@ -14,7 +16,7 @@ export const getStaticProps = async () => {
   const headerData = await getPageFieldsByName("header");
   const footerData = await getPageFieldsByName("footer");
 
-  if (!pageData) {
+  if (!pageData || !headerData || !footerData) {
     return {
       notFound: true,
     };
@@ -32,11 +34,11 @@ export const getStaticProps = async () => {
   };
 };
 
-export default function MainPage({ pageData }) {
+export default function MainPage({ pageData, headerData, footerData }) {
   const pageContent = pageData.acfFields;
 
   // debug statement
-  console.log("Page Content:", pageContent);
+  // console.log("Page Content:", pageContent);
 
   // Detect <br> and adjust second line
   const catchPhraseRef = useRef(null);
@@ -60,7 +62,8 @@ export default function MainPage({ pageData }) {
         description={pageContent["head-description"]}
         canonicalUrl={pageContent["head-url"]}
       />
-      <div className={styles.homepageBody}>
+      <Header pageData={headerData} />
+      <main className={styles.homepageBody}>
         <section className={styles.titleSection}>
           <div className={styles.logoWrapper}>
             <img src={pageContent["img-h1"].src} alt={pageContent["img-h1"].alt} className={styles.h1Logo} />
@@ -185,7 +188,8 @@ export default function MainPage({ pageData }) {
             </svg>
           </div>
         </section>
-      </div>
+      </main>
+      <Footer pageData={footerData} />
     </>
   );
 }

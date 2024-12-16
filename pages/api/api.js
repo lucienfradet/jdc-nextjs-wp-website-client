@@ -1,6 +1,6 @@
 import { GraphQLClient } from 'graphql-request';
 
-const endpoint = `${process.env.PUBLIC_WORDPRESS_GRAPHQL_URL}`;
+const endpoint = `${process.env.NEXT_PUBLIC_WORDPRESS_GRAPHQL_URL}`;
 
 const graphQLClient = new GraphQLClient(endpoint);
 
@@ -21,8 +21,8 @@ export async function getAllPosts() {
 }
 
 export async function getPageFieldsByName(name) {
-  const url = `${process.env.PUBLIC_WORDPRESS_API_URL}pages?slug=${name}`;
-  console.log(url)
+  const url = `${process.env.NEXT_PUBLIC_WORDPRESS_API_URL}pages?slug=${name}`;
+  console.log("Fetching URL:", url); // Log the API URL
 
   try {
     // Fetch data from the REST API
@@ -33,6 +33,7 @@ export async function getPageFieldsByName(name) {
     }
 
     const pages = await response.json();
+    console.log(pages);
 
     if (!pages || pages.length === 0) {
       throw new Error(`No page found with the slug: ${name}`);

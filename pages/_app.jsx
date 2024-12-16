@@ -1,5 +1,3 @@
-import Header from "../components/Header.js";
-import Footer from "../components/Footer.js";
 import App from 'next/app';
 import "../styles/globals.css";
 import { getPageFieldsByName } from './api/api.js';
@@ -12,9 +10,7 @@ import { getPageFieldsByName } from './api/api.js';
 function MyApp({ Component, pageProps }) {
   return (
     <>
-      <Header pageData={pageProps.headerData} />
       <Component {...pageProps} />
-      <Footer pageData={pageProps.footerData}/>
     </>
   );
 }
