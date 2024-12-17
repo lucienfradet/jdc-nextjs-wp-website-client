@@ -3,21 +3,21 @@
 /* Maitree */
 @font-face {
   font-family: 'Maitree';
-  src: url('__BASE_PATH__/fonts/Maitree/Maitree-Regular.ttf') format('truetype');
+  src: url('./fonts/Maitree/Maitree-Regular.ttf') format('truetype');
   font-weight: 400;
   font-style: normal;
 }
 
 @font-face {
   font-family: 'Maitree';
-  src: url('__BASE_PATH__/fonts/Maitree/Maitree-Bold.ttf') format('truetype');
+  src: url('./fonts/Maitree/Maitree-Bold.ttf') format('truetype');
   font-weight: 700;
   font-style: normal;
 }
 
 @font-face {
   font-family: 'Maitree';
-  src: url('__BASE_PATH__/fonts/Maitree/Maitree-Light.ttf') format('truetype');
+  src: url('./fonts/Maitree/Maitree-Light.ttf') format('truetype');
   font-weight: 300;
   font-style: normal;
 }
@@ -25,7 +25,7 @@
 /* Maname */
 @font-face {
   font-family: 'Maname';
-  src: url('__BASE_PATH__/fonts/Maname/Maname-Regular.ttf') format('truetype');
+  src: url('./fonts/Maname/Maname-Regular.ttf') format('truetype');
   font-weight: 400;
   font-style: normal;
 }
@@ -33,35 +33,35 @@
 /* Roboto */
 @font-face {
   font-family: 'Roboto';
-  src: url('__BASE_PATH__/fonts/Roboto/Roboto-Regular.ttf') format('truetype');
+  src: url('./fonts/Roboto/Roboto-Regular.ttf') format('truetype');
   font-weight: 400;
   font-style: normal;
 }
 
 @font-face {
   font-family: 'Roboto';
-  src: url('__BASE_PATH__/fonts/Roboto/Roboto-Bold.ttf') format('truetype');
+  src: url('./fonts/Roboto/Roboto-Bold.ttf') format('truetype');
   font-weight: 700;
   font-style: normal;
 }
 
 @font-face {
   font-family: 'Roboto';
-  src: url('__BASE_PATH__/fonts/Roboto/Roboto-Black.ttf') format('truetype');
+  src: url('./fonts/Roboto/Roboto-Black.ttf') format('truetype');
   font-weight: 700;
   font-style: black;
 }
 
 @font-face {
   font-family: 'Roboto';
-  src: url('__BASE_PATH__/fonts/Roboto/Roboto-Light.ttf') format('truetype');
+  src: url('./fonts/Roboto/Roboto-Light.ttf') format('truetype');
   font-weight: 300;
   font-style: normal;
 }
 
 @font-face {
   font-family: 'Roboto';
-  src: url('__BASE_PATH__/fonts/Roboto/Roboto-Thin.ttf') format('truetype');
+  src: url('./fonts/Roboto/Roboto-Thin.ttf') format('truetype');
   font-weight: 200;
   font-style: normal;
 }
