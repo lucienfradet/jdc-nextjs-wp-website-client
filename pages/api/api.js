@@ -69,9 +69,6 @@ async function fetchImageData(acfFields) {
   for (const key of fieldKeys) {
     const value = acfFields[key];
 
-    // Check for NEXT_PUBLIC_ASSETS_SOURCE_ADDRESS in the environment
-    const assetsSourceAddress = process.env.NEXT_PUBLIC_ASSETS_SOURCE_ADDRESS;
-
     // Check if the field value is a number (indicating a media ID)
     if (typeof value === 'number') {
       try {
@@ -92,14 +89,6 @@ async function fetchImageData(acfFields) {
 
         // Replace the numeric field value with the fetched media details
         if (data.mediaItem) {
-          let sourceUrl = data.mediaItem.sourceUrl;
-
-          // If NEXT_PUBLIC_ASSETS_SOURCE_ADDRESS is set, replace the domain in the sourceUrl
-          if (assetsSourceAddress) {
-            const urlParts = new URL(sourceUrl); // Parse the URL to replace only the domain
-            sourceUrl = `${assetsSourceAddress}${urlParts.pathname}`;
-          }
-
           acfFields[key] = {
             id: data.mediaItem.id,
             src: data.mediaItem.sourceUrl,
