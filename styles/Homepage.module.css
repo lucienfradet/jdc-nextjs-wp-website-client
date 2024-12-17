@@ -27,6 +27,11 @@
   align-items: center; /* Center logos horizontally */
 }
 
+/* .logoWrapper svg { */
+/*   transform: scale(1.1);
+/*   transform-origin: center;
+/* } */
+
 .h1Logo {
   width: 70vw;
   position: relative; /* Relative to the wrapper */
