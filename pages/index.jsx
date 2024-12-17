@@ -169,7 +169,9 @@ export default function MainPage({ pageData, headerData, footerData }) {
               }
             </div>
           </div>
-          <img className={styles.imgCollabBackground} src={pageContent["img-collaborateurs-background"].src} alt={pageContent["img-collaborateurs-background"].alt} />
+          <div className={styles.imgCollabBackgroundContainer}>
+            <img className={styles.imgCollabBackground} src={pageContent["img-collaborateurs-background"].src} alt={pageContent["img-collaborateurs-background"].alt} />
+          </div>
         </section>
         <section className={styles.abonnSection}>
           <div className={styles.abonnContainer}>

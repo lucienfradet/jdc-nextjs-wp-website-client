@@ -3,6 +3,7 @@
   overflow-y: hidden;
   z-index: 0;
   background: var(--green);
+  overflow-x: hidden;
 }
 
 /* Title section */
@@ -238,7 +239,7 @@
 .collabSection {
   position: relative;
   padding: 50px 20px;
-  overflow: visible; /* Allow elements to overflow */
+  overflow-y: visible; /* Allow elements to overflow */
 }
 
 .collabContainer {
@@ -298,6 +299,17 @@
   pointer-events: none;
 }
 
+.imgCollabBackgroundContainer {
+  position: absolute; /* Position relative to its parent */
+  top: 0;             /* Align to the top of the parent */
+  left: 0;            /* Align to the left of the parent */
+  width: 100vw;       /* Full viewport width */
+  height: 100%;       /* Full height of the parent */
+  overflow: hidden;   /* Hide overflowing content */
+  z-index: 0;         /* Behind other content */
+  pointer-events: none; /* Prevent interaction */
+}
+
 /* Background image */
 .imgCollabBackground {
   position: absolute;
@@ -305,7 +317,7 @@
   left: -300px;
   width: calc(120vw + 30%); /* Dynamically increase the width */
   height: auto;
-  z-index: -1;
+  z-index: 0;
   pointer-events: none;
   object-fit: contain; /* Maintain aspect ratio */
 }
