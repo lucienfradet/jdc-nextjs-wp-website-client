@@ -103,7 +103,7 @@
   background: var(--red);
   padding: 5px 15px; /* Add spacing around the text */
   color: var(--beige);
-  font-size: 1.5vw; /* Adjust font size */
+  font-size: clamp(5px, 1.5vw, 26px); /* Adjust font size */
   font-weight: bold; /* Bold label text */
   border-radius: 5px; /* Optional: rounded edges for the label */
   z-index: 3;
@@ -346,7 +346,7 @@
 .abonnContainer h2 {
   font-weight: black;
   position: relative;
-  font-size: 3vw;
+  font-size: 2.5vw;
   margin-bottom: 1vw;
   max-width: 20vw;
   z-index: 6;
@@ -354,7 +354,7 @@
 
 .abonnContainer p {
   position: relative;
-  font-size: 1.5vw;
+  font-size: 1.2vw;
   line-height: 1.6;
   font-weight: bold;
   text-align: justify;
