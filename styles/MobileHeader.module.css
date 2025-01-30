@@ -1,0 +1,116 @@
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+  background-color: var(--green);
+  color: var(--beige);
+  height: 100px;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  transition: transform 0.3s ease;
+  z-index: 100;
+}
+.hidden {
+  transform: translateY(-100%); /* Move header out of view */
+}
+
+.logoContainer {
+  width: 100px;
+  order: 1;
+  z-index: 1001;
+}
+
+.logoWrapper {
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logo {
+  height: 100%;
+  width: auto;
+}
+
+.nav {
+  position: fixed;
+  top: -100vh;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: var(--green);
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 2rem;
+  transition: top 0.5s ease-in-out;
+  padding: 2rem;
+}
+
+.nav.active {
+  top: 0;
+}
+
+.nav a {
+  font-family: 'Roboto', sans-serif;
+  font-weight: 900;
+  font-size: 1.5rem;
+  color: var(--beige);
+  text-decoration: none;
+  padding: 1rem 2rem;
+  border: 2px solid var(--beige);
+  border-radius: 30px;
+  transition: all 0.3s ease;
+  width: 100%;
+  max-width: 300px;
+  text-align: center;
+}
+
+.nav a.disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.nav a:hover {
+  background-color: var(--beige);
+  color: var(--green);
+}
+
+/* Burger menu positioning */
+.burgerMenu {
+  order: 3;
+  z-index: 1001;
+  cursor: pointer;
+}
+
+.cart {
+  order: 2;
+  z-index: 1001;
+  margin-left: auto;
+  padding-right: 1rem;
+  width: 60px;
+  height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cart img {
+  width: 100%;
+  height: auto;
+  max-width: 100%;
+}
+
+/* Overlay for when menu is open */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 998;
+}

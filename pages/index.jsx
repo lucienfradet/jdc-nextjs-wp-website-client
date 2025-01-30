@@ -1,7 +1,9 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import CustomHead from '../components/CustomHead';
-import Header from "../components/Header";
-import Footer from "../components/Footer";
+import DesktopHeader from "../components/DesktopHeader";
+import MobileHeader from "../components/MobileHeader";
+import DesktopFooter from "../components/DesktopFooter";
+import MobileFooter from "../components/MobileFooter";
 import styles from '../styles/Homepage.module.css';
 import { getPageFieldsByName } from './api/api';
 import { convertLineBreaksToHtml } from '../utils/textUtils';
@@ -37,6 +39,21 @@ export const getStaticProps = async () => {
 export default function MainPage({ pageData, headerData, footerData }) {
   const pageContent = pageData.acfFields;
 
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 991); // Define breakpoint for mobile/tablet
+    };
+
+    handleResize(); // Initial check
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
   // debug statement
   // console.log("Page Content:", pageContent);
 
@@ -62,7 +79,13 @@ export default function MainPage({ pageData, headerData, footerData }) {
         description={pageContent["head-description"]}
         canonicalUrl={pageContent["head-url"]}
       />
-      <Header pageData={headerData} />
+
+      {isMobile ? (
+        <MobileHeader pageData={headerData} />
+      ) : (
+        <DesktopHeader pageData={headerData} />
+      )}
+
       <main className={styles.homepageBody}>
         <section className={styles.titleSection}>
           <div className={styles.logoWrapper}>
@@ -278,8 +301,13 @@ export default function MainPage({ pageData, headerData, footerData }) {
             </svg>
           </div>
         </section>
+
+        {isMobile ? (
+          <MobileFooter pageData={footerData} />
+        ) : (
+            <DesktopFooter pageData={footerData} />
+          )}
       </main>
-      <Footer pageData={footerData} />
     </>
   );
 }

@@ -7,8 +7,7 @@
   padding: 0 20px;
   height: var(--header-height);
   background-color: var(--green);
-  background-color: var(--green);
-  position: fixed; /* Make the header fixed */
+  position: fixed;
   top: 0;
   width: 100%;
   transition: transform 0.3s ease;

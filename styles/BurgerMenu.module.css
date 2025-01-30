@@ -1,0 +1,99 @@
+@keyframes animation_Line_2_1_flow_1 {
+  from {
+    d: path("M111 138 L 104 138 L 104 152 L 111 152 L 111 138 Z M111 152 L 288 152 L 288 138 L 111 138 L 111 152 Z");
+    opacity: 1;
+  }
+  to {
+    d: path("M255.208 265.107 L260.158 270.057 L270.057 260.158 L265.107 255.208 L255.208 265.107 Z M265.107 255.208 L139.95 130.05 L130.05 139.95 L255.208 265.107 L265.107 255.208 Z");
+    opacity: 1;
+  }
+}
+
+@keyframes animation_Line_2_1_flow_2 {
+  from {
+    d: path("M255.208 265.107 L260.158 270.057 L270.057 260.158 L265.107 255.208 L255.208 265.107 Z M265.107 255.208 L139.95 130.05 L130.05 139.95 L255.208 265.107 L265.107 255.208 Z");
+    opacity: 1;
+  }
+  to {
+    d: path("M111 138 L 104 138 L 104 152 L 111 152 L 111 138 Z M111 152 L 288 152 L 288 138 L 111 138 L 111 152 Z");
+    opacity: 1;
+  }
+}
+
+@keyframes animation_Line_3_2_flow_1 {
+  from {
+    d: path("M111 194 L 104 194 L 104 208 L 111 208 L 111 194 Z M111 208 L 288 208 L 288 194 L 111 194 L 111 208 Z");
+    opacity: 1;
+  }
+  to {
+    d: path("M198 193 L 191 193 L 191 207 L 198 207 L 198 193 Z M198 207 L 210 207 L 210 193 L 198 193 L 198 207 Z");
+    opacity: 1;
+  }
+}
+
+@keyframes animation_Line_3_2_flow_2 {
+  from {
+    d: path("M198 193 L 191 193 L 191 207 L 198 207 L 198 193 Z M198 207 L 210 207 L 210 193 L 198 193 L 198 207 Z");
+    opacity: 1;
+  }
+  to {
+    d: path("M111 194 L 104 194 L 104 208 L 111 208 L 111 194 Z M111 208 L 288 208 L 288 194 L 111 194 L 111 208 Z");
+    opacity: 1;
+  }
+}
+
+@keyframes animation_Line_4_3_flow_1 {
+  from {
+    d: path("M111 248 L 104 248 L 104 262 L 111 262 L 111 248 Z M111 262 L 288 262 L 288 248 L 111 248 L 111 262 Z");
+    opacity: 1;
+  }
+  to {
+    d: path("M265.107 144.95 L270.057 140 L260.158 130.101 L255.208 135.05 L265.107 144.95 Z M255.208 135.05 L130.05 260.208 L139.95 270.108 L265.107 144.95 L255.208 135.05 Z");
+    opacity: 1;
+  }
+}
+
+@keyframes animation_Line_4_3_flow_2 {
+  from {
+    d: path("M265.107 144.95 L270.057 140 L260.158 130.101 L255.208 135.05 L265.107 144.95 Z M255.208 135.05 L130.05 260.208 L139.95 270.108 L265.107 144.95 L255.208 135.05 Z");
+    opacity: 1;
+  }
+  to {
+    d: path("M111 248 L 104 248 L 104 262 L 111 262 L 111 248 Z M111 262 L 288 262 L 288 248 L 111 248 L 111 262 Z");
+    opacity: 1;
+  }
+}
+
+.line {
+  transition: all 0.3s ease-out;
+}
+
+.animated {
+  animation-duration: 0.3s;
+  animation-timing-function: ease-out;
+  animation-fill-mode: forwards;
+}
+
+.flow_1_1 {
+  animation-name: animation_Line_2_1_flow_1;
+}
+
+.flow_1_2 {
+  animation-name: animation_Line_2_1_flow_2;
+}
+
+.flow_2_1 {
+  animation-name: animation_Line_3_2_flow_1;
+}
+
+.flow_2_2 {
+  animation-name: animation_Line_3_2_flow_2;
+}
+
+.flow_3_1 {
+  animation-name: animation_Line_4_3_flow_1;
+}
+
+.flow_3_2 {
+  animation-name: animation_Line_4_3_flow_2;
+}
