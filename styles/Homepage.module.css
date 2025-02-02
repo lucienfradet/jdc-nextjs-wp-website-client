@@ -27,11 +27,6 @@
   align-items: center; /* Center logos horizontally */
 }
 
-/* .logoWrapper svg { */
-/*   transform: scale(1.1);
-/*   transform-origin: center;
-/* } */
-
 .h1Logo {
   width: 70vw;
   position: relative; /* Relative to the wrapper */
@@ -156,7 +151,7 @@
   left: 0; /* Hug the left side of the viewport */
   width: 35vw; /* Adjust size */
   max-width: 400px; /* Ensure it's not too large */
-  z-index: 5; /* Place it below the main content */
+  z-index: 1;
 }
 
 /* Background SVG */
@@ -208,6 +203,7 @@
   display: flex; /* Display columns side by side */
   gap: 2px; /* Space between columns */
   margin-top: 50px;
+  z-index: 2;
 }
 
 .column {
@@ -255,7 +251,7 @@
 }
 
 .collabTextContainer {
-  background-color: var(--beige);
+  background-color: rgba(245, 240, 225, var(--bg-opacity, 0.7));
   border-radius: 15px;
   padding: 30px 70px 55px 70px;
   max-width: 600px;
@@ -318,8 +314,8 @@
 /* Background image */
 .imgCollabBackground {
   position: absolute;
-  top: -20vw;
-  left: -300px;
+  top: -25vw;
+  left: -25vw;
   width: calc(120vw + 30%); /* Dynamically increase the width */
   height: auto;
   z-index: 0;
@@ -435,4 +431,220 @@
   width: 20vw;
   z-index: 4;
   border-radius: 10%;
+}
+
+/* MEDIA QUERIES */
+@media screen and (max-width: 991px) {
+  .homepageBody {
+    padding-top: var(--header-height-mobile);
+  }
+
+  .titleSection {
+    height: 61vw;
+  }
+
+  .h1Logo {
+    width: 90vw;
+  }
+
+  .catchPhrase {
+    padding: 20px;
+    right: 10%;
+    top: 60%;
+    transform: translateY(-50%);
+    font-size: 3.1vw;
+    max-width: 40%;
+    line-height: 1.5;
+  }
+
+  .catchPhrase p {
+    position: relative; /* Allows fine-tuning its position */
+    top: -10px; /* Adjust this value to move the text upward */
+  }
+
+  .catchPhrase .secondLine {
+    font-size: 4vw;
+  }
+
+  /* Container for Centered Content */
+  .introContainer {
+    max-width: 1000px; /* Limit the width of the content */
+    margin: 0 auto; /* Center the container horizontally */
+    padding: 60px 60px; /* Adjust padding for the section content */
+  }
+
+  .imgCrewContainer {
+    top: 0; /* Move it halfway outside the top of the section */
+    transform: translateY(-50%) translateX(1vw);
+  }
+
+  /* First Image */
+  .imgCrew {
+    width: 35vw; /* Adjust size */
+  }
+
+  /* Label Image */
+  .labelImg {
+    font-size: clamp(5px, 2vw, 26px); /* Adjust font size */
+    padding: 4px 10px;
+  }
+
+  /* Intro Text Container */
+  .introTextContainer {
+    left: 22%;
+    width: clamp(350px, 60%, 1000px);
+    font-size: clamp(5px, 2.8vw, 20px);
+  }
+
+  /* Logo with Text */
+  .imgLogoText {
+    margin: 20px auto; /* Center the logo horizontally */
+    width: 100%; /* Adjust size */
+    max-width: 200px; /* Ensure it's not too large */
+  }
+
+  /* 
+* Produits Section 
+*/
+  .produitsSection {
+    position: relative; /* Enable positioning for child elements */
+    background-color: var(--orange); /* Section background color */
+    color: var(--beige); /* Text color */
+  }
+
+  .produitsContainer {
+    position: relative;
+    max-width: 1000px; /* Limit the width of the content */
+    padding: 60px;
+    text-align: left; /* Align text to the left */
+    display: flex;
+    align-items: flex-start; /* Align children at the top */
+    justify-content: space-between; /* Distribute children evenly */
+    flex-direction: column; /* Stack heading and columns vertically */
+    gap: 20px; /* Space between children */
+
+    max-width: 1000px; /* Limit the width of the content */
+    margin: 0 auto; /* Center the container horizontally */
+    padding: 60px 60px; /* Adjust padding for the section content */
+    position: relative; /* Enable positioning for child elements */
+  }
+
+  .produitsContainer h2 {
+    position: relative;
+    font-size: clamp(22px, 3.7vw, 40px);
+    margin-bottom: 20px;
+    left: 40%
+  }
+
+  .columnsWrapper {
+    flex-direction: column;
+    gap: 35px; /* Space between columns */
+    margin-bottom: 50px;
+    margin-top: 0px;
+    margin-left: 3%;
+    z-index: 2;
+  }
+
+  .column {
+    flex: 1; /* Equal width for both columns */
+    display: flex;
+    flex-direction: column;
+    gap: 5px; /* Space between heading and paragraph */
+  }
+
+  .column h3 {
+    font-size: clamp(22px, 3.4vw, 30px);
+    font-weight: bold;
+  }
+
+  .column p {
+    font-size: clamp(12px, 2.2vw, 20px);
+    line-height: 1.1; /* Improve readability */
+  }
+
+  .imgProduits {
+    position: absolute;
+    bottom: 0; /* Hug the bottom edge of the section */
+    right: 20px; /* Slight padding from the right edge */
+    width: clamp(300px, 40vw, 400px);
+    max-height: 90%; /* Ensure image doesn't overflow */
+    object-fit: contain; /* Maintain aspect ratio */
+    z-index: 1; /* Ensure it stays above the background */
+  }
+
+  .imgCollabBackground {
+    top: -20vw;
+    left: -40vw;
+    width: calc(120vw + 50%); /* Dynamically increase the width */
+    height: auto;
+    z-index: 0;
+    pointer-events: none;
+    object-fit: contain; /* Maintain aspect ratio */
+  }
+
+  .imageSide {
+    width: 35vw; /* Adjust size */
+  }
+
+  .collabSVG {
+    transform: translate(15vw, -20%); /* Adjust to center the SVG */
+    width: 115vw;
+  }
+
+  .imgLogoNFriends {
+    /* left: clamp(220px, 10vw, 150px); */
+    left: -5vw;
+    width: clamp(200px, 25vw, 300px);
+  }
+}
+
+@media screen and (max-width: 866px) {
+  .catchPhrase {
+    font-size: 2.8vw;
+    padding: 2vw;
+  }
+
+  .catchPhrase .secondLine {
+    font-size: 3.6vw;
+  }
+
+  .columnsWrapper {
+    padding: 10px;
+    border-radius: 5px; /* Optional: rounded edges for the label */
+    background: rgba(21, 60, 102, 0.8); /* Semi-transparent --beige background */
+  }
+
+  .imgCollabBackground {
+    left: -50vw;
+    width: calc(120vw + 60%); /* Dynamically increase the width */
+  }
+
+  .collabSVG {
+    width: 160vw;
+  }
+
+}
+
+@media screen and (max-width: 755px) {
+  .imgCollabBackground {
+    top: -20vw;
+    left: -140vw;
+    width: calc(220vw + 80%);
+  }
+
+  .collabTextContainer {
+    margin: auto 4vw;
+  }
+  .collabTextContainer h2 {
+    font-size: clamp(1rem, 6vw, 3.3rem);
+  }
+
+  .collabTextContainer p {
+    font-size: clamp(0.1rem, 2.8vw, 1rem);
+  }
+
+}
+
+@media screen and (max-width: 479px) {
+
 }

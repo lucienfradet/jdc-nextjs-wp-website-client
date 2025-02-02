@@ -29,30 +29,8 @@
 
 /* Logo styling */
 .footerLogo {
-  max-width: 150px; /* Adjust as needed */
+  max-width: 10vw; /* Adjust as needed */
   height: auto;
-}
-
-/* Links section */
-.linkWrapper {
-  display: flex;
-  margin-bottom: 20px;
-}
-
-.linkColumn {
-  display: flex;
-  flex-direction: column;
-  margin-right: 20px;
-}
-
-.linkColumn a {
-  text-decoration: none;
-  color: var(--beige);
-  margin: 5px 0;
-}
-
-.linkColumn a:hover {
-  text-decoration: underline;
 }
 
 /* Social and address */

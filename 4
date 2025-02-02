@@ -19,7 +19,7 @@ export const getStaticProps = async () => {
   const footerData = await getPageFieldsByName("footer");
 
   // Simulate a delay like a slow API call
-  // await new Promise((resolve) => setTimeout(resolve, 6000)); // 3 seconds
+  await new Promise((resolve) => setTimeout(resolve, 10000)); // 3 seconds
 
   if (!pageData || !headerData || !footerData) {
     return {

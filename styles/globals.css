@@ -11,13 +11,21 @@
   --blue: #153C66;
 
   --header-height: 60px;
-  --beige-rgb: 245, 245, 220; /* Replace with your actual beige RGB values */
+  --header-height-mobile: 100px;
+
+  --is-mobile: 0;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #282828;
     --foreground: #ededed;
+  }
+}
+
+@media (max-width: 991px) {
+  :root {
+    --is-mobile: 1;
   }
 }
 
@@ -44,6 +52,24 @@ body {
 a {
   color: inherit;
   text-decoration: none;
+}
+
+a.disabled {
+  color: grey !important;
+  pointer-events: none;
+  cursor: default;
+}
+
+button.disabled {
+  background: grey !important;
+  pointer-events: none;
+  cursor: default;
+}
+input.disabled {
+  background-color: #f0f0f0; /* Light gray background */
+  color: #a0a0a0; /* Gray text */
+  cursor: not-allowed;
+  opacity: 0.6; /* Faded effect */
 }
 
 @media (prefers-color-scheme: dark) {

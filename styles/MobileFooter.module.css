@@ -1,0 +1,130 @@
+.footer {
+  position: relative;
+  width: 100%;
+  padding: 40px 30px 25px 30px;
+  background: var(--green);
+  color: var(--beige);
+  font-family: "Roboto", sans-serif;
+  font-size: 14px;
+  z-index: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Columns Wrapper */
+.columns {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap; /* Ensure elements wrap correctly on smaller screens */
+  width: 100%;
+  max-width: 1200px;
+  gap: 20px; /* Adds spacing between columns */
+}
+
+/* Footer Columns */
+.footerCol {
+  flex: 1;
+  min-width: 280px; /* Ensures elements don't collapse on smaller screens */
+}
+
+/* Logo (Left Aligned) */
+.footerCol:first-child {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.footerLogo {
+  width: 25vw;
+  height: auto;
+}
+
+/* Centered Navigation */
+.linkWrapper {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  width: 100%;
+}
+
+.linkColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-align: center;
+}
+
+.linkColumn a {
+  color: var(--beige);
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.linkColumn a:hover {
+  text-decoration: underline;
+}
+
+/* Social Media and Address */
+.socialAndAddress {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+
+.iconsWrapper {
+  display: flex;
+  gap: 15px;
+}
+
+.iconsWrapper img {
+  width: 6vw;
+  max-width: 40px;
+  height: auto;
+}
+
+/* Newsletter */
+.newsletterWrapper {
+  text-align: center;
+}
+
+.newsletterForm {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.newsletterInput {
+  padding: 8px;
+  border: 1px solid var(--beige);
+  border-radius: 4px;
+  background: transparent;
+  color: var(--beige);
+}
+
+.newsletterButton {
+  padding: 8px 16px;
+  background: var(--beige);
+  color: var(--green);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.newsletterButton:hover {
+  opacity: 0.8;
+}
+
+/* Copyright (Centered at Bottom) */
+.copyright {
+  text-align: center;
+  width: 100%;
+  margin-top: 30px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+}

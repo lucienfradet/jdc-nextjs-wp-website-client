@@ -53,9 +53,9 @@ export default function Footer({ pageData }) {
               <input
                 type="email"
                 placeholder={pageContent["newsletter-field-text"]}
-                className={styles.newsletterInput}
+                className={`${styles.newsletterInput} disabled`}
               />
-              <button className={styles.newsletterButton}>{pageContent["btn-text"]}</button>
+              <button className={`${styles.newsletterButton} disabled`}>{pageContent["btn-text"]}</button>
             </div>
           </div>
         </div>
