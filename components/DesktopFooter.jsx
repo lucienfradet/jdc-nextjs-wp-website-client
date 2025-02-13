@@ -22,13 +22,13 @@ export default function Footer({ pageData }) {
         <div className={styles.footerCol}>
           <div className={styles.linkWrapper}>
             <div className={styles.linkColumn}>
-              <a href="#a-propos">{pageContent["a-propos"]}</a>
-              <a href="#agrotourisme">{pageContent["agrotourisme"]}</a>
-              <a href="#evenements">{pageContent["evenements"]}</a>
+              <a href="/a-propos">{pageContent["a-propos"]}</a>
+              <a href="/agrotourisme">{pageContent["agrotourisme"]}</a>
+              <a href="/evenements">{pageContent["evenements"]}</a>
             </div>
             <div className={styles.linkColumn}>
-              <a href="#abonnement">{pageContent["abonnement"]}</a>
-              <a href="#contact">{pageContent["contact"]}</a>
+              <a href="/abonnement">{pageContent["abonnement"]}</a>
+              <a href="/contact">{pageContent["contact"]}</a>
             </div>
           </div>
 

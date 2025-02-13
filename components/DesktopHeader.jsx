@@ -43,11 +43,11 @@ export default function Header({ pageData }) {
 
       {/* Navigation Links */}
       <nav className={styles.nav}>
-        <a href="#a-propos">{pageContent["a-propos"]}</a>
-        <a href="#abonnement">{pageContent["abonnement"]}</a>
-        <a href="#agrotourisme" className={styles.disabled}>{pageContent["agrotourisme"]}</a>
-        <a href="#evenements">{pageContent["evenements"]}</a>
-        <a href="#contact">{pageContent["contact"]}</a>
+        <a href="/a-propos">{pageContent["a-propos"]}</a>
+        <a href="/abonnement">{pageContent["abonnement"]}</a>
+        <a href="/agrotourisme" className={styles.disabled}>{pageContent["agrotourisme"]}</a>
+        <a href="/evenements">{pageContent["evenements"]}</a>
+        <a href="/contact">{pageContent["contact"]}</a>
       </nav>
 
       {/* Cart Icon */}
