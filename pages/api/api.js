@@ -22,7 +22,7 @@ export async function getAllPosts() {
 
 export async function getPageFieldsByName(name) {
   const url = `${process.env.NEXT_PUBLIC_WORDPRESS_API_URL}pages?slug=${name}`;
-  console.log("Fetching URL:", url); // Log the API URL
+  // console.log("Fetching URL:", url); // Log the API URL
 
   try {
     // Fetch data from the REST API
@@ -33,7 +33,7 @@ export async function getPageFieldsByName(name) {
     }
 
     const pages = await response.json();
-    console.log(pages);
+    // console.log(pages);
 
     if (!pages || pages.length === 0) {
       throw new Error(`No page found with the slug: ${name}`);
@@ -99,5 +99,19 @@ async function fetchImageData(acfFields) {
         console.error(`Error fetching image data for field "${key}":`, error);
       }
     }
+  }
+}
+
+export async function fetchSiteIcon() {
+  const url = `${process.env.NEXT_PUBLIC_WORDPRESS_BASE_URL}wp-json/`;
+
+  try {
+    const response = await fetch(url);
+    const data = await response.json();
+    console.log(`icon data: ${data.site_icon_url}`);
+    return data.site_icon_url;
+  } catch (error) {
+    console.error("Error fetching site icon:", error);
+    return null;
   }
 }

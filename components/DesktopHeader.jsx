@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import  styles from '../styles/DesktopHeader.module.css';
 import Link from 'next/link';
+import DrawerCart from "./DrawerCart";
 
 export default function Header({ pageData }) {
   const pageContent = pageData.acfFields;
@@ -51,9 +52,16 @@ export default function Header({ pageData }) {
       </nav>
 
       {/* Cart Icon */}
-      <div className={styles.cart}>
-        <img src={pageContent["img-cart"].src} alt={pageContent["img-cart"].alt} />
-      </div>
+      <DrawerCart
+        trigger={{
+          content: (
+            <div className={styles.cart}>
+              <img src={pageContent["img-cart"].src} alt={pageContent["img-cart"].alt} />
+            </div>
+          ),
+        }}
+      />
+      
     </header>
   );
 }

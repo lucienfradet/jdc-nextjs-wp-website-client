@@ -6,6 +6,7 @@ import DesktopFooter from "@/components/DesktopFooter";
 import MobileFooter from "@/components/MobileFooter";
 import styles from '@/styles/Homepage.module.css';
 import { getPageFieldsByName } from '@/pages/api/api';
+import { fetchSiteIcon } from "@/pages/api/api";
 import { convertLineBreaksToHtml } from '../utils/textUtils';
 
 // getStaticProps gets called on pages (in the pages dir)
@@ -17,6 +18,7 @@ export const getStaticProps = async () => {
   const pageData = await getPageFieldsByName("homepage");
   const headerData = await getPageFieldsByName("header");
   const footerData = await getPageFieldsByName("footer");
+  const siteIconUrl = await fetchSiteIcon();
 
   // Simulate a delay like a slow API call
   // await new Promise((resolve) => setTimeout(resolve, 6000)); // 3 seconds
@@ -32,6 +34,7 @@ export const getStaticProps = async () => {
       pageData,
       headerData,
       footerData,
+      siteIconUrl
     },
     // amount of time that needs to pass (in seconds) before next.js re-fetches the data
     // if not set, any changes to the CMS won't take effect until the app is rebuilt manually!
@@ -39,7 +42,7 @@ export const getStaticProps = async () => {
   };
 };
 
-export default function MainPage({ pageData, headerData, footerData }) {
+export default function MainPage({ pageData, headerData, footerData, siteIconUrl }) {
   const pageContent = pageData.acfFields;
   // debug statement
   // console.log("Page Content:", pageContent);
@@ -108,6 +111,7 @@ export default function MainPage({ pageData, headerData, footerData }) {
         title={pageContent["head-title"]}
         description={pageContent["head-description"]}
         canonicalUrl={pageContent["head-url"]}
+        siteIconUrl={siteIconUrl}
       />
 
       {isMobile ? (

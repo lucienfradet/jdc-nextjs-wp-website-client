@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import Loading from "@/components/Loading";
 import "@/styles/globals.css";
 import loadingStyles from "@/styles/Loading.module.css"; // Import the CSS module
-  
+
 // Interesting thing here:
 // If I understant correctly, the data from Header and Footer, even though they are called on 
 // every page using getStaticProps, will not be fetched again if it hasn't changed.
