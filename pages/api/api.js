@@ -1,23 +1,32 @@
-import { GraphQLClient } from 'graphql-request';
+import { graphQLClient, safeFetch } from "@/lib/sslConfig";
 
-const endpoint = `${process.env.NEXT_PUBLIC_WORDPRESS_GRAPHQL_URL}`;
-
-const graphQLClient = new GraphQLClient(endpoint);
-
+// NOT TESTED...
 export async function getAllPosts() {
-  const query = `
-    {
-      posts {
-        nodes {
-          id
-          title
-          content
-        }
-      }
+  try {
+    const response = await safeFetch(
+      `${process.env.NEXT_PUBLIC_WORDPRESS_API_URL}posts?context=embed&_fields=id,title,content`
+    );
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch posts');
     }
-  `;
-  const data = await graphQLClient.request(query);
-  return data.posts.nodes;
+
+    const posts = await response.json();
+    
+    // Restructure to match previous GraphQL response format
+    return {
+      posts: {
+        nodes: posts.map(post => ({
+          id: post.id,
+          title: post.title?.rendered || '',
+          content: post.content?.rendered || ''
+        }))
+      }
+    };
+  } catch (error) {
+    console.error("Error fetching posts:", error);
+    return { posts: { nodes: [] } };
+  }
 }
 
 export async function getPageFieldsByName(name) {
@@ -26,7 +35,7 @@ export async function getPageFieldsByName(name) {
 
   try {
     // Fetch data from the REST API
-    const response = await fetch(url);
+    const response = await safeFetch(url);
 
     if (!response.ok) {
       throw new Error(`Failed to fetch page data: ${response.statusText}`);
@@ -69,32 +78,23 @@ async function fetchImageData(acfFields) {
   for (const key of fieldKeys) {
     const value = acfFields[key];
 
-    // Check if the field value is a number (indicating a media ID)
     if (typeof value === 'number') {
       try {
-        // Fetch image details using GraphQL
-        const query = `
-          query GetMedia($id: ID!) {
-            mediaItem(id: $id, idType: DATABASE_ID) {
-              id
-              sourceUrl
-              altText
-            }
-          }
-        `;
+        const response = await safeFetch(
+          `${process.env.NEXT_PUBLIC_WORDPRESS_API_URL}media/${value}?_fields=id,source_url,alt_text`
+        );
 
-        const variables = { id: value };
-
-        const data = await graphQLClient.request(query, variables);
-
-        // Replace the numeric field value with the fetched media details
-        if (data.mediaItem) {
-          acfFields[key] = {
-            id: data.mediaItem.id,
-            src: data.mediaItem.sourceUrl,
-            alt: data.mediaItem.altText,
-          };
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
         }
+
+        const mediaItem = await response.json();
+
+        acfFields[key] = {
+          id: mediaItem.id,
+          src: mediaItem.source_url,
+          alt: mediaItem.alt_text || ''
+        };
       } catch (error) {
         console.error(`Error fetching image data for field "${key}":`, error);
       }
@@ -106,7 +106,7 @@ export async function fetchSiteIcon() {
   const url = `${process.env.NEXT_PUBLIC_WORDPRESS_BASE_URL}wp-json/`;
 
   try {
-    const response = await fetch(url);
+    const response = await safeFetch(url);
     const data = await response.json();
     console.log(`icon data: ${data.site_icon_url}`);
     return data.site_icon_url;

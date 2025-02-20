@@ -1,4 +1,4 @@
-import { fetchWooProducts } from "@/utils/wooCommerce"; // Move logic to /lib
+import { fetchWooProducts } from "@/lib/wooCommerce";
 
 export async function GET() {
     try {

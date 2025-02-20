@@ -7,7 +7,7 @@ import MobileFooter from "@/components/MobileFooter";
 import styles from '@/styles/abonnement.module.css';
 import { getPageFieldsByName } from '@/pages/api/api';
 import { fetchSiteIcon } from "@/pages/api/api";
-import { convertLineBreaksToHtml } from '../utils/textUtils';
+import { convertLineBreaksToHtml } from '@/lib/textUtils';
 
 // getStaticProps gets called on pages (in the pages dir)
 // It fetches static data to be rendered client side.
