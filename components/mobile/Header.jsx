@@ -1,6 +1,9 @@
-import  styles from '../styles/MobileHeader.module.css';
+"use client";
+
+import  styles from '@/styles/mobile/Header.module.css';
 import { useState, useEffect } from "react";
-import BurgerMenu from "./BurgerMenu";
+import WPImage from '@/components/WPImage';
+import BurgerMenu from "@/components/BurgerMenu";
 import Link from 'next/link';
 
 export default function Header({ pageData }) {
@@ -43,13 +46,13 @@ export default function Header({ pageData }) {
       {/* Logo */}
       <Link href="/" passHref className={styles.logoContainer}>
         <div className={styles.logoWrapper}>
-          <img src={pageContent["img-logo"].src} alt={pageContent["img-logo"].alt} className={styles.logo} />
+          <WPImage className={styles.logo} image={pageContent["img-logo"]} forceFullSize={true} />
         </div>
       </Link>
 
       {/* Cart Icon */}
       <div className={styles.cart}>
-        <img src={pageContent["img-cart"].src} alt={pageContent["img-cart"].alt} />
+        <WPImage image={pageContent["img-cart"]} forceFullSize={true} />
       </div>
 
       <div className={styles.burgerMenu}>

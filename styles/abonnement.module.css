@@ -52,7 +52,7 @@
   overflow: visible;
 }
 
-.introContainer .containerRight img {
+.introContainer .containerRight .imgIntro {
   width: 300px;
   height: auto;
   object-fit: cover;
@@ -102,7 +102,7 @@
 }
 
 
-.bonifContainer .containerLeft img {
+.bonifContainer .containerLeft .imgBonif {
   width: 100%;
 }
 
@@ -237,7 +237,7 @@
   justify-content: center;
 }
 
-.paimentSection img {
+.imgPaimentBackground {
   position: absolute;
   top: 0;
   left: 0;

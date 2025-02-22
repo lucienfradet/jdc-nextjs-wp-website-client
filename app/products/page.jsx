@@ -1,3 +1,5 @@
+import ProductsGrid from "@/components/products/ProductGrid";
+
 export default async function ProductsPage({ searchParams }) {
   // Await searchParams before using it
   const { point } = await searchParams;
@@ -18,8 +20,8 @@ export default async function ProductsPage({ searchParams }) {
   const selectedPoint = points.find(p => p.id.toString() === selectedPointId);
 
   return (
-    <div>
-      <h1>Our Products</h1>
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="text-3xl font-bold mb-8">Our Products</h1>
 
       {/* Points de chute selection form */}
       <form className="mb-8">
@@ -61,30 +63,10 @@ export default async function ProductsPage({ searchParams }) {
         </div>
       )}
 
-      {/* Products list */}
-      <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {products.map((product) => (
-          <li key={product.id} className="border p-4 rounded-lg">
-            <h2 className="text-xl font-bold mb-2">{product.name}</h2>
-            {product.images?.[0]?.src && (
-              <img 
-                src={product.images[0].src} 
-                width={300} 
-                height={200} 
-                alt={product.name}
-                className="mb-4 rounded"
-              />
-            )}
-            <p className="text-lg font-semibold">
-              {product.price} {product.currency}
-            </p>
-            <div 
-              className="prose"
-              dangerouslySetInnerHTML={{ __html: product.description }} 
-            />
-          </li>
-        ))}
-      </ul>
+      <ProductsGrid 
+        products={products}
+        columns={3} // Adjust based on page needs
+      />
     </div>
   );
 }

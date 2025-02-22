@@ -1,4 +1,4 @@
-import { getPageFieldsByName } from "@/pages/api/api";
+import { getPageFieldsByName } from "@/lib/api";
 
 export async function GET() {
   try {

@@ -20,8 +20,8 @@
 .logoContainer {
   display: inline-block;
   position: relative;
-  width: auto; /* Match the image width */
-  height: 40px; /* Match the image height */
+  width: 40px; /* Match the image width */
+  height: auto; /* Match the image height */
 }
 
 .logoWrapper {
@@ -31,11 +31,11 @@
 }
 
 .logo {
-  position: absolute; /* Overlapping the second image */
+  position: static; /* Overlapping the second image */
   top: 0;
   left: 0;
-  width: auto; /* Ensure both images have the same size */
-  height: 40px;
+  width: 40px; /* Ensure both images have the same size */
+  height: auto;
   object-fit: contain; /* Maintains aspect ratio */
   transition: opacity 0.3s ease; /* Smooth transition on hover */
   z-index: 2; /* Keeps the normal logo on top */
@@ -45,8 +45,8 @@
   position: absolute; /* Overlapping the first image */
   top: 0;
   left: 0;
-  width: auto; /* Ensure both images have the same size */
-  height: 40px;
+  width: 40px; /* Ensure both images have the same size */
+  height: auto;
   object-fit: contain; /* Maintains aspect ratio */
   opacity: 0; /* Initially hidden */
   transition: opacity 0.3s ease; /* Smooth transition on hover */
@@ -100,8 +100,8 @@
   cursor: default;
 }
 
-.cart img {
-  height: 30px;
+.cart {
+  width: 30px;
 }
 
 /* Media queries */

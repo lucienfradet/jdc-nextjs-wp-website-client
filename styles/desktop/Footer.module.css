@@ -33,6 +33,33 @@
   height: auto;
 }
 
+/* Link Section */
+.linkWrapper {
+  display: flex; /* Place the columns side by side */
+  gap: 40px; /* Space between the two columns */
+  justify-content: left; /* Distribute space between columns */
+  margin-bottom: 13px;
+}
+
+.linkColumn {
+  display: flex;
+  flex-direction: column; /* Stack links vertically */
+  gap: 10px; /* Space between links */
+}
+
+.linkColumn a {
+  text-decoration: none; /* Remove default underline */
+  color: inherit; /* Use the parent's text color */
+  font-weight: normal; /* Default font weight */
+  transition: all 0.3s ease; /* Smooth transition for hover effects */
+}
+
+.linkColumn a:hover {
+  font-weight: bold; /* Bold text on hover */
+  text-decoration: underline; /* Underline on hover */
+  text-decoration-thickness: 2px; /* Thicker underline */
+}
+
 /* Social and address */
 .socialAndAddress {
   display: flex;
@@ -46,7 +73,7 @@
   margin-bottom: 10px;
 }
 
-.iconsWrapper img {
+.iconImage {
   width: 24px;
   height: 24px;
   object-fit: contain;

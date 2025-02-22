@@ -1,3 +1,4 @@
+/* globals.css */
 @import './fonts.css';
 
 :root {
@@ -67,11 +68,25 @@ button.disabled {
   pointer-events: none;
   cursor: default;
 }
+
 input.disabled {
   background-color: #f0f0f0; /* Light gray background */
   color: #a0a0a0; /* Gray text */
   cursor: not-allowed;
   opacity: 0.6; /* Faded effect */
+}
+
+.image-wrapper {
+  /* Container styles (positioning, margins, etc.) */
+  display: flex;
+  position: relative;
+}
+
+.image-content {
+  /* Image-specific styles */
+  width: 100% !important;
+  height: auto !important;
+  display: block; /* Fixes the extra 4px issue */
 }
 
 @media (prefers-color-scheme: dark) {
@@ -80,7 +95,6 @@ input.disabled {
   }
 }
 
-/* globals.css */
 
 /* custom scrollbar */
 ::-webkit-scrollbar {

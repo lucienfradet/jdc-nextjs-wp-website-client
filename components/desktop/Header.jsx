@@ -1,7 +1,10 @@
+"use client";
+
 import { useEffect, useState } from 'react';
-import  styles from '../styles/DesktopHeader.module.css';
+import  styles from '@/styles/desktop/Header.module.css';
+import WPImage from '@/components/WPImage';
 import Link from 'next/link';
-import DrawerCart from "./DrawerCart";
+import DrawerCart from "@/components/DrawerCart";
 
 export default function Header({ pageData }) {
   const pageContent = pageData.acfFields;
@@ -37,8 +40,8 @@ export default function Header({ pageData }) {
       {/* Logo */}
       <Link href="/" passHref className={styles.logoContainer}>
         <div className={styles.logoWrapper}>
-          <img src={pageContent["img-logo"].src} alt={pageContent["img-logo"].alt} className={styles.logo} />
-          <img src={pageContent["img-logo-red"].src} alt={pageContent["img-logo-red"].alt} className={styles.logoRed} />
+          <WPImage className={styles.logo} image={pageContent["img-logo"]} forceFullSize={true} />
+          <WPImage className={styles.logoRed} image={pageContent["img-logo-red"]} forceFullSize={true} />
         </div>
       </Link>
 
@@ -56,7 +59,7 @@ export default function Header({ pageData }) {
         trigger={{
           content: (
             <div className={styles.cart}>
-              <img src={pageContent["img-cart"].src} alt={pageContent["img-cart"].alt} />
+              <WPImage image={pageContent["img-cart"]} forceFullSize={true} />
             </div>
           ),
         }}

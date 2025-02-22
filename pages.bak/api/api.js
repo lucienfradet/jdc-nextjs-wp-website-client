@@ -1,5 +1,5 @@
-import { graphQLClient, safeFetch } from "@/lib/sslConfig";
- 
+import { safeFetch } from "@/lib/sslConfig";
+
 // NOT TESTED...
 export async function getAllPosts() {
   try {

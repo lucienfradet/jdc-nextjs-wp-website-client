@@ -422,6 +422,7 @@
   width: 15vw;
   z-index: 5;
   border-radius: 10%;
+  overflow: hidden;
 }
 
 .absolutesWrapper .imgAbonn2 {
@@ -431,6 +432,7 @@
   width: 20vw;
   z-index: 4;
   border-radius: 10%;
+  overflow: hidden;
 }
 
 /* MEDIA QUERIES */

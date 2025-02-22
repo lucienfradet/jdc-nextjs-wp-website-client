@@ -76,12 +76,16 @@
   margin-bottom: 10px;
 }
 
+.socialAndAddress p {
+  margin-top: 10px;
+}
+
 .iconsWrapper {
   display: flex;
   gap: 15px;
 }
 
-.iconsWrapper img {
+.iconImage {
   width: 6vw;
   max-width: 40px;
   height: auto;
