@@ -240,11 +240,14 @@
 .imgPaimentBackground {
   position: absolute;
   top: 0;
-  left: 0;
-  width: 100%;
+  left: 50%;
   height: 100%;
+  width: auto;
+  transform: translateX(-50%);
   object-fit: cover;
+  object-position: center;
   z-index: 0;
+  min-width: 100vw;
 }
 
 .paimentSection .overlay {
@@ -265,7 +268,7 @@
   text-align: justify;
   width: 90%;
   padding: 0.3vw;
-  color: white;
+  color: var(--beige);
   text-align: center;
   z-index: 3;
 }
@@ -290,11 +293,41 @@
 .paimentTextSide h3 {
   font-size: 1.5rem;
   margin-bottom: 1rem;
+  text-transform: uppercase;
 }
 
 .paimentTextSide p {
   font-size: 1.1rem;
   line-height: 1.5;
+  margin-bottom: 1rem;
+}
+
+.pointDeChute {
+  margin-top: 3rem;
+}
+
+.pointDeChuteContainer h4 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.panierContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: justify;
+  width: 100%;
+  padding: 0.3vw;
+  color: var(--beige);
+  text-align: center;
+  z-index: 3;
+}
+
+.panierContainer h2 {
+  font-size: 2.5rem;
+  margin-top: 2rem;
+  text-transform: uppercase;
 }
 
 @media (max-width: 991px) {

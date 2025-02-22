@@ -87,6 +87,8 @@ input.disabled {
   width: 100% !important;
   height: auto !important;
   display: block; /* Fixes the extra 4px issue */
+  object-fit: cover;
+  object-position: center;
 }
 
 @media (prefers-color-scheme: dark) {

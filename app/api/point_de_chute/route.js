@@ -19,7 +19,7 @@ export async function GET() {
         location_name: point.location_name,
         adresse: {
           adresse: point.adresse?.adresse || "",
-          city: point.adresse?.city || "",
+          city: point.adresse?.ville || "",
           code_postale: point.adresse?.code_postale || "",
           pays: point.adresse?.pays || "",
           province: point.adresse?.province || "",

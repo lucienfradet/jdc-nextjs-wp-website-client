@@ -8,7 +8,7 @@ import MobileHeader from "@/components/mobile/Header";
 import DesktopFooter from "@/components/desktop/Footer";
 import MobileFooter from "@/components/mobile/Footer";
 import styles from '@/styles/HomePage.module.css';
-import { convertLineBreaksToHtml } from '@/lib/textUtils';
+import { convertLineBreaksToHtml, renderContent } from '@/lib/textUtils';
 
 export default function HomePage({ pageData, headerData, footerData, siteIconUrl }) {
   const pageContent = pageData.acfFields;
@@ -205,8 +205,8 @@ export default function HomePage({ pageData, headerData, footerData, siteIconUrl
               <p className={styles.labelImg} dangerouslySetInnerHTML={{ __html: pageContent["label-img"] }}></p>
             </div>
             <div className={styles.introTextContainer}>
-              <p dangerouslySetInnerHTML={{ __html: convertLineBreaksToHtml(pageContent["paragraph-intro"]) }}></p>
-              <p className={styles.introBold} dangerouslySetInnerHTML={{ __html: convertLineBreaksToHtml(pageContent["paragraph-intro-bold"]) }}></p>
+              {renderContent(pageContent["paragraph-intro"])}
+              {renderContent(pageContent["paragraph-intro-bold"], styles.introBold)}
               <WPImage className={styles.imgLogoText} image={pageContent["logo-with-text"]} />
             </div>
             <WPImage className={styles.imageSide} image={pageContent["img-side-left"]} />
@@ -228,11 +228,11 @@ export default function HomePage({ pageData, headerData, footerData, siteIconUrl
             <div className={styles.columnsWrapper}>
               <div className={styles.column}>
                 <h3>{pageContent["h3-en-saison"]}</h3>
-                <p dangerouslySetInnerHTML={{ __html: convertLineBreaksToHtml(pageContent["paragraph-en-saison"]) }}></p>
+                {renderContent(pageContent["paragraph-en-saison"])}
               </div>
               <div className={styles.column}>
                 <h3>{pageContent["h3-en-hiver"]}</h3>
-                <p dangerouslySetInnerHTML={{ __html: convertLineBreaksToHtml(pageContent["paragraph-en-hiver"]) }}></p>
+                {renderContent(pageContent["paragraph-en-hiver"])}
               </div>
             </div>
             <WPImage className={styles.imgProduits} image={pageContent["img-produits"]} />
@@ -299,7 +299,7 @@ export default function HomePage({ pageData, headerData, footerData, siteIconUrl
         <section className={styles.abonnSection}>
           <div className={styles.abonnContainer}>
             <h2>{pageContent["h2-abonnements"]}</h2>
-            <p dangerouslySetInnerHTML={{ __html: convertLineBreaksToHtml(pageContent["paragraph-abonnements"]) }}></p>
+            {renderContent(pageContent["paragraph-abonnements"])}
             <button className={styles.abonnButton}>{pageContent["btn-abonnements-text"]}</button>
           </div>
           <div className={styles.absolutesWrapper}>

@@ -7,10 +7,18 @@ import DesktopHeader from "@/components/desktop/Header";
 import MobileHeader from "@/components/mobile/Header";
 import DesktopFooter from "@/components/desktop/Footer";
 import MobileFooter from "@/components/mobile/Footer";
+import ProductGrid from '@/components/products/ProductGrid';
 import styles from '@/styles/abonnement.module.css';
-import { convertLineBreaksToHtml } from '@/lib/textUtils';
+import { renderContent } from '@/lib/textUtils';
 
-export default function Abonnement({ pageData, headerData, footerData, siteIconUrl }) {
+export default function Abonnement({ 
+  pageData,
+  headerData,
+  footerData,
+  siteIconUrl,
+  pointDeChute,
+  products
+}) {
   const pageContent = pageData.acfFields;
 
   const [isMobile, setIsMobile] = useState(false);
@@ -48,7 +56,7 @@ export default function Abonnement({ pageData, headerData, footerData, siteIconU
           <h2>{pageContent["intro-title"]}</h2>
           <div className={styles.introContainer}>
             <div className={styles.containerLeft}>
-              <p dangerouslySetInnerHTML={{ __html: convertLineBreaksToHtml(pageContent["paragraphe-explicatif"]) }}></p>
+              {renderContent(pageContent["paragraphe-explicatif"])}
             </div>
             <div className={styles.containerRight}>
               <WPImage className={styles.imgIntro} image={pageContent["intro-img"]} />
@@ -85,7 +93,7 @@ export default function Abonnement({ pageData, headerData, footerData, siteIconU
             </div>
 
             <div className={styles.containerRight}>
-              <p dangerouslySetInnerHTML={{ __html: convertLineBreaksToHtml(pageContent["paragraphe-explicatif-bonif"]) }}></p>
+              {renderContent(pageContent["paragraphe-explicatif-bonif"])}
             </div>
           </div>
 
@@ -108,17 +116,50 @@ export default function Abonnement({ pageData, headerData, footerData, siteIconU
             <div className={styles.paimentWrapper}>
               <div className={styles.paimentTextSide}>
                 <h3>{pageContent["paiments-virement-h2"]}</h3>
-                <p dangerouslySetInnerHTML={{ __html: convertLineBreaksToHtml(pageContent["paiments-virement-p"]) }}></p>
+                {renderContent(pageContent["paiments-virement-p"])}
               </div>
               <div className={styles.paimentTextSide}>
                 <h3>{pageContent["paiments-credit-h2"]}</h3>
-                <p dangerouslySetInnerHTML={{ __html: convertLineBreaksToHtml(pageContent["paiments-credit-p"]) }}></p>
+                {renderContent(pageContent["paiments-credit-p"])}
+
+                <h3>{pageContent["point-de-chute-h2"]}</h3>
+                {renderContent(pageContent["point-de-chute-p"])}
+                {/* Map through the point-de-chute and display them */}
+                <div className={styles.pointDeChuteContainer}>
+                  {pointDeChute.map((point) => (
+                    <div key={point.id} className={styles.pointDeChute}>
+                      <h4>{point.location_name}</h4>
+                      <p>
+                        {point.adresse.adresse}, {point.adresse.city}, {point.adresse.code_postale}, {point.adresse.province}, {point.adresse.pays}
+                      </p>
+                      <p>
+                      </p>
+                      {point.description_instructions && (
+                        <p>
+                          <strong>{point.description_instructions}</strong>
+                        </p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+
               </div>
             </div>
           </div>
           <div className={styles.overlay}></div>
-          <WPImage className={styles.imgPaimentBackground} image={pageContent["img-paiments-background"]} />
+          <WPImage className={styles.imgPaimentBackground} image={pageContent["img-paiments-background"]} forceFullSize={true} />
         </section>
+
+        <section className={styles.panierContainer}>
+          <h2>{pageContent["panier-h2"]}</h2>
+        </section>
+        <ProductGrid 
+          products={products}
+          showDescription={true}
+          showQuantity={true}
+          showRemove={false}
+          showAddToCart={true}
+        />
 
         {isMobile ? (
           <MobileFooter pageData={footerData} />
