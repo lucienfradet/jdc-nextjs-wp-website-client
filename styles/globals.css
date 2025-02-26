@@ -97,6 +97,37 @@ input.disabled {
   }
 }
 
+/* Cart feedback */
+@keyframes fadeInOut {
+  0% { opacity: 0; transform: translate(-50%, 20px); }
+  10% { opacity: 1; transform: translate(-50%, 0); }
+  90% { opacity: 1; transform: translate(-50%, 0); }
+  100% { opacity: 0; transform: translate(-50%, -20px); }
+}
+
+.cart-feedback {
+  position: fixed;
+  left: 50%;
+  bottom: 50px;
+  transform: translateX(-50%);
+  background-color: var(--red);
+  color: var(--beige);
+  padding: 15px 30px;
+  border-radius: 50px;
+  font-weight: bold;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  animation: fadeInOut 2s ease-in-out forwards;
+  font-size: 1rem;
+}
+
+/* Mobile adjustments */
+@media screen and (max-width: 991px) {
+  .cart-feedback {
+    font-size: 0.9rem;
+    padding: 12px 25px;
+  }
+}
 
 /* custom scrollbar */
 ::-webkit-scrollbar {

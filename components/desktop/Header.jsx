@@ -5,9 +5,14 @@ import  styles from '@/styles/desktop/Header.module.css';
 import WPImage from '@/components/WPImage';
 import Link from 'next/link';
 import DrawerCart from "@/components/DrawerCart";
+import { useCart } from '@/context/CartContext';
 
 export default function Header({ pageData }) {
   const pageContent = pageData.acfFields;
+  const { cart } = useCart();
+  
+  // Calculate total items in cart
+  const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
 
   //debugging
   // This will only log ounce when pageData changes
@@ -54,12 +59,19 @@ export default function Header({ pageData }) {
         <a href="/contact">{pageContent["contact"]}</a>
       </nav>
 
-      {/* Cart Icon */}
+      {/* Cart Icon with number indicator */}
       <DrawerCart
         trigger={{
           content: (
-            <div className={styles.cart}>
-              <WPImage image={pageContent["img-cart"]} forceFullSize={true} />
+            <div className={styles.cartContainer}>
+              <div className={styles.cart}>
+                <WPImage image={pageContent["img-cart"]} forceFullSize={true} />
+              </div>
+              {totalItems > 0 && (
+                <div className={styles.cartCounter}>
+                  {totalItems}
+                </div>
+              )}
             </div>
           ),
         }}

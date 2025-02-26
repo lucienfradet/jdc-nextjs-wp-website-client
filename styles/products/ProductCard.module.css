@@ -10,6 +10,26 @@
   max-width: 350px;
 }
 
+/* Add to cart feedback animation */
+@keyframes addToCartPulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.addingToCart {
+  animation: addToCartPulse 0.5s ease-in-out;
+}
+
 .cardLink {
   display: flex;
   flex-direction: column;

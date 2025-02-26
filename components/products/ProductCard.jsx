@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import WPImage from "@/components/WPImage";
 import styles from "@/styles/products/ProductCard.module.css";
@@ -15,14 +15,39 @@ export default function ProductCard({
   showAddToCart = false
 }) {
   const [quantity, setQuantity] = useState(1);
-  const { addToCart, removeFromCart} = useCart();
+  const { addToCart, removeFromCart, updateQuantity, cart } = useCart();
+  const [isAddingToCart, setIsAddingToCart] = useState(false);
+
+  // Find if this product is already in the cart
+  const cartItem = cart.find(item => item.id === product.id);
+  
+  // If this is a cart item, initialize the quantity state with the cart quantity
+  useEffect(() => {
+    if (cartItem && showRemove) {
+      setQuantity(cartItem.quantity);
+    }
+  }, [cartItem, showRemove]);
 
   const handleQuantityChange = (event) => {
-    setQuantity(parseInt(event.target.value));
+    const newQuantity = parseInt(event.target.value);
+    if (newQuantity < 1) return;
+    
+    setQuantity(newQuantity);
+    
+    // If in cart view, update the cart quantity directly
+    if (showRemove && cartItem) {
+      updateQuantity(product.id, newQuantity);
+    }
   };
 
   const handleAddToCart = () => {
+    setIsAddingToCart(true);
     addToCart(product, quantity);
+    
+    // Reset animation state after a short delay
+    setTimeout(() => {
+      setIsAddingToCart(false);
+    }, 500);
   };
   
   const handleRemoveFromCart = () => {
@@ -30,7 +55,7 @@ export default function ProductCard({
   };
 
   return (
-    <article className={`${styles.card} ${className || ""}`}>
+    <article className={`${styles.card} ${className || ""} ${isAddingToCart ? styles.addingToCart : ''}`}>
       <Link className={styles.cardLink} href={`/products/${product.id}`}>
         <div className={styles.imageContainer}>
           {product.images?.[0] && (

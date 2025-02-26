@@ -6,9 +6,14 @@ import WPImage from '@/components/WPImage';
 import BurgerMenu from "@/components/BurgerMenu";
 import DrawerCart from "@/components/DrawerCart";
 import Link from 'next/link';
+import { useCart } from '@/context/CartContext';
 
 export default function Header({ pageData }) {
   const pageContent = pageData.acfFields;
+  const { cart } = useCart();
+  
+  // Calculate total items in cart
+  const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
 
   const [burgerState, setBurgerState] = useState(1);
   // scroll hide trigger behaviour
@@ -51,15 +56,22 @@ export default function Header({ pageData }) {
         </div>
       </Link>
 
-      {/* Cart Icon */}
-      <div className={styles.cart}>
+      {/* Cart Icon with number indicator */}
+      <div className={styles.cartContainer}>
         <DrawerCart
           trigger={{
             content: (
-              <WPImage image={pageContent["img-cart"]} forceFullSize={true} />
+              <div className={styles.cart}>
+                <WPImage image={pageContent["img-cart"]} forceFullSize={true} />
+              </div>
             ),
           }}
         />
+        {totalItems > 0 && (
+          <div className={styles.cartCounter}>
+            {totalItems}
+          </div>
+        )}
       </div>
 
       <div className={styles.burgerMenu}>

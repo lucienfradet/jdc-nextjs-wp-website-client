@@ -13,7 +13,8 @@ import { useCart } from '@/context/CartContext';
 export default function ProductDetail({ product, headerData, footerData, siteIconUrl }) {
   const [isMobile, setIsMobile] = useState(false);
   const { addToCart } = useCart();
-  const [selectedQuantity, setSelectedQuantity] = useState(1);
+  const [quantity, setQuantity] = useState(1);
+  const [isAddingToCart, setIsAddingToCart] = useState(false);
 
   useEffect(() => {
     const handleResize = () => {
@@ -28,8 +29,26 @@ export default function ProductDetail({ product, headerData, footerData, siteIco
     };
   }, []);
 
+  const handleQuantityChange = (event) => {
+    const newQuantity = parseInt(event.target.value);
+    if (newQuantity < 1) return;
+    
+    setQuantity(newQuantity);
+    
+    // If in cart view, update the cart quantity directly
+    if (showRemove && cartItem) {
+      updateQuantity(product.id, newQuantity);
+    }
+  };
+
   const handleAddToCart = () => {
-    addToCart(product, selectedQuantity);
+    addToCart(product, quantity);
+    setIsAddingToCart(true);
+
+    // Reset animation state after a short delay
+    setTimeout(() => {
+      setIsAddingToCart(false);
+    }, 500);
   };
 
   return (
@@ -47,7 +66,7 @@ export default function ProductDetail({ product, headerData, footerData, siteIco
         <DesktopHeader pageData={headerData} />
         )}
 
-      <main className={styles.Body}>
+      <main className={`${styles.Body} ${isAddingToCart ? styles.addingToCart : ''}`}>
         <div className={styles.container}>
           {product.images?.[0] && (
             <div className={styles.imageWrapper}>
@@ -80,12 +99,13 @@ export default function ProductDetail({ product, headerData, footerData, siteIco
             )}
 
             <div className={styles.quantitySelector}>
-              <label>Quantité:</label>
+              <label htmlFor={`quantity-${product.id}`}>Quantité:</label>
               <input
                 type="number"
+                id={`quantity-${product.id}`}
                 min="1"
-                value={selectedQuantity}
-                onChange={(e) => setSelectedQuantity(Math.max(1, parseInt(e.target.value)))}
+                value={quantity}
+                onChange={handleQuantityChange}
               />
             </div>
 

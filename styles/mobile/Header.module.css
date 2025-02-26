@@ -87,23 +87,48 @@
   cursor: pointer;
 }
 
-.cart {
+/* Cart Container and Indicator */
+.cartContainer {
+  position: relative;
   order: 2;
   z-index: 1001;
   margin-left: auto;
   padding-right: 1rem;
-  width: 60px;
-  height: auto;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
 }
 
+.cart {
+  width: 50px;
+  height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .cart img {
   width: 100%;
   height: auto;
   max-width: 100%;
+}
+
+.cartCounter {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background-color: var(--red);
+  color: var(--beige);
+  font-size: 14px;
+  font-weight: bold;
+  min-width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px;
 }
 
 /* Overlay for when menu is open */
