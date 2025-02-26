@@ -7,6 +7,7 @@ import DesktopHeader from "@/components/desktop/Header";
 import MobileHeader from "@/components/mobile/Header";
 import DesktopFooter from "@/components/desktop/Footer";
 import MobileFooter from "@/components/mobile/Footer";
+import Link from "next/link";
 import styles from '@/styles/HomePage.module.css';
 import { convertLineBreaksToHtml, renderContent } from '@/lib/textUtils';
 
@@ -300,7 +301,9 @@ export default function HomePage({ pageData, headerData, footerData, siteIconUrl
           <div className={styles.abonnContainer}>
             <h2>{pageContent["h2-abonnements"]}</h2>
             {renderContent(pageContent["paragraph-abonnements"])}
-            <button className={styles.abonnButton}>{pageContent["btn-abonnements-text"]}</button>
+            <Link href="/abonnement">
+              <button className={styles.abonnButton}>{pageContent["btn-abonnements-text"]}</button>
+            </Link>
           </div>
           <div className={styles.absolutesWrapper}>
             <WPImage className={styles.imgAbonn1} image={pageContent["img-abonnements-1"]} />

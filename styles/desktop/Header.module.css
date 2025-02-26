@@ -102,6 +102,7 @@
 
 .cart {
   width: 30px;
+  cursor: pointer;
 }
 
 /* Media queries */

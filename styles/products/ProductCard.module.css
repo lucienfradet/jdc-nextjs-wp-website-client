@@ -1,5 +1,6 @@
 .card {
   display: flex;
+  position: relative;
   flex-direction: column;
   border-radius: 8px;
   overflow: hidden;
@@ -7,6 +8,14 @@
   background: var(--beige);
   transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
   max-width: 350px;
+}
+
+.cardLink {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1; /* Take up remaining space */
+  text-decoration: none;
+  color: inherit;
 }
 
 .card:hover {
@@ -35,15 +44,24 @@
   flex-grow: 1;
 }
 
+.interactiveSection {
+  display: flex;
+  flex-direction: column;
+  padding: 0 16px 16px 16px;
+  flex-grow: 1;
+}
+
+.interactiveSection .topSection {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
 .title {
   font-size: 1.25rem;
   font-weight: bold;
   margin-bottom: 8px;
   color: var(--green);
-}
-
-.details {
-  margin-top: auto;
 }
 
 .price {
@@ -75,13 +93,14 @@
 }
 
 .quantitySelector input {
-  width: 60px;
+  width: 47px;
   color: var(--green);
-  padding: 6px 10px;
+  padding: 6px 6px;
   font-size: 0.9rem;
-  border: 1px solid #ccc;
+  text-align: center;
+  border: 1px solid var(--green);
   border-radius: 4px;
-  background-color: #f5f5f5;
+  background-color: transparent;
   transition: border-color 0.2s ease-in-out;
 }
 
@@ -91,13 +110,15 @@
 }
 
 .removeFromCartLink {
-  color: var(--green);
+  color: var(--red);
+  font-size: 0.9rem;
   text-decoration: underline;
   transition: color 0.2s ease-in-out;
+  margin: auto 10px auto 10px;
 }
 
 .removeFromCartLink:hover {
-  color: #8bc34a;
+  color: #3a100c;
 }
 
 .addToCartButton {

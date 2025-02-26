@@ -1,5 +1,4 @@
-"use client";
-
+import Link from 'next/link';
 import WPImage from '@/components/WPImage';
 import  styles from '@/styles/mobile/Footer.module.css';
 
@@ -11,7 +10,9 @@ export default function Footer({ pageData }) {
       {/* Column 1: Logo */}
       <div className={styles.columns}>
         <div className={styles.footerCol}>
-          <WPImage className={styles.footerLogo} image={pageContent["img-logo"]} forceFullSize={true} />
+          <Link href="/">
+            <WPImage className={styles.footerLogo} image={pageContent["img-logo"]} forceFullSize={true} />
+          </Link>
         </div>
 
         {/* Column 2: address */}

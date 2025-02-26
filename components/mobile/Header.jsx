@@ -4,6 +4,7 @@ import  styles from '@/styles/mobile/Header.module.css';
 import { useState, useEffect } from "react";
 import WPImage from '@/components/WPImage';
 import BurgerMenu from "@/components/BurgerMenu";
+import DrawerCart from "@/components/DrawerCart";
 import Link from 'next/link';
 
 export default function Header({ pageData }) {
@@ -52,7 +53,13 @@ export default function Header({ pageData }) {
 
       {/* Cart Icon */}
       <div className={styles.cart}>
-        <WPImage image={pageContent["img-cart"]} forceFullSize={true} />
+        <DrawerCart
+          trigger={{
+            content: (
+              <WPImage image={pageContent["img-cart"]} forceFullSize={true} />
+            ),
+          }}
+        />
       </div>
 
       <div className={styles.burgerMenu}>

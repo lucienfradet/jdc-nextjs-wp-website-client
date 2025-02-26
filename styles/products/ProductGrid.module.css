@@ -3,7 +3,7 @@
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 32px; /* Fixed gap */
   padding: 32px;
-  max-width: 1400px; /* Adjust this value based on your design */
+  max-width: 1200px; /* Adjust this value based on your design */
   margin: 0 auto; /* Center the grid */
 }
 

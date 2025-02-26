@@ -66,10 +66,11 @@
 }
 
 .quantitySelector input {
-  width: 100px; /* Slightly larger */
+  width: 70px; /* Slightly larger */
   padding: 0.75rem; /* More padding */
-  border: 1px solid #ccc;
-  background-color: white;
+  border: 1px solid var(--green);
+  text-align: center;
+  background-color: transparent;
   color: var(--green);
   border-radius: 4px;
   font-size: 1.25rem; /* Increased size */

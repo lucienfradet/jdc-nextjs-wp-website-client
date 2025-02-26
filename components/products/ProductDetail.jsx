@@ -8,9 +8,12 @@ import DesktopHeader from "@/components/desktop/Header";
 import MobileHeader from "@/components/mobile/Header";
 import DesktopFooter from "@/components/desktop/Footer";
 import MobileFooter from "@/components/mobile/Footer";
+import { useCart } from '@/context/CartContext';
 
 export default function ProductDetail({ product, headerData, footerData, siteIconUrl }) {
   const [isMobile, setIsMobile] = useState(false);
+  const { addToCart } = useCart();
+  const [selectedQuantity, setSelectedQuantity] = useState(1);
 
   useEffect(() => {
     const handleResize = () => {
@@ -25,14 +28,8 @@ export default function ProductDetail({ product, headerData, footerData, siteIco
     };
   }, []);
 
-  const [selectedQuantity, setSelectedQuantity] = useState(1);
-  // const { addToCart } = useCart();
-
   const handleAddToCart = () => {
-    addToCart({
-      ...product,
-      quantity: selectedQuantity
-    });
+    addToCart(product, selectedQuantity);
   };
 
   return (
