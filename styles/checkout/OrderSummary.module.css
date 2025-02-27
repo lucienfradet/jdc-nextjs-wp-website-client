@@ -116,13 +116,14 @@
   text-align: center;
 }
 
-.returnToCart a {
+.modifyCartLink {
   color: var(--green);
   text-decoration: underline;
   transition: color 0.2s;
+  cursor: pointer;
 }
 
-.returnToCart a:hover {
+.modifyCartLink:hover {
   color: var(--orange);
 }
 

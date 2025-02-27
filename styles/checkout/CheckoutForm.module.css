@@ -77,6 +77,80 @@
   margin-top: 0.25rem;
 }
 
+/* Delivery options */
+.deliveryOptions {
+  margin-bottom: 2rem;
+  background-color: var(--beige);
+  color: var(--green);
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.deliveryOptions h3 {
+  color: var(--green);
+  font-size: 1.25rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--green);
+}
+
+.radioGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.radioLabel {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+  padding: 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.radioLabel:hover {
+  border-color: var(--green);
+  background-color: rgba(36, 49, 27, 0.05);
+}
+
+.radioLabel input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.radioButton {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #ccc;
+  border-radius: 50%;
+  margin-right: 0.75rem;
+  position: relative;
+  display: inline-block;
+}
+
+.radioLabel input[type="radio"]:checked + .radioButton {
+  border-color: var(--green);
+}
+
+.radioLabel input[type="radio"]:checked + .radioButton:after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 10px;
+  height: 10px;
+  background-color: var(--green);
+  border-radius: 50%;
+}
+
 .pickupSection {
   margin-top: 2rem;
   background-color: var(--beige);
@@ -133,7 +207,12 @@
   }
   
   .formSection,
-  .pickupSection {
+  .pickupSection,
+  .deliveryOptions {
     padding: 1rem;
+  }
+  
+  .radioGroup {
+    flex-direction: column;
   }
 }

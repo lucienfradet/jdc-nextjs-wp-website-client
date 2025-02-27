@@ -134,14 +134,18 @@
 @media (max-width: 768px) {
   .checkoutColumns {
     flex-direction: column-reverse;
+    margin-right: 20px;
+    margin-left: 20px;
   }
   
   .summaryColumn {
     position: static;
+    min-width: 60vw;
+    margin: auto;
   }
   
   .pageTitle {
-    font-size: 1.5rem;
+    font-size: 5vw;
     padding: 1.5rem 1rem;
   }
 }

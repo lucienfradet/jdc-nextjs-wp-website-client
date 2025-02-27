@@ -7,9 +7,13 @@ export default function CheckoutForm({
   cart, 
   pointDeChute, 
   hasShippableItems,
-  onFormDataChange 
+  onFormDataChange,
+  onDeliveryMethodChange
 }) {
   const [formData, setFormData] = useState({
+    // Delivery method options
+    deliveryMethod: hasShippableItems ? 'shipping' : 'pickup', // Default to shipping if there are shippable items
+    
     // Billing info
     billingFirstName: '',
     billingLastName: '',
@@ -22,7 +26,7 @@ export default function CheckoutForm({
     billingPostcode: '',
     billingCountry: 'CA',
     
-    // Shipping info (only used if hasShippableItems is true)
+    // Shipping info (only used if deliveryMethod is 'shipping')
     shippingSameAsBilling: true,
     shippingFirstName: '',
     shippingLastName: '',
@@ -33,22 +37,37 @@ export default function CheckoutForm({
     shippingPostcode: '',
     shippingCountry: 'CA',
     
-    // Pickup location (used if cart has items with shipping_class="only_pickup")
+    // Pickup location (used if cart has items with shipping_class="only_pickup" or deliveryMethod is 'pickup')
     selectedPickupLocation: ''
   });
 
   const [validationErrors, setValidationErrors] = useState({});
+  
+  // Check if cart has pickup-only items
+  const hasPickupOnlyItems = cart.some(item => item.shipping_class === 'only_pickup');
 
   // When form data changes, pass it up to parent
   useEffect(() => {
     onFormDataChange(formData);
   }, [formData, onFormDataChange]);
 
+  // When delivery method changes, notify parent for shipping cost calculation
+  useEffect(() => {
+    if (onDeliveryMethodChange) {
+      onDeliveryMethodChange(formData.deliveryMethod);
+    }
+  }, [formData.deliveryMethod, onDeliveryMethodChange]);
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     
     setFormData(prev => {
       const newData = { ...prev, [name]: value };
+      
+      // If delivery method changes
+      if (name === 'deliveryMethod') {
+        // Do nothing special, just update the value
+      }
       
       // If user checked "shipping same as billing", copy billing address to shipping
       if (name === 'shippingSameAsBilling') {
@@ -86,8 +105,48 @@ export default function CheckoutForm({
     }
   };
 
+  const renderDeliveryOptions = () => {
+    // If there are no shippable items, don't show options (pickup is the only choice)
+    if (!hasShippableItems) return null;
+
+    return (
+      <div className={styles.deliveryOptions}>
+        <h3>Méthode de livraison</h3>
+        
+        <div className={styles.radioGroup}>
+          <label className={styles.radioLabel}>
+            <input
+              type="radio"
+              name="deliveryMethod"
+              value="shipping"
+              checked={formData.deliveryMethod === 'shipping'}
+              onChange={handleInputChange}
+            />
+            <span className={styles.radioButton}></span>
+            <span>Expédition à mon adresse</span>
+          </label>
+          
+          <label className={styles.radioLabel}>
+            <input
+              type="radio"
+              name="deliveryMethod"
+              value="pickup"
+              checked={formData.deliveryMethod === 'pickup'}
+              onChange={handleInputChange}
+            />
+            <span className={styles.radioButton}></span>
+            <span>Collecte à un point de chute</span>
+          </label>
+        </div>
+      </div>
+    );
+  };
+
   const renderPickupLocationSelector = () => {
-    if (!pointDeChute || pointDeChute.length === 0) return null;
+    // Only show pickup selector if there are pickup-only items OR if pickup is selected as delivery method
+    if ((!hasPickupOnlyItems && formData.deliveryMethod !== 'pickup') || !pointDeChute || pointDeChute.length === 0) {
+      return null;
+    }
     
     return (
       <div className={styles.pickupSection}>
@@ -140,6 +199,9 @@ export default function CheckoutForm({
 
   return (
     <div className={styles.checkoutForm}>
+      {/* Delivery Method Selection */}
+      {renderDeliveryOptions()}
+
       {/* Billing Information */}
       <section className={styles.formSection}>
         <h3>Informations de facturation</h3>
@@ -314,8 +376,8 @@ export default function CheckoutForm({
         </div>
       </section>
       
-      {/* Shipping Information (only if hasShippableItems is true) */}
-      {hasShippableItems && (
+      {/* Shipping Information (only if deliveryMethod is 'shipping') */}
+      {hasShippableItems && formData.deliveryMethod === 'shipping' && (
         <section className={styles.formSection}>
           <h3>Informations de livraison</h3>
           
@@ -479,7 +541,7 @@ export default function CheckoutForm({
         </section>
       )}
       
-      {/* Pickup Point Selection (only if needed) */}
+      {/* Pickup Point Selection (if needed) */}
       {renderPickupLocationSelector()}
     </div>
   );

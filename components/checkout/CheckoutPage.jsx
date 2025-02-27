@@ -28,6 +28,7 @@ export default function CheckoutPage({
   const [formErrors, setFormErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [orderComplete, setOrderComplete] = useState(false);
+  const [deliveryMethod, setDeliveryMethod] = useState('shipping');
 
   // Check if cart is empty, redirect to home if it is
   useEffect(() => {
@@ -53,6 +54,11 @@ export default function CheckoutPage({
       window.removeEventListener("resize", handleResize);
     };
   }, []);
+
+  // Handle delivery method change
+  const handleDeliveryMethodChange = (method) => {
+    setDeliveryMethod(method);
+  }
 
   // Handle form data change
   const handleFormDataChange = (data) => {
@@ -193,6 +199,7 @@ export default function CheckoutPage({
                 pointDeChute={pointDeChute} 
                 hasShippableItems={hasShippableItems}
                 onFormDataChange={handleFormDataChange}
+                onDeliveryMethodChange={handleDeliveryMethodChange}
               />
 
               <PaymentGateway 
@@ -212,9 +219,10 @@ export default function CheckoutPage({
                     Veuillez corriger les erreurs dans le formulaire pour continuer.
                   </div>
                 )}
-                <p className={styles.termsText}>
-                  En confirmant votre commande, vous acceptez nos conditions générales de vente et notre politique de confidentialité.
-                </p>
+                {/* <p className={styles.termsText}>
+                  En confirmant votre commande, vous acceptez nos conditions
+                  générales de vente et notre politique de confidentialité.
+                </p> */}
               </div>
             </div>
 
@@ -222,6 +230,7 @@ export default function CheckoutPage({
               <OrderSummary 
                 cart={cart} 
                 getCartTotal={getCartTotal}
+                deliveryMethod={deliveryMethod}
               />
             </div>
           </div>

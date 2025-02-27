@@ -3,13 +3,14 @@
 import { useState, useEffect } from 'react';
 import styles from '@/styles/checkout/OrderSummary.module.css';
 import WPImage from '@/components/WPImage';
-import Link from 'next/link';
+import DrawerCart from "@/components/DrawerCart";
 
-export default function OrderSummary({ cart, getCartTotal }) {
+export default function OrderSummary({ cart, getCartTotal, deliveryMethod = 'shipping' }) {
   const [subtotal, setSubtotal] = useState(0);
   const [tax, setTax] = useState(0);
   const [shipping, setShipping] = useState(0);
   const [total, setTotal] = useState(0);
+  const [hasShippableItems, setHasShippableItems] = useState(false);
   
   useEffect(() => {
     // Calculate totals
@@ -23,8 +24,10 @@ export default function OrderSummary({ cart, getCartTotal }) {
     
     // For now, flat shipping rate
     // In a real implementation, this would be calculated based on shipping address and items
-    const hasShippableItems = cart.some(item => item.shipping_class !== 'only_pickup');
-    setShipping(hasShippableItems ? 15 : 0);
+    const shippableItems = cart.some(item => item.shipping_class !== 'only_pickup');
+    const shouldApplyShipping = shippableItems && deliveryMethod === 'shipping';
+    setHasShippableItems(shippableItems);
+    setShipping(shouldApplyShipping ? 15 : 0);
     
     // Calculate total
     setTotal(subtotalValue + (gst + qst) + (hasShippableItems ? 15 : 0));
@@ -77,8 +80,12 @@ export default function OrderSummary({ cart, getCartTotal }) {
           <span>{formatCurrency(tax)}</span>
         </div>
         <div className={styles.totalRow}>
-          <span>Livraison</span>
-          <span>{shipping > 0 ? formatCurrency(shipping) : 'Gratuit'}</span>
+          {hasShippableItems && (
+            <>
+              <span>Livraison</span>
+              <span>{shipping > 0 ? formatCurrency(shipping) : 'Gratuit'}</span>
+            </>
+          )}
         </div>
         <div className={`${styles.totalRow} ${styles.grandTotal}`}>
           <span>Total</span>
@@ -87,9 +94,13 @@ export default function OrderSummary({ cart, getCartTotal }) {
       </div>
       
       <div className={styles.returnToCart}>
-        <Link href="/cart">
-          Modifier le panier
-        </Link>
+        <DrawerCart
+          trigger={{
+            content: (
+              <span className={styles.modifyCartLink}>Modifier le panier</span>
+            ),
+          }}
+        />
       </div>
     </div>
   );
