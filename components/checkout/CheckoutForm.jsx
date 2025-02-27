@@ -8,7 +8,8 @@ export default function CheckoutForm({
   pointDeChute, 
   hasShippableItems,
   onFormDataChange,
-  onDeliveryMethodChange
+  onDeliveryMethodChange,
+  validationErrors = {}
 }) {
   const [formData, setFormData] = useState({
     // Delivery method options
@@ -41,8 +42,6 @@ export default function CheckoutForm({
     selectedPickupLocation: ''
   });
 
-  const [validationErrors, setValidationErrors] = useState({});
-  
   // Check if cart has pickup-only items
   const hasPickupOnlyItems = cart.some(item => item.shipping_class === 'only_pickup');
 

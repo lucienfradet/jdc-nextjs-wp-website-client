@@ -200,6 +200,7 @@ export default function CheckoutPage({
                 hasShippableItems={hasShippableItems}
                 onFormDataChange={handleFormDataChange}
                 onDeliveryMethodChange={handleDeliveryMethodChange}
+                validationErrors={formErrors}
               />
 
               <PaymentGateway 

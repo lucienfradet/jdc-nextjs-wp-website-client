@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import styles from '@/styles/checkout/PaymentGateway.module.css';
 
-export default function PaymentGateway({ onPaymentDataChange }) {
+export default function PaymentGateway({ onPaymentDataChange, validationErrors = {} }) {
   const [paymentMethod, setPaymentMethod] = useState('credit-card');
   const [cardData, setCardData] = useState({
     cardNumber: '',
@@ -11,7 +11,22 @@ export default function PaymentGateway({ onPaymentDataChange }) {
     expiryDate: '',
     cvv: ''
   });
-  const [errors, setErrors] = useState({});
+  const [localErrors, setLocalErrors] = useState({});
+  
+  // Sync with parent errors when they change
+  useEffect(() => {
+    // If parent has validation errors for our fields, show them in our UI
+    const relevantErrors = {};
+    ['cardNumber', 'cardName', 'expiryDate', 'cvv'].forEach(field => {
+      if (validationErrors[field]) {
+        relevantErrors[field] = validationErrors[field];
+      }
+    });
+    
+    if (Object.keys(relevantErrors).length > 0) {
+      setLocalErrors(prev => ({ ...prev, ...relevantErrors }));
+    }
+  }, [validationErrors]);
   
   // Handle payment method change
   const handlePaymentMethodChange = (method) => {
@@ -49,8 +64,8 @@ export default function PaymentGateway({ onPaymentDataChange }) {
     }
     
     // Clear validation error when field is changed
-    if (errors[name]) {
-      setErrors(prev => {
+    if (localErrors[name]) {
+      setLocalErrors(prev => {
         const newErrors = { ...prev };
         delete newErrors[name];
         return newErrors;
@@ -61,7 +76,7 @@ export default function PaymentGateway({ onPaymentDataChange }) {
     onPaymentDataChange({ method: paymentMethod, ...cardData, [name]: value });
   };
   
-  // Validate card data
+  // Validate card data (can be called by the parent via a ref if needed)
   const validateCardData = () => {
     const newErrors = {};
     
@@ -85,7 +100,7 @@ export default function PaymentGateway({ onPaymentDataChange }) {
       newErrors.cvv = 'CVV invalide';
     }
     
-    setErrors(newErrors);
+    setLocalErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
   
@@ -130,10 +145,10 @@ export default function PaymentGateway({ onPaymentDataChange }) {
                 onChange={handleCardDataChange}
                 placeholder="1234 5678 9012 3456"
                 maxLength="19" // 16 digits + 3 spaces
-                className={errors.cardNumber ? styles.inputError : ''}
+                className={localErrors.cardNumber ? styles.inputError : ''}
               />
-              {errors.cardNumber && (
-                <p className={styles.errorText}>{errors.cardNumber}</p>
+              {localErrors.cardNumber && (
+                <p className={styles.errorText}>{localErrors.cardNumber}</p>
               )}
             </div>
           </div>
@@ -147,11 +162,11 @@ export default function PaymentGateway({ onPaymentDataChange }) {
                 name="cardName"
                 value={cardData.cardName}
                 onChange={handleCardDataChange}
-                placeholder="John Doe"
-                className={errors.cardName ? styles.inputError : ''}
+                placeholder="Prénom Nom"
+                className={localErrors.cardName ? styles.inputError : ''}
               />
-              {errors.cardName && (
-                <p className={styles.errorText}>{errors.cardName}</p>
+              {localErrors.cardName && (
+                <p className={styles.errorText}>{localErrors.cardName}</p>
               )}
             </div>
           </div>
@@ -167,10 +182,10 @@ export default function PaymentGateway({ onPaymentDataChange }) {
                 onChange={handleCardDataChange}
                 placeholder="MM/YY"
                 maxLength="5"
-                className={errors.expiryDate ? styles.inputError : ''}
+                className={localErrors.expiryDate ? styles.inputError : ''}
               />
-              {errors.expiryDate && (
-                <p className={styles.errorText}>{errors.expiryDate}</p>
+              {localErrors.expiryDate && (
+                <p className={styles.errorText}>{localErrors.expiryDate}</p>
               )}
             </div>
             
@@ -184,10 +199,10 @@ export default function PaymentGateway({ onPaymentDataChange }) {
                 onChange={handleCardDataChange}
                 placeholder="123"
                 maxLength="4"
-                className={errors.cvv ? styles.inputError : ''}
+                className={localErrors.cvv ? styles.inputError : ''}
               />
-              {errors.cvv && (
-                <p className={styles.errorText}>{errors.cvv}</p>
+              {localErrors.cvv && (
+                <p className={styles.errorText}>{localErrors.cvv}</p>
               )}
             </div>
           </div>
@@ -207,11 +222,7 @@ export default function PaymentGateway({ onPaymentDataChange }) {
       {paymentMethod === 'bank-transfer' && (
         <div className={styles.bankTransferInfo}>
           <p>
-            Pour effectuer un paiement par virement bancaire, veuillez compléter votre commande.
-            Vous recevrez les instructions de paiement par courriel.
-          </p>
-          <p>
-            Votre commande ne sera traitée qu'après la réception du paiement.
+            INCLURE INFO DE ABONNEMENT PAGE
           </p>
         </div>
       )}
