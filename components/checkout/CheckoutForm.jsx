@@ -1,16 +1,15 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useImperativeHandle, forwardRef } from 'react';
 import styles from '@/styles/checkout/CheckoutForm.module.css';
 
-export default function CheckoutForm({ 
+const CheckoutForm = forwardRef(({ 
   cart, 
   pointDeChute, 
   hasShippableItems,
   onFormDataChange,
   onDeliveryMethodChange,
-  validationErrors = {}
-}) {
+}, ref) => {
   const [formData, setFormData] = useState({
     // Delivery method options
     deliveryMethod: hasShippableItems ? 'shipping' : 'pickup', // Default to shipping if there are shippable items
@@ -42,8 +41,46 @@ export default function CheckoutForm({
     selectedPickupLocation: ''
   });
 
+  const [localErrors, setLocalErrors] = useState({});
+  
   // Check if cart has pickup-only items
   const hasPickupOnlyItems = cart.some(item => item.shipping_class === 'only_pickup');
+
+  // Expose validation function to parent via ref
+  useImperativeHandle(ref, () => ({
+    validate: () => {
+      const errors = {};
+      
+      // Validate billing address
+      ['billingFirstName', 'billingLastName', 'billingEmail', 'billingPhone', 
+       'billingAddress1', 'billingCity', 'billingState', 'billingPostcode'].forEach(field => {
+        if (!formData[field]) {
+          errors[field] = 'Ce champ est requis';
+        }
+      });
+      
+      // Validate shipping address if we have shippable items and "same as billing" is not checked
+      if (hasShippableItems && formData.deliveryMethod === 'shipping' && !formData.shippingSameAsBilling) {
+        ['shippingFirstName', 'shippingLastName', 'shippingAddress1', 
+         'shippingCity', 'shippingState', 'shippingPostcode'].forEach(field => {
+          if (!formData[field]) {
+            errors[field] = 'Ce champ est requis';
+          }
+        });
+      }
+
+      // Validate pickup location if we have pickup-only items or if delivery method is pickup
+      if ((hasPickupOnlyItems || formData.deliveryMethod === 'pickup') && !formData.selectedPickupLocation) {
+        errors.selectedPickupLocation = 'Veuillez sélectionner un point de chute';
+      }
+      
+      setLocalErrors(errors);
+      return { hasErrors: Object.keys(errors).length > 0, errors };
+    },
+    getFirstErrorElement: () => {
+      return document.querySelector(`.${styles.checkoutForm} .${styles.inputError}`);
+    }
+  }));
 
   // When form data changes, pass it up to parent
   useEffect(() => {
@@ -95,8 +132,8 @@ export default function CheckoutForm({
     });
     
     // Clear validation error when field is changed
-    if (validationErrors[name]) {
-      setValidationErrors(prev => {
+    if (localErrors[name]) {
+      setLocalErrors(prev => {
         const newErrors = { ...prev };
         delete newErrors[name];
         return newErrors;
@@ -159,7 +196,7 @@ export default function CheckoutForm({
             name="selectedPickupLocation"
             value={formData.selectedPickupLocation}
             onChange={handleInputChange}
-            className={validationErrors.selectedPickupLocation ? styles.inputError : ''}
+            className={localErrors.selectedPickupLocation ? styles.inputError : ''}
           >
             <option value="">-- Sélectionner un point de chute --</option>
             {pointDeChute.map(point => (
@@ -168,8 +205,8 @@ export default function CheckoutForm({
               </option>
             ))}
           </select>
-          {validationErrors.selectedPickupLocation && (
-            <p className={styles.errorText}>{validationErrors.selectedPickupLocation}</p>
+          {localErrors.selectedPickupLocation && (
+            <p className={styles.errorText}>{localErrors.selectedPickupLocation}</p>
           )}
         </div>
         
@@ -214,10 +251,10 @@ export default function CheckoutForm({
               name="billingFirstName"
               value={formData.billingFirstName}
               onChange={handleInputChange}
-              className={validationErrors.billingFirstName ? styles.inputError : ''}
+              className={localErrors.billingFirstName ? styles.inputError : ''}
             />
-            {validationErrors.billingFirstName && (
-              <p className={styles.errorText}>{validationErrors.billingFirstName}</p>
+            {localErrors.billingFirstName && (
+              <p className={styles.errorText}>{localErrors.billingFirstName}</p>
             )}
           </div>
           
@@ -229,10 +266,10 @@ export default function CheckoutForm({
               name="billingLastName"
               value={formData.billingLastName}
               onChange={handleInputChange}
-              className={validationErrors.billingLastName ? styles.inputError : ''}
+              className={localErrors.billingLastName ? styles.inputError : ''}
             />
-            {validationErrors.billingLastName && (
-              <p className={styles.errorText}>{validationErrors.billingLastName}</p>
+            {localErrors.billingLastName && (
+              <p className={styles.errorText}>{localErrors.billingLastName}</p>
             )}
           </div>
         </div>
@@ -246,10 +283,10 @@ export default function CheckoutForm({
               name="billingEmail"
               value={formData.billingEmail}
               onChange={handleInputChange}
-              className={validationErrors.billingEmail ? styles.inputError : ''}
+              className={localErrors.billingEmail ? styles.inputError : ''}
             />
-            {validationErrors.billingEmail && (
-              <p className={styles.errorText}>{validationErrors.billingEmail}</p>
+            {localErrors.billingEmail && (
+              <p className={styles.errorText}>{localErrors.billingEmail}</p>
             )}
           </div>
           
@@ -261,10 +298,10 @@ export default function CheckoutForm({
               name="billingPhone"
               value={formData.billingPhone}
               onChange={handleInputChange}
-              className={validationErrors.billingPhone ? styles.inputError : ''}
+              className={localErrors.billingPhone ? styles.inputError : ''}
             />
-            {validationErrors.billingPhone && (
-              <p className={styles.errorText}>{validationErrors.billingPhone}</p>
+            {localErrors.billingPhone && (
+              <p className={styles.errorText}>{localErrors.billingPhone}</p>
             )}
           </div>
         </div>
@@ -277,10 +314,10 @@ export default function CheckoutForm({
             name="billingAddress1"
             value={formData.billingAddress1}
             onChange={handleInputChange}
-            className={validationErrors.billingAddress1 ? styles.inputError : ''}
+            className={localErrors.billingAddress1 ? styles.inputError : ''}
           />
-          {validationErrors.billingAddress1 && (
-            <p className={styles.errorText}>{validationErrors.billingAddress1}</p>
+          {localErrors.billingAddress1 && (
+            <p className={styles.errorText}>{localErrors.billingAddress1}</p>
           )}
         </div>
         
@@ -304,10 +341,10 @@ export default function CheckoutForm({
               name="billingCity"
               value={formData.billingCity}
               onChange={handleInputChange}
-              className={validationErrors.billingCity ? styles.inputError : ''}
+              className={localErrors.billingCity ? styles.inputError : ''}
             />
-            {validationErrors.billingCity && (
-              <p className={styles.errorText}>{validationErrors.billingCity}</p>
+            {localErrors.billingCity && (
+              <p className={styles.errorText}>{localErrors.billingCity}</p>
             )}
           </div>
           
@@ -318,7 +355,7 @@ export default function CheckoutForm({
               name="billingState"
               value={formData.billingState}
               onChange={handleInputChange}
-              className={validationErrors.billingState ? styles.inputError : ''}
+              className={localErrors.billingState ? styles.inputError : ''}
             >
               <option value="">-- Sélectionner --</option>
               <option value="QC">Québec</option>
@@ -335,8 +372,8 @@ export default function CheckoutForm({
               <option value="YT">Yukon</option>
               <option value="NU">Nunavut</option>
             </select>
-            {validationErrors.billingState && (
-              <p className={styles.errorText}>{validationErrors.billingState}</p>
+            {localErrors.billingState && (
+              <p className={styles.errorText}>{localErrors.billingState}</p>
             )}
           </div>
         </div>
@@ -350,10 +387,10 @@ export default function CheckoutForm({
               name="billingPostcode"
               value={formData.billingPostcode}
               onChange={handleInputChange}
-              className={validationErrors.billingPostcode ? styles.inputError : ''}
+              className={localErrors.billingPostcode ? styles.inputError : ''}
             />
-            {validationErrors.billingPostcode && (
-              <p className={styles.errorText}>{validationErrors.billingPostcode}</p>
+            {localErrors.billingPostcode && (
+              <p className={styles.errorText}>{localErrors.billingPostcode}</p>
             )}
           </div>
           
@@ -364,12 +401,12 @@ export default function CheckoutForm({
               name="billingCountry"
               value={formData.billingCountry}
               onChange={handleInputChange}
-              className={validationErrors.billingCountry ? styles.inputError : ''}
+              className={localErrors.billingCountry ? styles.inputError : ''}
             >
               <option value="CA">Canada</option>
             </select>
-            {validationErrors.billingCountry && (
-              <p className={styles.errorText}>{validationErrors.billingCountry}</p>
+            {localErrors.billingCountry && (
+              <p className={styles.errorText}>{localErrors.billingCountry}</p>
             )}
           </div>
         </div>
@@ -408,10 +445,10 @@ export default function CheckoutForm({
                     name="shippingFirstName"
                     value={formData.shippingFirstName}
                     onChange={handleInputChange}
-                    className={validationErrors.shippingFirstName ? styles.inputError : ''}
+                    className={localErrors.shippingFirstName ? styles.inputError : ''}
                   />
-                  {validationErrors.shippingFirstName && (
-                    <p className={styles.errorText}>{validationErrors.shippingFirstName}</p>
+                  {localErrors.shippingFirstName && (
+                    <p className={styles.errorText}>{localErrors.shippingFirstName}</p>
                   )}
                 </div>
                 
@@ -423,10 +460,10 @@ export default function CheckoutForm({
                     name="shippingLastName"
                     value={formData.shippingLastName}
                     onChange={handleInputChange}
-                    className={validationErrors.shippingLastName ? styles.inputError : ''}
+                    className={localErrors.shippingLastName ? styles.inputError : ''}
                   />
-                  {validationErrors.shippingLastName && (
-                    <p className={styles.errorText}>{validationErrors.shippingLastName}</p>
+                  {localErrors.shippingLastName && (
+                    <p className={styles.errorText}>{localErrors.shippingLastName}</p>
                   )}
                 </div>
               </div>
@@ -439,10 +476,10 @@ export default function CheckoutForm({
                   name="shippingAddress1"
                   value={formData.shippingAddress1}
                   onChange={handleInputChange}
-                  className={validationErrors.shippingAddress1 ? styles.inputError : ''}
+                  className={localErrors.shippingAddress1 ? styles.inputError : ''}
                 />
-                {validationErrors.shippingAddress1 && (
-                  <p className={styles.errorText}>{validationErrors.shippingAddress1}</p>
+                {localErrors.shippingAddress1 && (
+                  <p className={styles.errorText}>{localErrors.shippingAddress1}</p>
                 )}
               </div>
               
@@ -466,10 +503,10 @@ export default function CheckoutForm({
                     name="shippingCity"
                     value={formData.shippingCity}
                     onChange={handleInputChange}
-                    className={validationErrors.shippingCity ? styles.inputError : ''}
+                    className={localErrors.shippingCity ? styles.inputError : ''}
                   />
-                  {validationErrors.shippingCity && (
-                    <p className={styles.errorText}>{validationErrors.shippingCity}</p>
+                  {localErrors.shippingCity && (
+                    <p className={styles.errorText}>{localErrors.shippingCity}</p>
                   )}
                 </div>
                 
@@ -480,7 +517,7 @@ export default function CheckoutForm({
                     name="shippingState"
                     value={formData.shippingState}
                     onChange={handleInputChange}
-                    className={validationErrors.shippingState ? styles.inputError : ''}
+                    className={localErrors.shippingState ? styles.inputError : ''}
                   >
                     <option value="">-- Sélectionner --</option>
                     <option value="QC">Québec</option>
@@ -497,8 +534,8 @@ export default function CheckoutForm({
                     <option value="YT">Yukon</option>
                     <option value="NU">Nunavut</option>
                   </select>
-                  {validationErrors.shippingState && (
-                    <p className={styles.errorText}>{validationErrors.shippingState}</p>
+                  {localErrors.shippingState && (
+                    <p className={styles.errorText}>{localErrors.shippingState}</p>
                   )}
                 </div>
               </div>
@@ -512,10 +549,10 @@ export default function CheckoutForm({
                     name="shippingPostcode"
                     value={formData.shippingPostcode}
                     onChange={handleInputChange}
-                    className={validationErrors.shippingPostcode ? styles.inputError : ''}
+                    className={localErrors.shippingPostcode ? styles.inputError : ''}
                   />
-                  {validationErrors.shippingPostcode && (
-                    <p className={styles.errorText}>{validationErrors.shippingPostcode}</p>
+                  {localErrors.shippingPostcode && (
+                    <p className={styles.errorText}>{localErrors.shippingPostcode}</p>
                   )}
                 </div>
                 
@@ -526,12 +563,12 @@ export default function CheckoutForm({
                     name="shippingCountry"
                     value={formData.shippingCountry}
                     onChange={handleInputChange}
-                    className={validationErrors.shippingCountry ? styles.inputError : ''}
+                    className={localErrors.shippingCountry ? styles.inputError : ''}
                   >
                     <option value="CA">Canada</option>
                   </select>
-                  {validationErrors.shippingCountry && (
-                    <p className={styles.errorText}>{validationErrors.shippingCountry}</p>
+                  {localErrors.shippingCountry && (
+                    <p className={styles.errorText}>{localErrors.shippingCountry}</p>
                   )}
                 </div>
               </div>
@@ -544,4 +581,8 @@ export default function CheckoutForm({
       {renderPickupLocationSelector()}
     </div>
   );
-}
+});
+
+CheckoutForm.displayName = 'CheckoutForm';
+
+export default CheckoutForm;

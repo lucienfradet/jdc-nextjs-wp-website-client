@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import styles from '@/styles/checkout/CheckoutPage.module.css';
 import { useCart } from '@/context/CartContext';
@@ -17,6 +17,7 @@ export default function CheckoutPage({
   headerData,
   footerData,
   siteIconUrl,
+  abonnementPageData,
   pointDeChute
 }) {
   const router = useRouter();
@@ -29,6 +30,10 @@ export default function CheckoutPage({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [orderComplete, setOrderComplete] = useState(false);
   const [deliveryMethod, setDeliveryMethod] = useState('shipping');
+
+  // Create refs for the child components
+  const checkoutFormRef = useRef(null);
+  const paymentGatewayRef = useRef(null);
 
   // Check if cart is empty, redirect to home if it is
   useEffect(() => {
@@ -69,72 +74,52 @@ export default function CheckoutPage({
   const handlePaymentDataChange = (data) => {
     setPaymentData(data);
   };
+  
+  // Focus on the first error element
+  const focusOnFirstError = () => {
+    // Check which component has the first error
+    const checkoutFormElement = checkoutFormRef.current?.getFirstErrorElement();
+    const paymentGatewayElement = paymentGatewayRef.current?.getFirstErrorElement();
+    
+    // Focus on the first error element found
+    if (checkoutFormElement) {
+      checkoutFormElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      checkoutFormElement.focus();
+    } else if (paymentGatewayElement) {
+      paymentGatewayElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      paymentGatewayElement.focus();
+    }
+  };
 
   // Handle form submission
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
     
-    // Validate all required fields
-    const errors = {};
+    // Validate checkout form
+    const checkoutFormValidation = await checkoutFormRef.current.validate();
     
-    // Validate billing address
-    ['billingFirstName', 'billingLastName', 'billingEmail', 'billingPhone', 
-     'billingAddress1', 'billingCity', 'billingState', 'billingPostcode'].forEach(field => {
-      if (!formData[field]) {
-        errors[field] = 'Ce champ est requis';
-      }
-    });
+    // Validate payment gateway
+    const paymentGatewayValidation = await paymentGatewayRef.current.validate();
     
-    // Validate shipping address if we have shippable items and "same as billing" is not checked
-    if (hasShippableItems && !formData.shippingSameAsBilling) {
-      ['shippingFirstName', 'shippingLastName', 'shippingAddress1', 
-       'shippingCity', 'shippingState', 'shippingPostcode'].forEach(field => {
-        if (!formData[field]) {
-          errors[field] = 'Ce champ est requis';
-        }
-      });
-    }
-
-    // Validate pickup location if we have pickup-only items
-    if (cart.some(item => item.shipping_class === 'only_pickup') && !formData.selectedPickupLocation) {
-      errors.selectedPickupLocation = 'Veuillez sélectionner un point de chute';
-    }
-    
-    // Validate payment data
-    if (paymentData.method === 'credit-card') {
-      ['cardNumber', 'cardName', 'expiryDate', 'cvv'].forEach(field => {
-        if (!paymentData[field]) {
-          errors[field] = 'Ce champ est requis';
-        }
-      });
-      
-      // Additional card validation
-      if (paymentData.cardNumber && paymentData.cardNumber.replace(/\s/g, '').length < 16) {
-        errors.cardNumber = 'Numéro de carte invalide';
-      }
-      
-      if (paymentData.expiryDate && !paymentData.expiryDate.match(/^\d{2}\/\d{2}$/)) {
-        errors.expiryDate = 'Format invalide (MM/YY)';
-      }
-      
-      if (paymentData.cvv && !paymentData.cvv.match(/^\d{3,4}$/)) {
-        errors.cvv = 'CVV invalide';
-      }
-    }
-    
-    setFormErrors(errors);
+    // Combine all errors
+    const allErrors = {
+      ...(checkoutFormValidation.hasErrors ? checkoutFormValidation.errors : {}),
+      ...(paymentGatewayValidation.hasErrors ? paymentGatewayValidation.errors : {})
+    };
     
     // If we have errors, stop submission
-    if (Object.keys(errors).length > 0) {
+    if (Object.keys(allErrors).length > 0) {
+      setFormErrors(allErrors);
       setIsSubmitting(false);
-      // Scroll to the first error
-      const firstError = document.querySelector(`.${styles.inputError}`);
-      if (firstError) {
-        firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }
+      
+      // Focus on the first error element
+      focusOnFirstError();
       return;
     }
+    
+    // Clear any previous errors
+    setFormErrors({});
     
     // Simulate API call to place order
     setTimeout(() => {
@@ -185,8 +170,8 @@ export default function CheckoutPage({
       {isMobile ? (
         <MobileHeader pageData={headerData} />
       ) : (
-          <DesktopHeader pageData={headerData} />
-        )}
+        <DesktopHeader pageData={headerData} />
+      )}
 
       <main className={styles.checkoutContainer}>
         <h1 className={styles.pageTitle}>Finaliser votre commande</h1>
@@ -195,16 +180,18 @@ export default function CheckoutPage({
           <div className={styles.checkoutColumns}>
             <div className={styles.formColumn}>
               <CheckoutForm 
+                ref={checkoutFormRef}
                 cart={cart} 
                 pointDeChute={pointDeChute} 
                 hasShippableItems={hasShippableItems}
                 onFormDataChange={handleFormDataChange}
                 onDeliveryMethodChange={handleDeliveryMethodChange}
-                validationErrors={formErrors}
               />
 
               <PaymentGateway 
+                ref={paymentGatewayRef}
                 onPaymentDataChange={handlePaymentDataChange}
+                abonnementPageData={abonnementPageData}
               />
 
               <div className={styles.submitSection}>
@@ -220,10 +207,6 @@ export default function CheckoutPage({
                     Veuillez corriger les erreurs dans le formulaire pour continuer.
                   </div>
                 )}
-                {/* <p className={styles.termsText}>
-                  En confirmant votre commande, vous acceptez nos conditions
-                  générales de vente et notre politique de confidentialité.
-                </p> */}
               </div>
             </div>
 
@@ -241,8 +224,8 @@ export default function CheckoutPage({
       {isMobile ? (
         <MobileFooter pageData={footerData} />
       ) : (
-          <DesktopFooter pageData={footerData} />
-        )}
+        <DesktopFooter pageData={footerData} />
+      )}
     </>
   );
 }

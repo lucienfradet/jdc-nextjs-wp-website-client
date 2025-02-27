@@ -1,10 +1,12 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useImperativeHandle, forwardRef } from 'react';
 import styles from '@/styles/checkout/PaymentGateway.module.css';
+import { renderContent } from '@/lib/textUtils';
 
-export default function PaymentGateway({ onPaymentDataChange, validationErrors = {} }) {
-  const [paymentMethod, setPaymentMethod] = useState('credit-card');
+const PaymentGateway = forwardRef(({ onPaymentDataChange, abonnementPageData }, ref) => {
+  const abonnementPageContent = abonnementPageData.acfFields;
+  const [paymentMethod, setPaymentMethod] = useState('bank-transfer');
   const [cardData, setCardData] = useState({
     cardNumber: '',
     cardName: '',
@@ -13,55 +15,78 @@ export default function PaymentGateway({ onPaymentDataChange, validationErrors =
   });
   const [localErrors, setLocalErrors] = useState({});
   
-  // Sync with parent errors when they change
-  useEffect(() => {
-    // If parent has validation errors for our fields, show them in our UI
-    const relevantErrors = {};
-    ['cardNumber', 'cardName', 'expiryDate', 'cvv'].forEach(field => {
-      if (validationErrors[field]) {
-        relevantErrors[field] = validationErrors[field];
+  // Expose validation function to parent via ref
+  useImperativeHandle(ref, () => ({
+    validate: () => {
+      const errors = {};
+      
+      // Only validate credit card data if credit card is the selected payment method
+      if (paymentMethod === 'credit-card') {
+        // Validate card number (simplified for demo)
+        if (!cardData.cardNumber || cardData.cardNumber.replace(/\s/g, '').length < 16) {
+          errors.cardNumber = 'Numéro de carte invalide';
+        }
+        
+        // Validate card name
+        if (!cardData.cardName || cardData.cardName.trim() === '') {
+          errors.cardName = 'Nom sur la carte requis';
+        }
+        
+        // Validate expiry date
+        if (!cardData.expiryDate || !cardData.expiryDate.match(/^\d{2}\/\d{2}$/)) {
+          errors.expiryDate = 'Date d\'expiration invalide (MM/YY)';
+        }
+        
+        // Validate CVV
+        if (!cardData.cvv || !cardData.cvv.match(/^\d{3,4}$/)) {
+          errors.cvv = 'CVV invalide';
+        }
       }
-    });
-    
-    if (Object.keys(relevantErrors).length > 0) {
-      setLocalErrors(prev => ({ ...prev, ...relevantErrors }));
+      
+      setLocalErrors(errors);
+      return { hasErrors: Object.keys(errors).length > 0, errors };
+    },
+    getFirstErrorElement: () => {
+      return document.querySelector(`.${styles.paymentGateway} .${styles.inputError}`);
     }
-  }, [validationErrors]);
+  }));
   
   // Handle payment method change
   const handlePaymentMethodChange = (method) => {
     setPaymentMethod(method);
+    
+    // Clear credit card errors when switching away from credit card payment
+    if (method !== 'credit-card') {
+      setLocalErrors({});
+    }
+    
     onPaymentDataChange({ method, ...cardData });
   };
   
   // Handle card data change
   const handleCardDataChange = (e) => {
     const { name, value } = e.target;
+    let formattedValue = value;
     
     // Format card number with spaces every 4 digits
     if (name === 'cardNumber') {
-      const formatted = value
+      formattedValue = value
         .replace(/\s/g, '') // Remove existing spaces
         .replace(/(.{4})/g, '$1 ') // Add space after every 4 chars
         .trim(); // Remove trailing space
-      
-      setCardData({ ...cardData, [name]: formatted });
     } 
     // Format expiry date as MM/YY
     else if (name === 'expiryDate') {
       const clean = value.replace(/\D/g, '');
-      let formatted = clean;
       
       if (clean.length > 2) {
-        formatted = `${clean.slice(0, 2)}/${clean.slice(2, 4)}`;
+        formattedValue = `${clean.slice(0, 2)}/${clean.slice(2, 4)}`;
+      } else {
+        formattedValue = clean;
       }
-      
-      setCardData({ ...cardData, [name]: formatted });
     }
-    // Regular input for other fields
-    else {
-      setCardData({ ...cardData, [name]: value });
-    }
+    
+    setCardData(prev => ({ ...prev, [name]: formattedValue }));
     
     // Clear validation error when field is changed
     if (localErrors[name]) {
@@ -73,35 +98,11 @@ export default function PaymentGateway({ onPaymentDataChange, validationErrors =
     }
     
     // Notify parent of payment data change
-    onPaymentDataChange({ method: paymentMethod, ...cardData, [name]: value });
-  };
-  
-  // Validate card data (can be called by the parent via a ref if needed)
-  const validateCardData = () => {
-    const newErrors = {};
-    
-    // Validate card number (simplified for demo)
-    if (!cardData.cardNumber || cardData.cardNumber.replace(/\s/g, '').length < 16) {
-      newErrors.cardNumber = 'Numéro de carte invalide';
-    }
-    
-    // Validate card name
-    if (!cardData.cardName || cardData.cardName.trim() === '') {
-      newErrors.cardName = 'Nom sur la carte requis';
-    }
-    
-    // Validate expiry date
-    if (!cardData.expiryDate || !cardData.expiryDate.match(/^\d{2}\/\d{2}$/)) {
-      newErrors.expiryDate = 'Date d\'expiration invalide (MM/YY)';
-    }
-    
-    // Validate CVV
-    if (!cardData.cvv || !cardData.cvv.match(/^\d{3,4}$/)) {
-      newErrors.cvv = 'CVV invalide';
-    }
-    
-    setLocalErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    onPaymentDataChange({ 
+      method: paymentMethod, 
+      ...cardData, 
+      [name]: formattedValue 
+    });
   };
   
   return (
@@ -109,17 +110,6 @@ export default function PaymentGateway({ onPaymentDataChange, validationErrors =
       <h3>Méthode de paiement</h3>
       
       <div className={styles.paymentMethods}>
-        <label className={`${styles.paymentMethod} ${paymentMethod === 'credit-card' ? styles.selected : ''}`}>
-          <input
-            type="radio"
-            name="paymentMethod"
-            checked={paymentMethod === 'credit-card'}
-            onChange={() => handlePaymentMethodChange('credit-card')}
-          />
-          <span className={styles.radioButton}></span>
-          <span className={styles.methodName}>Carte de crédit</span>
-        </label>
-        
         <label className={`${styles.paymentMethod} ${paymentMethod === 'bank-transfer' ? styles.selected : ''}`}>
           <input
             type="radio"
@@ -129,6 +119,17 @@ export default function PaymentGateway({ onPaymentDataChange, validationErrors =
           />
           <span className={styles.radioButton}></span>
           <span className={styles.methodName}>Virement bancaire (Instructions à suivre)</span>
+        </label>
+
+        <label className={`${styles.paymentMethod} ${paymentMethod === 'credit-card' ? styles.selected : ''}`}>
+          <input
+            type="radio"
+            name="paymentMethod"
+            checked={paymentMethod === 'credit-card'}
+            onChange={() => handlePaymentMethodChange('credit-card')}
+          />
+          <span className={styles.radioButton}></span>
+          <span className={styles.methodName}>Carte de crédit</span>
         </label>
       </div>
       
@@ -221,11 +222,13 @@ export default function PaymentGateway({ onPaymentDataChange, validationErrors =
       
       {paymentMethod === 'bank-transfer' && (
         <div className={styles.bankTransferInfo}>
-          <p>
-            INCLURE INFO DE ABONNEMENT PAGE
-          </p>
+          {renderContent(abonnementPageContent["paiments-virement-p"])}
         </div>
       )}
     </div>
   );
-}
+});
+
+PaymentGateway.displayName = 'PaymentGateway';
+
+export default PaymentGateway;
