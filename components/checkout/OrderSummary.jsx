@@ -31,7 +31,7 @@ export default function OrderSummary({ cart, getCartTotal, deliveryMethod = 'shi
     
     // Calculate total
     setTotal(subtotalValue + (gst + qst) + (hasShippableItems ? 15 : 0));
-  }, [cart, getCartTotal]);
+  }, [cart, getCartTotal, deliveryMethod]);
   
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('fr-CA', {

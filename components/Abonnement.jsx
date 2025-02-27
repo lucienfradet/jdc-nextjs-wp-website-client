@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import WPImage from "@/components/WPImage";
 import CustomHead from '@/components/CustomHead';
 import DesktopHeader from "@/components/desktop/Header";
@@ -20,8 +20,8 @@ export default function Abonnement({
   products
 }) {
   const pageContent = pageData.acfFields;
-
   const [isMobile, setIsMobile] = useState(false);
+  const panierRef = useRef(null);
 
   useEffect(() => {
     const handleResize = () => {
@@ -35,6 +35,16 @@ export default function Abonnement({
       window.removeEventListener("resize", handleResize);
     };
   }, []);
+
+  // Function to scroll to the panier section
+  const scrollToPanier = () => {
+    if (panierRef.current) {
+      panierRef.current.scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }
+  };
 
   return (
     <>
@@ -71,10 +81,34 @@ export default function Abonnement({
               <div className={styles.TableContainer}>
                 {/* Row of 4 rectangles */}
                 <div className={styles.rectanglesRow}>
-                  <div className={styles.rectangle}>{pageContent["forfaits-noms"]["forfait-1"]}</div>
-                  <div className={styles.rectangle}>{pageContent["forfaits-noms"]["forfait-2"]}</div>
-                  <div className={styles.rectangle}>{pageContent["forfaits-noms"]["forfait-3"]}</div>
-                  <div className={styles.rectangle}>{pageContent["forfaits-noms"]["forfait-4"]}</div>
+                  <div 
+                    className={styles.rectangle} 
+                    onClick={scrollToPanier} 
+                    style={{ cursor: 'pointer' }}
+                  >
+                    {pageContent["forfaits-noms"]["forfait-1"]}
+                  </div>
+                  <div 
+                    className={styles.rectangle} 
+                    onClick={scrollToPanier} 
+                    style={{ cursor: 'pointer' }}
+                  >
+                    {pageContent["forfaits-noms"]["forfait-2"]}
+                  </div>
+                  <div 
+                    className={styles.rectangle} 
+                    onClick={scrollToPanier} 
+                    style={{ cursor: 'pointer' }}
+                  >
+                    {pageContent["forfaits-noms"]["forfait-3"]}
+                  </div>
+                  <div 
+                    className={styles.rectangle} 
+                    onClick={scrollToPanier} 
+                    style={{ cursor: 'pointer' }}
+                  >
+                    {pageContent["forfaits-noms"]["forfait-4"]}
+                  </div>
                 </div>
 
                 {/* Row of values */}
@@ -150,7 +184,7 @@ export default function Abonnement({
           <WPImage className={styles.imgPaimentBackground} image={pageContent["img-paiments-background"]} forceFullSize={true} />
         </section>
 
-        <section className={styles.panierContainer}>
+        <section ref={panierRef} className={styles.panierContainer}>
           <h2>{pageContent["panier-h2"]}</h2>
         </section>
         <ProductGrid 
