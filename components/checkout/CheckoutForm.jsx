@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useImperativeHandle, forwardRef } from 'react';
+import EmailConfirmation from '../EmailConfirmation';
 import styles from '@/styles/checkout/CheckoutForm.module.css';
 
 const CheckoutForm = forwardRef(({ 
@@ -18,6 +19,7 @@ const CheckoutForm = forwardRef(({
     billingFirstName: '',
     billingLastName: '',
     billingEmail: '',
+    billingConfirmEmail: '',
     billingPhone: '',
     billingAddress1: '',
     billingAddress2: '',
@@ -52,12 +54,18 @@ const CheckoutForm = forwardRef(({
       const errors = {};
       
       // Validate billing address
-      ['billingFirstName', 'billingLastName', 'billingEmail', 'billingPhone', 
+      ['billingFirstName', 'billingLastName', 'billingEmail', 'billingConfirmEmail', 'billingPhone', 
        'billingAddress1', 'billingCity', 'billingState', 'billingPostcode'].forEach(field => {
         if (!formData[field]) {
           errors[field] = 'Ce champ est requis';
         }
       });
+
+      // Check if emails match
+      if (formData.billingEmail && formData.billingConfirmEmail && 
+        formData.billingEmail !== formData.billingConfirmEmail) {
+        errors.billingConfirmEmail = 'Les adresses e-mail ne correspondent pas';
+      }
       
       // Validate shipping address if we have shippable items and "same as billing" is not checked
       if (hasShippableItems && formData.deliveryMethod === 'shipping' && !formData.shippingSameAsBilling) {
@@ -274,52 +282,42 @@ const CheckoutForm = forwardRef(({
           </div>
         </div>
         
-        <div className={styles.formRow}>
-          <div className={styles.formGroup}>
-            <label htmlFor="billingEmail">Courriel</label>
-            <input
-              type="email"
-              id="billingEmail"
-              name="billingEmail"
-              value={formData.billingEmail}
-              onChange={handleInputChange}
-              className={localErrors.billingEmail ? styles.inputError : ''}
-            />
-            {localErrors.billingEmail && (
-              <p className={styles.errorText}>{localErrors.billingEmail}</p>
-            )}
-          </div>
-          
-          <div className={styles.formGroup}>
-            <label htmlFor="billingPhone">Téléphone</label>
-            <input
-              type="tel"
-              id="billingPhone"
-              name="billingPhone"
-              value={formData.billingPhone}
-              onChange={handleInputChange}
-              className={localErrors.billingPhone ? styles.inputError : ''}
-            />
-            {localErrors.billingPhone && (
-              <p className={styles.errorText}>{localErrors.billingPhone}</p>
-            )}
-          </div>
-        </div>
-        
-        <div className={styles.formGroup}>
-          <label htmlFor="billingAddress1">Adresse</label>
-          <input
-            type="text"
-            id="billingAddress1"
-            name="billingAddress1"
-            value={formData.billingAddress1}
-            onChange={handleInputChange}
-            className={localErrors.billingAddress1 ? styles.inputError : ''}
-          />
-          {localErrors.billingAddress1 && (
-            <p className={styles.errorText}>{localErrors.billingAddress1}</p>
-          )}
-        </div>
+      <EmailConfirmation
+        formData={formData}
+        setFormData={setFormData}
+        localErrors={localErrors}
+        setLocalErrors={setLocalErrors}
+      />
+
+      <div className={styles.formGroup}>
+        <label htmlFor="billingPhone">Téléphone</label>
+        <input
+          type="tel"
+          id="billingPhone"
+          name="billingPhone"
+          value={formData.billingPhone}
+          onChange={handleInputChange}
+          className={localErrors.billingPhone ? styles.inputError : ''}
+        />
+        {localErrors.billingPhone && (
+          <p className={styles.errorText}>{localErrors.billingPhone}</p>
+        )}
+      </div>
+
+      <div className={styles.formGroup}>
+        <label htmlFor="billingAddress1">Adresse</label>
+        <input
+          type="text"
+          id="billingAddress1"
+          name="billingAddress1"
+          value={formData.billingAddress1}
+          onChange={handleInputChange}
+          className={localErrors.billingAddress1 ? styles.inputError : ''}
+        />
+        {localErrors.billingAddress1 && (
+          <p className={styles.errorText}>{localErrors.billingAddress1}</p>
+        )}
+      </div>
         
         <div className={styles.formGroup}>
           <label htmlFor="billingAddress2">Appartement, suite, etc. (optionnel)</label>

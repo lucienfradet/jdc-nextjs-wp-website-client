@@ -199,6 +199,23 @@
   margin-bottom: 0.5rem;
 }
 
+.suggestionText {
+  font-size: 0.875rem;
+  color: var(--orange);
+  margin-top: 0.25rem;
+  cursor: pointer;
+}
+
+.suggestionText strong {
+  text-decoration: underline;
+}
+
+/* You can create a highlighted version of inputs for suggestions */
+.inputSuggestion {
+  border-color: var(--orange) !important;
+  background-color: rgba(209, 120, 41, 0.05);
+}
+
 /* Media Queries */
 @media (max-width: 768px) {
   .formRow {
