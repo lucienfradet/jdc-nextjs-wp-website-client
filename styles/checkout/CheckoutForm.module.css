@@ -1,0 +1,141 @@
+.checkoutForm {
+  padding-top: var(--header-height);
+  width: 80%;
+  margin: auto;
+}
+
+.formSection {
+  margin-bottom: 2rem;
+  background-color: var(--beige);
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.formSection h3 {
+  color: var(--green);
+  font-size: 1.25rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--green);
+}
+
+.formRow {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.formGroup {
+  flex: 1;
+  margin-bottom: 1rem;
+}
+
+.formGroup label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: var(--green);
+  font-weight: 500;
+}
+
+.formGroup input,
+.formGroup select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+  color: var(--green);
+  background-color: white;
+}
+
+.formGroup input:focus,
+.formGroup select:focus {
+  outline: none;
+  border-color: var(--green);
+  box-shadow: 0 0 0 2px rgba(36, 49, 27, 0.2);
+}
+
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+}
+
+.checkboxLabel input {
+  margin-right: 0.5rem;
+  width: auto;
+}
+
+.inputError {
+  border-color: var(--red) !important;
+  background-color: rgba(162, 45, 34, 0.05);
+}
+
+.errorText {
+  color: var(--red);
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+.pickupSection {
+  margin-top: 2rem;
+  background-color: var(--beige);
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.pickupSection h3 {
+  color: var(--green);
+  font-size: 1.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.pickupSection p {
+  margin-bottom: 1.5rem;
+  color: var(--green);
+}
+
+.pickupDetails {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background-color: rgba(36, 49, 27, 0.05);
+  border-radius: 4px;
+  color: var(--green);
+}
+
+.pickupDetails h4 {
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+
+.pickupDetails p {
+  margin: 0.25rem 0;
+  font-size: 0.95rem;
+}
+
+.instructions {
+  margin-top: 1rem;
+  border-top: 1px dashed rgba(36, 49, 27, 0.3);
+  padding-top: 0.5rem;
+}
+
+.instructions h5 {
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Media Queries */
+@media (max-width: 768px) {
+  .formRow {
+    flex-direction: column;
+    gap: 0;
+  }
+  
+  .formSection,
+  .pickupSection {
+    padding: 1rem;
+  }
+}

@@ -1,0 +1,157 @@
+.orderSummary {
+  background-color: var(--beige);
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  font-family: 'Roboto', sans-serif;
+}
+
+.orderSummary h2 {
+  color: var(--green);
+  font-size: 1.25rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--green);
+}
+
+.itemList {
+  margin-bottom: 1.5rem;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.item {
+  display: flex;
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(36, 49, 27, 0.1);
+}
+
+.item:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.itemImage {
+  width: 80px;
+  height: 80px;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-right: 1rem;
+}
+
+.itemImage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.itemDetails {
+  flex: 1;
+}
+
+.itemName {
+  font-size: 1rem;
+  color: var(--green);
+  margin-bottom: 0.5rem;
+}
+
+.itemMeta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.875rem;
+  color: #555;
+}
+
+.itemQuantity {
+  color: #666;
+}
+
+.itemPrice {
+  font-weight: 600;
+  color: var(--green);
+}
+
+.pickupOnly {
+  display: inline-block;
+  margin-top: 0.5rem;
+  background-color: rgba(209, 120, 41, 0.1);
+  color: var(--orange);
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+.totals {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(36, 49, 27, 0.2);
+}
+
+.totalRow {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  font-size: 1rem;
+  color: var(--green);
+}
+
+.totalRow:last-child {
+  margin-bottom: 0;
+}
+
+.grandTotal {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 2px solid var(--green);
+}
+
+.returnToCart {
+  margin-top: 1.5rem;
+  font-size: 0.875rem;
+  text-align: center;
+}
+
+.returnToCart a {
+  color: var(--green);
+  text-decoration: underline;
+  transition: color 0.2s;
+}
+
+.returnToCart a:hover {
+  color: var(--orange);
+}
+
+/* Custom scrollbar for itemList */
+.itemList::-webkit-scrollbar {
+  width: 6px;
+}
+
+.itemList::-webkit-scrollbar-track {
+  background: rgba(36, 49, 27, 0.05);
+  border-radius: 10px;
+}
+
+.itemList::-webkit-scrollbar-thumb {
+  background-color: rgba(36, 49, 27, 0.3);
+  border-radius: 10px;
+}
+
+@media (max-width: 768px) {
+  .orderSummary {
+    margin-top: 2rem;
+  }
+  
+  .item {
+    align-items: center;
+  }
+  
+  .itemImage {
+    width: 60px;
+    height: 60px;
+  }
+}

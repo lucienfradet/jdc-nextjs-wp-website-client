@@ -1,0 +1,174 @@
+.paymentGateway {
+  width: 100%;
+  background-color: var(--beige);
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-top: 2rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  font-family: 'Roboto', sans-serif;
+}
+
+.paymentGateway h3 {
+  color: var(--green);
+  font-size: 1.25rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--green);
+}
+
+.paymentMethods {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.paymentMethod {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+}
+
+.paymentMethod.selected {
+  border-color: var(--green);
+  background-color: rgba(36, 49, 27, 0.05);
+}
+
+.paymentMethod input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.radioButton {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #ccc;
+  border-radius: 50%;
+  margin-right: 1rem;
+  position: relative;
+  display: inline-block;
+}
+
+.selected .radioButton {
+  border-color: var(--green);
+}
+
+.selected .radioButton:after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 10px;
+  height: 10px;
+  background-color: var(--green);
+  border-radius: 50%;
+}
+
+.methodName {
+  font-weight: 500;
+  color: var(--green);
+}
+
+.creditCardForm {
+  margin-top: 1.5rem;
+}
+
+.formRow {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.formGroup {
+  flex: 1;
+}
+
+.formGroup label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: var(--green);
+  font-weight: 500;
+}
+
+.formGroup input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+  color: var(--green);
+  background-color: white;
+}
+
+.formGroup input:focus {
+  outline: none;
+  border-color: var(--green);
+  box-shadow: 0 0 0 2px rgba(36, 49, 27, 0.2);
+}
+
+.inputError {
+  border-color: var(--red) !important;
+  background-color: rgba(162, 45, 34, 0.05);
+}
+
+.errorText {
+  color: var(--red);
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+.securePaymentInfo {
+  display: flex;
+  align-items: center;
+  margin-top: 1.5rem;
+  padding: 0.75rem;
+  background-color: rgba(36, 49, 27, 0.05);
+  border-radius: 4px;
+}
+
+.secureIcon {
+  margin-right: 0.75rem;
+  color: var(--green);
+}
+
+.securePaymentInfo p {
+  font-size: 0.875rem;
+  color: var(--green);
+}
+
+.bankTransferInfo {
+  margin-top: 1rem;
+  padding: 1.5rem;
+  background-color: rgba(36, 49, 27, 0.05);
+  border-radius: 8px;
+}
+
+.bankTransferInfo p {
+  color: var(--green);
+  margin-bottom: 1rem;
+  line-height: 1.5;
+}
+
+.bankTransferInfo p:last-child {
+  margin-bottom: 0;
+}
+
+/* Media Queries */
+@media (max-width: 768px) {
+  .formRow {
+    flex-direction: column;
+    gap: 0;
+  }
+  
+  .paymentGateway {
+    padding: 1rem;
+  }
+}
