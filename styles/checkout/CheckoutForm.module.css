@@ -1,7 +1,5 @@
 .checkoutForm {
-  padding-top: var(--header-height);
-  width: 80%;
-  margin: auto;
+  width: 100%;
 }
 
 .formSection {

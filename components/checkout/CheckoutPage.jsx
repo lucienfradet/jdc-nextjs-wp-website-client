@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import styles from '@/styles/checkout/CheckoutForm.module.css';
+import styles from '@/styles/checkout/CheckoutPage.module.css';
 import { useCart } from '@/context/CartContext';
 import CheckoutForm from '@/components/checkout/CheckoutForm';
 import OrderSummary from '@/components/checkout/OrderSummary';

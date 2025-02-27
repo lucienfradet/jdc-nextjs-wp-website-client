@@ -1,0 +1,147 @@
+.checkoutContainer {
+  padding-top: var(--header-height);
+  background-color: var(--green);
+  min-height: calc(100vh - var(--header-height));
+  color: var(--beige);
+  padding-bottom: 4rem;
+}
+
+.pageTitle {
+  text-align: center;
+  padding: 2rem 1rem;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--beige);
+}
+
+.checkoutForm {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.checkoutColumns {
+  display: flex;
+  gap: 2rem;
+}
+
+.formColumn {
+  flex: 3;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.summaryColumn {
+  flex: 2;
+  align-self: flex-start;
+  position: sticky;
+  top: calc(var(--header-height) + 2rem);
+}
+
+.submitSection {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background-color: var(--beige);
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.submitButton {
+  width: 100%;
+  padding: 1rem;
+  background-color: var(--green);
+  color: var(--beige);
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.submitButton:hover {
+  background-color: #2a3a20;
+}
+
+.submitButton:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.formErrorSummary {
+  margin-top: 1rem;
+  padding: 1rem;
+  background-color: rgba(162, 45, 34, 0.1);
+  border-left: 4px solid var(--red);
+  color: var(--red);
+  font-weight: 500;
+}
+
+.termsText {
+  margin-top: 1rem;
+  font-size: 0.875rem;
+  color: #666;
+  text-align: center;
+}
+
+.loading,
+.emptyCart,
+.orderComplete {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  padding: 1rem;
+  text-align: center;
+  background-color: var(--green);
+  color: var(--beige);
+}
+
+.orderComplete {
+  gap: 1.5rem;
+}
+
+.orderComplete h2 {
+  font-size: 2rem;
+  color: var(--beige);
+}
+
+.orderComplete p {
+  font-size: 1.1rem;
+  max-width: 600px;
+}
+
+/* Input error state */
+.inputError {
+  border-color: var(--red) !important;
+  background-color: rgba(162, 45, 34, 0.05);
+}
+
+/* Media Queries */
+@media (max-width: 991px) {
+  .checkoutContainer {
+    padding-top: var(--header-height-mobile);
+  }
+  
+  .summaryColumn {
+    top: calc(var(--header-height-mobile) + 2rem);
+  }
+}
+
+@media (max-width: 768px) {
+  .checkoutColumns {
+    flex-direction: column-reverse;
+  }
+  
+  .summaryColumn {
+    position: static;
+  }
+  
+  .pageTitle {
+    font-size: 1.5rem;
+    padding: 1.5rem 1rem;
+  }
+}
