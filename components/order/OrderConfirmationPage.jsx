@@ -7,7 +7,7 @@ import DesktopHeader from "@/components/desktop/Header";
 import MobileHeader from "@/components/mobile/Header";
 import DesktopFooter from "@/components/desktop/Footer";
 import MobileFooter from "@/components/mobile/Footer";
-import styles from '@/styles/checkout/OrderConfirmation.module.css';
+import styles from '@/styles/checkout/OrderConfirmationPage.module.css';
 
 export default function OrderConfirmationPage({ headerData, footerData, siteIconUrl }) {
   const [isMobile, setIsMobile] = useState(false);
@@ -74,7 +74,9 @@ export default function OrderConfirmationPage({ headerData, footerData, siteIcon
           
           <div className={styles.contactInfo}>
             <p>
-              Pour toute question concernant votre commande, n'hésitez pas à nous contacter par courriel à <a href="mailto:info@jardindeschefs.com">info@jardindeschefs.com</a>.
+              Pour toute question concernant votre commande, n'hésitez pas à
+              nous contacter par courriel à <a
+                href="mailto:contact@jardindeschefs.com">contact@jardindeschefs.com</a>.
             </p>
           </div>
           

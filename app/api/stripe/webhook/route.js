@@ -6,8 +6,7 @@ export async function POST(request) {
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
     const body = await request.text();
     
-    // Read headers directly - no await needed on the function itself
-    const signature = headers().get('stripe-signature');
+    const signature = (await headers()).get('stripe-signature');
     
     if (!signature) {
       throw new Error('Missing stripe-signature header');
