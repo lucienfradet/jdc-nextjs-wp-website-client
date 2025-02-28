@@ -12,9 +12,6 @@ import styles from '@/styles/checkout/OrderConfirmationPage.module.css';
 export default function OrderConfirmationPage({ headerData, footerData, siteIconUrl }) {
   const [isMobile, setIsMobile] = useState(false);
   
-  // Generate a random order number for demonstration purposes
-  const orderNumber = `JDC-${Math.floor(Math.random() * 10000).toString().padStart(4, '0')}`;
-  
   // Mobile detection
   useEffect(() => {
     const handleResize = () => {
@@ -56,7 +53,7 @@ export default function OrderConfirmationPage({ headerData, footerData, siteIcon
           <h1>Merci pour votre commande!</h1>
           
           <p className={styles.orderNumber}>
-            Numéro de commande: <strong>{orderNumber}</strong>
+            Numéro de commande: <strong>PLACE HOLDER</strong>
           </p>
           
           <p className={styles.confirmationMessage}>

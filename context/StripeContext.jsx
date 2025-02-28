@@ -79,9 +79,8 @@ export function StripeProvider({ children }) {
     setPaymentError(null);
   };
   
-  // If we have a client secret, prepare the Stripe elements
-  const options = clientSecret ? {
-    clientSecret,
+  // Prepare the Stripe elements configuration 
+  const options = {
     appearance: {
       theme: 'stripe',
       variables: {
@@ -94,8 +93,27 @@ export function StripeProvider({ children }) {
         borderRadius: '4px',
       },
     },
-  } : {};
+  };
   
+  // Only render the Stripe Elements wrapper if we have a client secret
+  if (clientSecret) {
+    return (
+      <StripeContext.Provider value={{
+        createPaymentIntent,
+        completeOrder,
+        resetPayment,
+        paymentStatus,
+        paymentError,
+        clientSecret
+      }}>
+        <Elements stripe={stripePromise} options={{...options, clientSecret}}>
+          {children}
+        </Elements>
+      </StripeContext.Provider>
+    );
+  }
+  
+  // Otherwise, render without the Elements wrapper
   return (
     <StripeContext.Provider value={{
       createPaymentIntent,
@@ -105,11 +123,7 @@ export function StripeProvider({ children }) {
       paymentError,
       clientSecret
     }}>
-      {clientSecret ? (
-        <Elements stripe={stripePromise} options={options}>
-          {children}
-        </Elements>
-      ) : children}
+      {children}
     </StripeContext.Provider>
   );
 }
