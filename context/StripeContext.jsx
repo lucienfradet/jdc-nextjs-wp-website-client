@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
 
@@ -80,7 +80,8 @@ export function StripeProvider({ children }) {
   };
   
   // Prepare the Stripe elements configuration 
-  const options = {
+  const options = clientSecret ? {
+    clientSecret,
     appearance: {
       theme: 'stripe',
       variables: {
@@ -93,37 +94,27 @@ export function StripeProvider({ children }) {
         borderRadius: '4px',
       },
     },
-  };
+  } : {};
   
-  // Only render the Stripe Elements wrapper if we have a client secret
-  if (clientSecret) {
-    return (
-      <StripeContext.Provider value={{
-        createPaymentIntent,
-        completeOrder,
-        resetPayment,
-        paymentStatus,
-        paymentError,
-        clientSecret
-      }}>
-        <Elements stripe={stripePromise} options={{...options, clientSecret}}>
+  // Create context value
+  const contextValue = {
+    createPaymentIntent,
+    completeOrder,
+    resetPayment,
+    paymentStatus,
+    paymentError,
+    clientSecret
+  };
+
+  return (
+    <StripeContext.Provider value={contextValue}>
+      {clientSecret ? (
+        <Elements stripe={stripePromise} options={options}>
           {children}
         </Elements>
-      </StripeContext.Provider>
-    );
-  }
-  
-  // Otherwise, render without the Elements wrapper
-  return (
-    <StripeContext.Provider value={{
-      createPaymentIntent,
-      completeOrder,
-      resetPayment,
-      paymentStatus,
-      paymentError,
-      clientSecret
-    }}>
-      {children}
+      ) : (
+        children
+      )}
     </StripeContext.Provider>
   );
 }

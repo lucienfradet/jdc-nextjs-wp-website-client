@@ -210,6 +210,16 @@
   font-weight: 500;
 }
 
+.loadingMessage {
+  text-align: center;
+  padding: 20px;
+  color: var(--green);
+  font-size: 1rem;
+  background-color: rgba(36, 49, 27, 0.05);
+  border-radius: 4px;
+  margin-bottom: 1.5rem;
+}
+
 /* Media Queries */
 @media (max-width: 768px) {
   .formRow {

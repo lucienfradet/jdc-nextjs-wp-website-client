@@ -1,24 +1,17 @@
 "use client";
 
 import { useState } from 'react';
-import { PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
+import { PaymentElement } from '@stripe/react-stripe-js';
 import styles from '@/styles/checkout/PaymentGateway.module.css';
 
-const StripePaymentForm = ({ onPaymentComplete, onError }) => {
-  const stripe = useStripe();
-  const elements = useElements();
-  
+// Now we pass the stripe and elements objects as props
+const StripePaymentForm = ({ stripe, elements, onPaymentComplete, onError }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
   
   // Handle form submission
   const handlePaymentSubmit = async (e) => {
     e.preventDefault();
-    
-    if (!stripe || !elements) {
-      // Stripe.js hasn't loaded yet
-      return;
-    }
     
     setIsLoading(true);
     setErrorMessage(null);

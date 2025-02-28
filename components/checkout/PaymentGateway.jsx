@@ -3,9 +3,8 @@
 import { useState, useEffect, useImperativeHandle, forwardRef } from 'react';
 import styles from '@/styles/checkout/PaymentGateway.module.css';
 import { renderContent } from '@/lib/textUtils';
-import StripePaymentForm from './StripePaymentForm';
+import StripePaymentWrapper from './StripePaymentWrapper';
 import { useStripe as useStripeContext } from '@/context/StripeContext';
-import { PaymentElement } from '@stripe/react-stripe-js';
 
 const PaymentGateway = forwardRef(({ onPaymentDataChange, abonnementPageData, total }, ref) => {
   const abonnementPageContent = abonnementPageData.acfFields;
@@ -25,6 +24,23 @@ const PaymentGateway = forwardRef(({ onPaymentDataChange, abonnementPageData, to
     paymentStatus, 
     paymentError 
   } = useStripeContext();
+
+  // Trying to prevent radio submission
+  useEffect(() => {
+    // Function to prevent form submission when changing radio buttons
+    const preventFormSubmission = (e) => {
+      if (e.target.type === 'radio' && e.target.name === 'paymentMethod') {
+        e.preventDefault();
+      }
+    };
+
+    // Prevent form submission for radio buttons within the payment methods
+    document.addEventListener('submit', preventFormSubmission);
+
+    return () => {
+      document.removeEventListener('submit', preventFormSubmission);
+    };
+  }, []);
   
   // When payment method changes to 'stripe', create a payment intent
   useEffect(() => {
@@ -82,15 +98,18 @@ const PaymentGateway = forwardRef(({ onPaymentDataChange, abonnementPageData, to
   }));
   
   // Handle payment method change
-  const handlePaymentMethodChange = (method) => {
+  const handlePaymentMethodChange = (method) => (event) => {
+    // Prevent any default form submission
+    event.preventDefault();
+
     setPaymentMethod(method);
-    
+
     // Clear credit card errors when switching away from credit card payment
     if (method !== 'credit-card') {
       setLocalErrors({});
     }
-    
-    onPaymentDataChange({ method, ...cardData });
+
+    onPaymentDataChange({ method });
   };
   
   // Handle card data change
@@ -164,144 +183,47 @@ const PaymentGateway = forwardRef(({ onPaymentDataChange, abonnementPageData, to
     <div className={styles.paymentGateway}>
       <h3>Méthode de paiement</h3>
       
-      <div className={styles.paymentMethods}>
-        <label className={`${styles.paymentMethod} ${paymentMethod === 'bank-transfer' ? styles.selected : ''}`}>
-          <input
-            type="radio"
-            name="paymentMethod"
-            checked={paymentMethod === 'bank-transfer'}
-            onChange={() => handlePaymentMethodChange('bank-transfer')}
-          />
-          <span className={styles.radioButton}></span>
-          <span className={styles.methodName}>Virement bancaire (Instructions à suivre)</span>
-        </label>
+    <div className={styles.paymentMethods}>
+      <label className={`${styles.paymentMethod} ${paymentMethod === 'bank-transfer' ? styles.selected : ''}`}>
+        <input
+          type="radio"
+          name="paymentMethod"
+          checked={paymentMethod === 'bank-transfer'}
+          onChange={handlePaymentMethodChange('bank-transfer')}
+        />
+        <span className={styles.radioButton}></span>
+        <span className={styles.methodName}>Virement bancaire (Instructions à suivre)</span>
+      </label>
 
-        <label className={`${styles.paymentMethod} ${paymentMethod === 'stripe' ? styles.selected : ''}`}>
-          <input
-            type="radio"
-            name="paymentMethod"
-            checked={paymentMethod === 'stripe'}
-            onChange={() => handlePaymentMethodChange('stripe')}
-          />
-          <span className={styles.radioButton}></span>
-          <span className={styles.methodName}>Carte de crédit (Stripe)</span>
-        </label>
-        
-
-      {/*
-        <label className={`${styles.paymentMethod} ${paymentMethod === 'credit-card' ? styles.selected : ''}`}>
-          <input
-            type="radio"
-            name="paymentMethod"
-            checked={paymentMethod === 'credit-card'}
-            onChange={() => handlePaymentMethodChange('credit-card')}
-          />
-          <span className={styles.radioButton}></span>
-          <span className={styles.methodName}>Carte de crédit (Formulaire Personnalisé)</span>
-        </label>
-      */}
-      </div>
+      <label className={`${styles.paymentMethod} ${paymentMethod === 'stripe' ? styles.selected : ''}`}>
+        <input
+          type="radio"
+          name="paymentMethod"
+          checked={paymentMethod === 'stripe'}
+          onChange={handlePaymentMethodChange('stripe')}
+        />
+        <span className={styles.radioButton}></span>
+        <span className={styles.methodName}>Carte de crédit (Stripe)</span>
+      </label>
+    </div>
       
-      {/*
-      {paymentMethod === 'credit-card' && (
-        <div className={styles.creditCardForm}>
-          <div className={styles.formRow}>
-            <div className={styles.formGroup}>
-              <label htmlFor="cardNumber">Numéro de carte</label>
-              <input
-                type="text"
-                id="cardNumber"
-                name="cardNumber"
-                value={cardData.cardNumber}
-                onChange={handleCardDataChange}
-                placeholder="1234 5678 9012 3456"
-                maxLength="19" // 16 digits + 3 spaces
-                className={localErrors.cardNumber ? styles.inputError : ''}
-              />
-              {localErrors.cardNumber && (
-                <p className={styles.errorText}>{localErrors.cardNumber}</p>
-              )}
-            </div>
-          </div>
-          
-          <div className={styles.formRow}>
-            <div className={styles.formGroup}>
-              <label htmlFor="cardName">Nom sur la carte</label>
-              <input
-                type="text"
-                id="cardName"
-                name="cardName"
-                value={cardData.cardName}
-                onChange={handleCardDataChange}
-                placeholder="Prénom Nom"
-                className={localErrors.cardName ? styles.inputError : ''}
-              />
-              {localErrors.cardName && (
-                <p className={styles.errorText}>{localErrors.cardName}</p>
-              )}
-            </div>
-          </div>
-          
-          <div className={styles.formRow}>
-            <div className={styles.formGroup}>
-              <label htmlFor="expiryDate">Date d'expiration</label>
-              <input
-                type="text"
-                id="expiryDate"
-                name="expiryDate"
-                value={cardData.expiryDate}
-                onChange={handleCardDataChange}
-                placeholder="MM/YY"
-                maxLength="5"
-                className={localErrors.expiryDate ? styles.inputError : ''}
-              />
-              {localErrors.expiryDate && (
-                <p className={styles.errorText}>{localErrors.expiryDate}</p>
-              )}
-            </div>
-            
-            <div className={styles.formGroup}>
-              <label htmlFor="cvv">CVV</label>
-              <input
-                type="text"
-                id="cvv"
-                name="cvv"
-                value={cardData.cvv}
-                onChange={handleCardDataChange}
-                placeholder="123"
-                maxLength="4"
-                className={localErrors.cvv ? styles.inputError : ''}
-              />
-              {localErrors.cvv && (
-                <p className={styles.errorText}>{localErrors.cvv}</p>
-              )}
-            </div>
-          </div>
-          
-          <div className={styles.securePaymentInfo}>
-            <div className={styles.secureIcon}>
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-              </svg>
-            </div>
-            <p>Informations sécurisé par SSL</p>
-          </div>
-        </div>
-      )}
-      */}
-      
-      {paymentMethod === 'stripe' && clientSecret && (
+      {paymentMethod === 'stripe' && (
         <div className={styles.stripeContainer}>
-          <StripePaymentForm
-            onPaymentComplete={handleStripePaymentComplete}
-            onError={handleStripePaymentError}
-          />
-          
+          {clientSecret ? (
+            <StripePaymentWrapper
+              onPaymentComplete={handleStripePaymentComplete}
+              onError={handleStripePaymentError}
+            />
+          ) : (
+            <div className={styles.loadingMessage}>
+              Préparation du formulaire de paiement...
+            </div>
+          )}
+
           {localErrors.stripePayment && (
             <p className={styles.errorText}>{localErrors.stripePayment}</p>
           )}
-          
+
           <div className={styles.securePaymentInfo}>
             <div className={styles.secureIcon}>
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
