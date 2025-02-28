@@ -161,6 +161,55 @@
   margin-bottom: 0;
 }
 
+.stripeContainer {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background-color: rgba(36, 49, 27, 0.05);
+  border-radius: 8px;
+}
+
+.stripeForm {
+  margin-bottom: 1.5rem;
+}
+
+.stripeSubmitButton {
+  margin-top: 1.5rem;
+  background-color: var(--green);
+  color: var(--beige);
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+  width: 100%;
+}
+
+.stripeSubmitButton:hover {
+  background-color: #2a3a20;
+}
+
+.stripeSubmitButton:disabled {
+  background-color: #999;
+  cursor: not-allowed;
+}
+
+.errorMessage {
+  color: var(--red);
+  background-color: rgba(162, 45, 34, 0.1);
+  border-left: 3px solid var(--red);
+  padding: 0.75rem;
+  margin: 1rem 0;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.submissionError {
+  margin-top: 0.5rem;
+  font-weight: 500;
+}
+
 /* Media Queries */
 @media (max-width: 768px) {
   .formRow {

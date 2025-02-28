@@ -94,7 +94,7 @@ const EmailConfirmation = ({
       </div>
       
       <div className={styles.formGroup}>
-        <label htmlFor="billingConfirmEmail">Confirmer le courriel</label>
+        <label htmlFor="billingConfirmEmail">Confirmer votre adresse courriel</label>
         <input
           type="email"
           id="billingConfirmEmail"

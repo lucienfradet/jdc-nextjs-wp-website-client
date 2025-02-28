@@ -1,7 +1,6 @@
 "use client";
-
 import styles from '@/styles/DrawerCart.module.css';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useCart } from '@/context/CartContext';
 import ProductGrid from '@/components/products/ProductGrid';
 import Link from 'next/link';
@@ -14,9 +13,23 @@ export default function DrawerCart({ trigger }) {
   const [open, setOpen] = useState(false);
   const cartContext = useCart ? useCart() : { cart: [], getCartTotal: () => 0 };
   const { cart, getCartTotal } = cartContext;
+  const triggerRef = useRef(null);
   
-  const toggleDrawer = (state) => () => {
+  const toggleDrawer = (state) => (event) => {
+    if (event && event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
+      return;
+    }
     setOpen(state);
+  };
+  
+  const handleClose = () => {
+    setOpen(false);
+    // Return focus to the trigger element when closing
+    setTimeout(() => {
+      if (triggerRef.current) {
+        triggerRef.current.focus();
+      }
+    }, 0);
   };
   
   const formatPrice = (price) => {
@@ -27,25 +40,28 @@ export default function DrawerCart({ trigger }) {
   
   return (
     <>
-      <div onClick={toggleDrawer(true)}>
+      <div onClick={toggleDrawer(true)} ref={triggerRef} tabIndex={0}>
         {trigger.content}
       </div>
       <Drawer 
         open={open} 
         anchor="right" 
-        onClose={toggleDrawer(false)}
+        onClose={handleClose}
         slotProps={{
           paper: {
             className: styles.drawer
           }
         }}
+        // Add keepMounted={false} to ensure the drawer is fully unmounted when closed
+        keepMounted={false}
+        disableRestoreFocus
       >
         <Box sx={{ width: 400 }} role="presentation">
           <div className={styles.drawerHeader}>
             <h2 className={styles.title}>VOTRE PANIER</h2>
             <IconButton 
               aria-label="close" 
-              onClick={toggleDrawer(false)}
+              onClick={handleClose}
               className={styles.closeButton}
             >
               <CloseIcon />
@@ -55,24 +71,22 @@ export default function DrawerCart({ trigger }) {
             {cart.length === 0 ? (
               <p className={styles.emptyCart}>Votre panier est vide</p>
             ) : (
-                <>
-                  <div className={styles.cartItems}>
-                    <ProductGrid 
-                      products={cart}
-                      showDescription={false}
-                      showQuantity={true}
-                      showRemove={true}
-                      showAddToCart={false}
-                    />
-                  </div>
-
-                  <div className={styles.cartTotal}>
-                    <span>Total: </span>
-                    <span className={styles.totalAmount}>{formatPrice(getCartTotal())}</span>
-                  </div>
-                </>
-              )}
-
+              <>
+                <div className={styles.cartItems}>
+                  <ProductGrid 
+                    products={cart}
+                    showDescription={false}
+                    showQuantity={true}
+                    showRemove={true}
+                    showAddToCart={false}
+                  />
+                </div>
+                <div className={styles.cartTotal}>
+                  <span>Total: </span>
+                  <span className={styles.totalAmount}>{formatPrice(getCartTotal())}</span>
+                </div>
+              </>
+            )}
             {cart.length > 0 && (
               <div className={styles.checkoutContainer}>
                 <Link href="/checkout" className={styles.checkoutButton} onClick={toggleDrawer(false)}>
