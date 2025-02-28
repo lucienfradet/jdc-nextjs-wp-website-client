@@ -5,7 +5,13 @@ export async function POST(request) {
   try {
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
     const body = await request.text();
+    
+    // Read headers directly - no await needed on the function itself
     const signature = headers().get('stripe-signature');
+    
+    if (!signature) {
+      throw new Error('Missing stripe-signature header');
+    }
     
     // Verify webhook signature
     const event = stripe.webhooks.constructEvent(
@@ -29,15 +35,24 @@ export async function POST(request) {
         // Handle failed payment (notify user, etc.)
         break;
         
+      case 'payment_intent.created':
+        // Handle payment intent creation (optional)
+        console.log(`Payment intent created: ${event.data.object.id}`);
+        break;
+        
       default:
         console.log(`Unhandled event type: ${event.type}`);
     }
     
-    return Response.json({ received: true });
+    return new Response(JSON.stringify({ received: true }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' }
+    });
   } catch (error) {
     console.error('Webhook error:', error);
-    return Response.json({ 
-      error: error.message 
-    }, { status: 400 });
+    return new Response(JSON.stringify({ error: error.message }), {
+      status: 400,
+      headers: { 'Content-Type': 'application/json' }
+    });
   }
 }

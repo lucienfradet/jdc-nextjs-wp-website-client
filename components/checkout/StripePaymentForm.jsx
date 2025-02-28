@@ -12,7 +12,7 @@ const StripePaymentForm = ({ onPaymentComplete, onError }) => {
   const [errorMessage, setErrorMessage] = useState(null);
   
   // Handle form submission
-  const handleSubmit = async (e) => {
+  const handlePaymentSubmit = async (e) => {
     e.preventDefault();
     
     if (!stripe || !elements) {
@@ -54,23 +54,24 @@ const StripePaymentForm = ({ onPaymentComplete, onError }) => {
   };
   
   return (
-    <form onSubmit={handleSubmit} className={styles.stripeForm}>
+    <div className={styles.stripeForm}>
       <PaymentElement />
-      
+
       {errorMessage && (
         <div className={styles.errorMessage}>
           {errorMessage}
         </div>
       )}
-      
+
       <button 
-        type="submit" 
+        type="button" 
+        onClick={handlePaymentSubmit}
         disabled={!stripe || isLoading} 
         className={styles.stripeSubmitButton}
       >
         {isLoading ? 'Traitement en cours...' : 'Payer maintenant'}
       </button>
-    </form>
+    </div>
   );
 };
 
