@@ -47,15 +47,16 @@ const CheckoutForm = forwardRef(({
   
   // Check if cart has pickup-only items
   const hasPickupOnlyItems = cart.some(item => item.shipping_class === 'only_pickup');
+  // Check if ALL items are pickup-only
+  const isPickupOnlyOrder = cart.every(item => item.shipping_class === 'only_pickup');
 
   // Expose validation function to parent via ref
   useImperativeHandle(ref, () => ({
     validate: () => {
       const errors = {};
       
-      // Validate billing address
-      ['billingFirstName', 'billingLastName', 'billingEmail', 'billingConfirmEmail', 'billingPhone', 
-       'billingAddress1', 'billingCity', 'billingState', 'billingPostcode'].forEach(field => {
+      // For all orders, always validate these fields
+      ['billingFirstName', 'billingLastName', 'billingEmail', 'billingConfirmEmail', 'billingPhone'].forEach(field => {
         if (!formData[field]) {
           errors[field] = 'Ce champ est requis';
         }
@@ -67,14 +68,24 @@ const CheckoutForm = forwardRef(({
         errors.billingConfirmEmail = 'Les adresses e-mail ne correspondent pas';
       }
       
-      // Validate shipping address if we have shippable items and "same as billing" is not checked
-      if (hasShippableItems && formData.deliveryMethod === 'shipping' && !formData.shippingSameAsBilling) {
-        ['shippingFirstName', 'shippingLastName', 'shippingAddress1', 
-         'shippingCity', 'shippingState', 'shippingPostcode'].forEach(field => {
+      // Only validate address if we have shippable items
+      if (!isPickupOnlyOrder) {
+        // Validate billing address
+        ['billingAddress1', 'billingCity', 'billingState', 'billingPostcode'].forEach(field => {
           if (!formData[field]) {
             errors[field] = 'Ce champ est requis';
           }
         });
+        
+        // Validate shipping address if shipping is selected and "same as billing" is not checked
+        if (hasShippableItems && formData.deliveryMethod === 'shipping' && !formData.shippingSameAsBilling) {
+          ['shippingFirstName', 'shippingLastName', 'shippingAddress1', 
+           'shippingCity', 'shippingState', 'shippingPostcode'].forEach(field => {
+            if (!formData[field]) {
+              errors[field] = 'Ce champ est requis';
+            }
+          });
+        }
       }
 
       // Validate pickup location if we have pickup-only items or if delivery method is pickup
@@ -150,8 +161,8 @@ const CheckoutForm = forwardRef(({
   };
 
   const renderDeliveryOptions = () => {
-    // If there are no shippable items, don't show options (pickup is the only choice)
-    if (!hasShippableItems) return null;
+    // If there are no shippable items or all items are pickup-only, don't show options
+    if (!hasShippableItems || isPickupOnlyOrder) return null;
 
     return (
       <div className={styles.deliveryOptions}>
@@ -248,7 +259,7 @@ const CheckoutForm = forwardRef(({
 
       {/* Billing Information */}
       <section className={styles.formSection}>
-        <h3>Informations de facturation</h3>
+        <h3>Informations personnelles</h3>
         
         <div className={styles.formRow}>
           <div className={styles.formGroup}>
@@ -282,136 +293,143 @@ const CheckoutForm = forwardRef(({
           </div>
         </div>
         
-      <EmailConfirmation
-        formData={formData}
-        setFormData={setFormData}
-        localErrors={localErrors}
-        setLocalErrors={setLocalErrors}
-      />
-
-      <div className={styles.formGroup}>
-        <label htmlFor="billingPhone">Téléphone</label>
-        <input
-          type="tel"
-          id="billingPhone"
-          name="billingPhone"
-          value={formData.billingPhone}
-          onChange={handleInputChange}
-          className={localErrors.billingPhone ? styles.inputError : ''}
+        <EmailConfirmation
+          formData={formData}
+          setFormData={setFormData}
+          localErrors={localErrors}
+          setLocalErrors={setLocalErrors}
         />
-        {localErrors.billingPhone && (
-          <p className={styles.errorText}>{localErrors.billingPhone}</p>
-        )}
-      </div>
 
-      <div className={styles.formGroup}>
-        <label htmlFor="billingAddress1">Adresse</label>
-        <input
-          type="text"
-          id="billingAddress1"
-          name="billingAddress1"
-          value={formData.billingAddress1}
-          onChange={handleInputChange}
-          className={localErrors.billingAddress1 ? styles.inputError : ''}
-        />
-        {localErrors.billingAddress1 && (
-          <p className={styles.errorText}>{localErrors.billingAddress1}</p>
-        )}
-      </div>
-        
         <div className={styles.formGroup}>
-          <label htmlFor="billingAddress2">Appartement, suite, etc. (optionnel)</label>
+          <label htmlFor="billingPhone">Téléphone</label>
           <input
-            type="text"
-            id="billingAddress2"
-            name="billingAddress2"
-            value={formData.billingAddress2}
+            type="tel"
+            id="billingPhone"
+            name="billingPhone"
+            value={formData.billingPhone}
             onChange={handleInputChange}
+            className={localErrors.billingPhone ? styles.inputError : ''}
           />
-        </div>
-        
-        <div className={styles.formRow}>
-          <div className={styles.formGroup}>
-            <label htmlFor="billingCity">Ville</label>
-            <input
-              type="text"
-              id="billingCity"
-              name="billingCity"
-              value={formData.billingCity}
-              onChange={handleInputChange}
-              className={localErrors.billingCity ? styles.inputError : ''}
-            />
-            {localErrors.billingCity && (
-              <p className={styles.errorText}>{localErrors.billingCity}</p>
-            )}
-          </div>
-          
-          <div className={styles.formGroup}>
-            <label htmlFor="billingState">Province</label>
-            <select
-              id="billingState"
-              name="billingState"
-              value={formData.billingState}
-              onChange={handleInputChange}
-              className={localErrors.billingState ? styles.inputError : ''}
-            >
-              <option value="">-- Sélectionner --</option>
-              <option value="QC">Québec</option>
-              <option value="ON">Ontario</option>
-              <option value="NS">Nouvelle-Écosse</option>
-              <option value="NB">Nouveau-Brunswick</option>
-              <option value="MB">Manitoba</option>
-              <option value="BC">Colombie-Britannique</option>
-              <option value="PE">Île-du-Prince-Édouard</option>
-              <option value="SK">Saskatchewan</option>
-              <option value="AB">Alberta</option>
-              <option value="NL">Terre-Neuve-et-Labrador</option>
-              <option value="NT">Territoires du Nord-Ouest</option>
-              <option value="YT">Yukon</option>
-              <option value="NU">Nunavut</option>
-            </select>
-            {localErrors.billingState && (
-              <p className={styles.errorText}>{localErrors.billingState}</p>
-            )}
-          </div>
-        </div>
-        
-        <div className={styles.formRow}>
-          <div className={styles.formGroup}>
-            <label htmlFor="billingPostcode">Code postal</label>
-            <input
-              type="text"
-              id="billingPostcode"
-              name="billingPostcode"
-              value={formData.billingPostcode}
-              onChange={handleInputChange}
-              className={localErrors.billingPostcode ? styles.inputError : ''}
-            />
-            {localErrors.billingPostcode && (
-              <p className={styles.errorText}>{localErrors.billingPostcode}</p>
-            )}
-          </div>
-          
-          <div className={styles.formGroup}>
-            <label htmlFor="billingCountry">Pays</label>
-            <select
-              id="billingCountry"
-              name="billingCountry"
-              value={formData.billingCountry}
-              onChange={handleInputChange}
-              className={localErrors.billingCountry ? styles.inputError : ''}
-            >
-              <option value="CA">Canada</option>
-            </select>
-            {localErrors.billingCountry && (
-              <p className={styles.errorText}>{localErrors.billingCountry}</p>
-            )}
-          </div>
+          {localErrors.billingPhone && (
+            <p className={styles.errorText}>{localErrors.billingPhone}</p>
+          )}
         </div>
       </section>
+
+      {/* Only show address fields if this is not a pickup-only order */}
+      {!isPickupOnlyOrder && (
+        <section className={styles.formSection}>
+          <h3>Adresse de facturation</h3>
+
+          <div className={styles.formGroup}>
+            <label htmlFor="billingAddress1">Adresse</label>
+            <input
+              type="text"
+              id="billingAddress1"
+              name="billingAddress1"
+              value={formData.billingAddress1}
+              onChange={handleInputChange}
+              className={localErrors.billingAddress1 ? styles.inputError : ''}
+            />
+            {localErrors.billingAddress1 && (
+              <p className={styles.errorText}>{localErrors.billingAddress1}</p>
+            )}
+          </div>
+            
+          <div className={styles.formGroup}>
+            <label htmlFor="billingAddress2">Appartement, suite, etc. (optionnel)</label>
+            <input
+              type="text"
+              id="billingAddress2"
+              name="billingAddress2"
+              value={formData.billingAddress2}
+              onChange={handleInputChange}
+            />
+          </div>
+            
+          <div className={styles.formRow}>
+            <div className={styles.formGroup}>
+              <label htmlFor="billingCity">Ville</label>
+              <input
+                type="text"
+                id="billingCity"
+                name="billingCity"
+                value={formData.billingCity}
+                onChange={handleInputChange}
+                className={localErrors.billingCity ? styles.inputError : ''}
+              />
+              {localErrors.billingCity && (
+                <p className={styles.errorText}>{localErrors.billingCity}</p>
+              )}
+            </div>
+              
+            <div className={styles.formGroup}>
+              <label htmlFor="billingState">Province</label>
+              <select
+                id="billingState"
+                name="billingState"
+                value={formData.billingState}
+                onChange={handleInputChange}
+                className={localErrors.billingState ? styles.inputError : ''}
+              >
+                <option value="">-- Sélectionner --</option>
+                <option value="QC">Québec</option>
+                <option value="ON">Ontario</option>
+                <option value="NS">Nouvelle-Écosse</option>
+                <option value="NB">Nouveau-Brunswick</option>
+                <option value="MB">Manitoba</option>
+                <option value="BC">Colombie-Britannique</option>
+                <option value="PE">Île-du-Prince-Édouard</option>
+                <option value="SK">Saskatchewan</option>
+                <option value="AB">Alberta</option>
+                <option value="NL">Terre-Neuve-et-Labrador</option>
+                <option value="NT">Territoires du Nord-Ouest</option>
+                <option value="YT">Yukon</option>
+                <option value="NU">Nunavut</option>
+              </select>
+              {localErrors.billingState && (
+                <p className={styles.errorText}>{localErrors.billingState}</p>
+              )}
+            </div>
+          </div>
+            
+          <div className={styles.formRow}>
+            <div className={styles.formGroup}>
+              <label htmlFor="billingPostcode">Code postal</label>
+              <input
+                type="text"
+                id="billingPostcode"
+                name="billingPostcode"
+                value={formData.billingPostcode}
+                onChange={handleInputChange}
+                className={localErrors.billingPostcode ? styles.inputError : ''}
+              />
+              {localErrors.billingPostcode && (
+                <p className={styles.errorText}>{localErrors.billingPostcode}</p>
+              )}
+            </div>
+              
+            <div className={styles.formGroup}>
+              <label htmlFor="billingCountry">Pays</label>
+              <select
+                id="billingCountry"
+                name="billingCountry"
+                value={formData.billingCountry}
+                onChange={handleInputChange}
+                className={localErrors.billingCountry ? styles.inputError : ''}
+              >
+                <option value="CA">Canada</option>
+              </select>
+              {localErrors.billingCountry && (
+                <p className={styles.errorText}>{localErrors.billingCountry}</p>
+              )}
+            </div>
+          </div>
+        </section>
+      )}
       
-      {/* Shipping Information (only if deliveryMethod is 'shipping') */}
-      {hasShippableItems && formData.deliveryMethod === 'shipping' && (
+      {/* Shipping Information (only if deliveryMethod is 'shipping' and NOT a pickup-only order) */}
+      {hasShippableItems && formData.deliveryMethod === 'shipping' && !isPickupOnlyOrder && (
         <section className={styles.formSection}>
           <h3>Informations de livraison</h3>
           

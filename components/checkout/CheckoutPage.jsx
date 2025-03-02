@@ -25,6 +25,7 @@ const CheckoutPageContent = ({
   const [isMobile, setIsMobile] = useState(false);
   const { cart, getCartTotal, clearCart } = useCart();
   const [hasShippableItems, setHasShippableItems] = useState(false);
+  const [isPickupOnlyOrder, setIsPickupOnlyOrder] = useState(false);
   const [formData, setFormData] = useState({});
   const [paymentData, setPaymentData] = useState({});
   const [formErrors, setFormErrors] = useState({});
@@ -48,11 +49,21 @@ const CheckoutPageContent = ({
   useEffect(() => {
     if (cart.length === 0) {
       router.push('/');
+      return;
     }
     
     // Check if we have shippable items
     const hasShippable = cart.some(item => item.shipping_class !== 'only_pickup');
     setHasShippableItems(hasShippable);
+    
+    // Check if all items are pickup-only
+    const onlyPickup = cart.every(item => item.shipping_class === 'only_pickup');
+    setIsPickupOnlyOrder(onlyPickup);
+    
+    // Set delivery method based on items
+    if (!hasShippable) {
+      setDeliveryMethod('pickup');
+    }
     
     // Calculate the total amount
     setOrderTotalAmount(getCartTotal());
@@ -103,16 +114,30 @@ const CheckoutPageContent = ({
     }
   };
 
+  // Determine if submit button should be disabled
+  const isSubmitDisabled = () => {
+    return isSubmitting || paymentData.method === 'bank-transfer';
+  };
+
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // If the selected payment method is bank transfer, we don't proceed with submission
+    if (paymentData.method === 'bank-transfer') {
+      return;
+    }
+    
     setIsSubmitting(true);
     
     // Validate checkout form
     const checkoutFormValidation = await checkoutFormRef.current.validate();
     
-    // Validate payment gateway
-    const paymentGatewayValidation = await paymentGatewayRef.current.validate();
+    // Validate payment gateway only if it's Stripe
+    let paymentGatewayValidation = { hasErrors: false, errors: {} };
+    if (paymentData.method === 'stripe') {
+      paymentGatewayValidation = await paymentGatewayRef.current.validate();
+    }
     
     // Combine all errors
     const allErrors = {
@@ -137,7 +162,7 @@ const CheckoutPageContent = ({
     const paymentMethod = paymentGatewayRef.current.getPaymentMethod();
     
     try {
-      // Handle based on payment method
+      // Handle based on payment method - for Stripe
       if (paymentMethod === 'stripe') {
         // For Stripe, the payment is already processed by this point if successful
         if (paymentData.paymentStatus === 'succeeded') {
@@ -164,25 +189,8 @@ const CheckoutPageContent = ({
         } else {
           throw new Error('Le paiement n\'a pas été traité correctement');
         }
-      } else {
-        // For bank transfer or custom credit card form
-        // In a real implementation, this would be an API call to create the order
-        
-        // Simulate API call to place order
-        setTimeout(() => {
-          // Clear cart and show success message
-          clearCart();
-          setOrderComplete(true);
-          
-          // Reset payment state
-          resetPayment();
-          
-          // Redirect to confirmation page after 2 seconds
-          setTimeout(() => {
-            router.push('/order-confirmation');
-          }, 2000);
-        }, 2000);
       }
+      // Note: The bank transfer option is handled differently and doesn't submit
     } catch (error) {
       console.error('Error processing order:', error);
       setFormErrors({
@@ -244,13 +252,23 @@ const CheckoutPageContent = ({
               />
 
               <div className={styles.submitSection}>
-                <button 
-                  type="submit" 
-                  className={styles.submitButton}
-                  disabled={isSubmitting}
-                >
-                  {isSubmitting ? 'Traitement en cours...' : 'Confirmer la commande'}
-                </button>
+                {paymentData.method === 'bank-transfer' ? (
+                  <div className={styles.bankTransferNote}>
+                    <p>Pour le paiement par virement bancaire, veuillez prendre connaissance des instructions ci-dessus et nous contacter par courriel.</p>
+                    <a href="mailto:contact@jardindeschefs.com" className={styles.emailLink}>
+                      Contactez-nous par courriel
+                    </a>
+                  </div>
+                ) : (
+                  <button 
+                    type="submit" 
+                    className={styles.submitButton}
+                    disabled={isSubmitDisabled()}
+                  >
+                    {isSubmitting ? 'Traitement en cours...' : 'Confirmer la commande'}
+                  </button>
+                )}
+                
                 {Object.keys(formErrors).length > 0 && (
                   <div className={styles.formErrorSummary}>
                     Veuillez corriger les erreurs dans le formulaire pour continuer.

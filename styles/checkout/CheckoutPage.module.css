@@ -120,6 +120,38 @@
   background-color: rgba(162, 45, 34, 0.05);
 }
 
+.bankTransferNote {
+  padding: 1.5rem;
+  background-color: rgba(36, 49, 27, 0.05);
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.bankTransferNote p {
+  color: var(--green);
+  margin-bottom: 1rem;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.emailLink {
+  display: inline-block;
+  background-color: var(--green);
+  color: var(--beige);
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  font-weight: bold;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.emailLink:hover {
+  background-color: var(--beige);
+  color: var(--green);
+  border: 1px solid var(--green);
+}
+
 /* Media Queries */
 @media (max-width: 991px) {
   .checkoutContainer {

@@ -1,14 +1,14 @@
 "use client";
 
-import { useState, useEffect, forwardRef } from 'react';
+import { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
 import styles from '@/styles/checkout/PaymentGateway.module.css';
 import { renderContent } from '@/lib/textUtils';
 import StripePaymentForm from './StripePaymentForm';
 import { useStripe as useStripeContext } from '@/context/StripeContext';
 
 const PaymentGateway = forwardRef(({ onPaymentDataChange, abonnementPageData, total }, ref) => {
-  const abonnementPageContent = abonnementPageData.acfFields;
-  const [paymentMethod, setPaymentMethod] = useState('bank-transfer');
+  const abonnementPageContent = abonnementPageData?.acfFields || {};
+  const [paymentMethod, setPaymentMethod] = useState('stripe');
   const [localErrors, setLocalErrors] = useState({});
   
   // Get Stripe context
@@ -19,23 +19,27 @@ const PaymentGateway = forwardRef(({ onPaymentDataChange, abonnementPageData, to
     paymentError 
   } = useStripeContext();
 
-  // Trying to prevent radio submission
-  useEffect(() => {
-    // Function to prevent form submission when changing radio buttons
-    const preventFormSubmission = (e) => {
-      if (e.target.type === 'radio' && e.target.name === 'paymentMethod') {
-        e.preventDefault();
+  // Use imperative handle to expose validation method to parent
+  useImperativeHandle(ref, () => ({
+    validate: () => {
+      const errors = {};
+      
+      if (paymentMethod === 'stripe') {
+        // For Stripe, validate if payment was successful
+        if (paymentStatus !== 'succeeded') {
+          errors.payment = "Veuillez compléter le paiement avec Stripe";
+        }
       }
-    };
+      
+      setLocalErrors(errors);
+      return { hasErrors: Object.keys(errors).length > 0, errors };
+    },
+    getFirstErrorElement: () => {
+      return document.querySelector(`.${styles.errorText}`);
+    },
+    getPaymentMethod: () => paymentMethod
+  }));
 
-    // Prevent form submission for radio buttons within the payment methods
-    document.addEventListener('submit', preventFormSubmission);
-
-    return () => {
-      document.removeEventListener('submit', preventFormSubmission);
-    };
-  }, []);
-  
   // When payment method changes to 'stripe', create a payment intent
   useEffect(() => {
     // Only create payment intent if method is stripe and we don't already have a client secret
@@ -90,29 +94,29 @@ const PaymentGateway = forwardRef(({ onPaymentDataChange, abonnementPageData, to
     <div className={styles.paymentGateway}>
       <h3>Méthode de paiement</h3>
       
-    <div className={styles.paymentMethods}>
-      <label className={`${styles.paymentMethod} ${paymentMethod === 'bank-transfer' ? styles.selected : ''}`}>
-        <input
-          type="radio"
-          name="paymentMethod"
-          checked={paymentMethod === 'bank-transfer'}
-          onChange={handlePaymentMethodChange('bank-transfer')}
-        />
-        <span className={styles.radioButton}></span>
-        <span className={styles.methodName}>Virement bancaire (Instructions à suivre)</span>
-      </label>
+      <div className={styles.paymentMethods}>
+        <label className={`${styles.paymentMethod} ${paymentMethod === 'stripe' ? styles.selected : ''}`}>
+          <input
+            type="radio"
+            name="paymentMethod"
+            checked={paymentMethod === 'stripe'}
+            onChange={handlePaymentMethodChange('stripe')}
+          />
+          <span className={styles.radioButton}></span>
+          <span className={styles.methodName}>Carte de crédit (Stripe)</span>
+        </label>
 
-      <label className={`${styles.paymentMethod} ${paymentMethod === 'stripe' ? styles.selected : ''}`}>
-        <input
-          type="radio"
-          name="paymentMethod"
-          checked={paymentMethod === 'stripe'}
-          onChange={handlePaymentMethodChange('stripe')}
-        />
-        <span className={styles.radioButton}></span>
-        <span className={styles.methodName}>Carte de crédit (Stripe)</span>
-      </label>
-    </div>
+        <label className={`${styles.paymentMethod} ${paymentMethod === 'bank-transfer' ? styles.selected : ''}`}>
+          <input
+            type="radio"
+            name="paymentMethod"
+            checked={paymentMethod === 'bank-transfer'}
+            onChange={handlePaymentMethodChange('bank-transfer')}
+          />
+          <span className={styles.radioButton}></span>
+          <span className={styles.methodName}>Virement bancaire (Instructions à suivre)</span>
+        </label>
+      </div>
       
       {paymentMethod === 'stripe' && (
         <div className={styles.stripeContainer}>
@@ -122,10 +126,10 @@ const PaymentGateway = forwardRef(({ onPaymentDataChange, abonnementPageData, to
               onError={handleStripePaymentError}
             />
           ) : (
-              <div className={styles.loadingMessage}>
-                Préparation du formulaire de paiement...
-              </div>
-            )}
+            <div className={styles.loadingMessage}>
+              Préparation du formulaire de paiement...
+            </div>
+          )}
 
           {localErrors.stripePayment && (
             <p className={styles.errorText}>{localErrors.stripePayment}</p>
