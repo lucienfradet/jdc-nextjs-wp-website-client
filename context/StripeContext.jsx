@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState } from 'react';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
 
@@ -80,8 +80,7 @@ export function StripeProvider({ children }) {
   };
   
   // Prepare the Stripe elements configuration 
-  const options = clientSecret ? {
-    clientSecret,
+  const options = {
     appearance: {
       theme: 'stripe',
       variables: {
@@ -94,22 +93,24 @@ export function StripeProvider({ children }) {
         borderRadius: '4px',
       },
     },
-  } : {};
-  
-  // Create context value
-  const contextValue = {
-    createPaymentIntent,
-    completeOrder,
-    resetPayment,
-    paymentStatus,
-    paymentError,
     clientSecret
   };
-
+  
   return (
-    <StripeContext.Provider value={contextValue}>
+    <StripeContext.Provider value={{
+      createPaymentIntent,
+      completeOrder,
+      resetPayment,
+      paymentStatus,
+      paymentError,
+      clientSecret
+    }}>
       {clientSecret ? (
-        <Elements stripe={stripePromise} options={options}>
+        <Elements 
+          stripe={stripePromise} 
+          options={options}
+          key={clientSecret} // This forces a remount when clientSecret changes
+        >
           {children}
         </Elements>
       ) : (

@@ -1,17 +1,24 @@
 "use client";
 
 import { useState } from 'react';
-import { PaymentElement } from '@stripe/react-stripe-js';
+import { PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import styles from '@/styles/checkout/PaymentGateway.module.css';
 
-// Now we pass the stripe and elements objects as props
-const StripePaymentForm = ({ stripe, elements, onPaymentComplete, onError }) => {
+const StripePaymentForm = ({ onPaymentComplete, onError }) => {
+  const stripe = useStripe();
+  const elements = useElements();
+  
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
   
   // Handle form submission
   const handlePaymentSubmit = async (e) => {
     e.preventDefault();
+    
+    if (!stripe || !elements) {
+      // Stripe.js hasn't loaded yet
+      return;
+    }
     
     setIsLoading(true);
     setErrorMessage(null);
@@ -48,22 +55,31 @@ const StripePaymentForm = ({ stripe, elements, onPaymentComplete, onError }) => 
   
   return (
     <div className={styles.stripeForm}>
-      <PaymentElement />
-
-      {errorMessage && (
-        <div className={styles.errorMessage}>
-          {errorMessage}
+      {/* Show loading state if Stripe is not yet available */}
+      {!stripe || !elements ? (
+        <div className={styles.loadingMessage}>
+          Chargement du formulaire de paiement...
         </div>
-      )}
+      ) : (
+        <>
+          <PaymentElement />
 
-      <button 
-        type="button" 
-        onClick={handlePaymentSubmit}
-        disabled={!stripe || isLoading} 
-        className={styles.stripeSubmitButton}
-      >
-        {isLoading ? 'Traitement en cours...' : 'Payer maintenant'}
-      </button>
+          {errorMessage && (
+            <div className={styles.errorMessage}>
+              {errorMessage}
+            </div>
+          )}
+
+          <button 
+            type="button" 
+            onClick={handlePaymentSubmit}
+            disabled={!stripe || isLoading} 
+            className={styles.stripeSubmitButton}
+          >
+            {isLoading ? 'Traitement en cours...' : 'Payer maintenant'}
+          </button>
+        </>
+      )}
     </div>
   );
 };

@@ -1,20 +1,14 @@
 "use client";
 
-import { useState, useEffect, useImperativeHandle, forwardRef } from 'react';
+import { useState, useEffect, forwardRef } from 'react';
 import styles from '@/styles/checkout/PaymentGateway.module.css';
 import { renderContent } from '@/lib/textUtils';
-import StripePaymentWrapper from './StripePaymentWrapper';
+import StripePaymentForm from './StripePaymentForm';
 import { useStripe as useStripeContext } from '@/context/StripeContext';
 
 const PaymentGateway = forwardRef(({ onPaymentDataChange, abonnementPageData, total }, ref) => {
   const abonnementPageContent = abonnementPageData.acfFields;
   const [paymentMethod, setPaymentMethod] = useState('bank-transfer');
-  const [cardData, setCardData] = useState({
-    cardNumber: '',
-    cardName: '',
-    expiryDate: '',
-    cvv: ''
-  });
   const [localErrors, setLocalErrors] = useState({});
   
   // Get Stripe context
@@ -57,46 +51,6 @@ const PaymentGateway = forwardRef(({ onPaymentDataChange, abonnementPageData, to
     initializeStripePayment();
   }, [paymentMethod, clientSecret, createPaymentIntent, total]);
   
-  // Expose validation function to parent via ref
-  useImperativeHandle(ref, () => ({
-    validate: () => {
-      const errors = {};
-      
-      // Only validate credit card data if credit card is the selected payment method
-      if (paymentMethod === 'credit-card') {
-        // Validate card number (simplified for demo)
-        if (!cardData.cardNumber || cardData.cardNumber.replace(/\s/g, '').length < 16) {
-          errors.cardNumber = 'Numéro de carte invalide';
-        }
-        
-        // Validate card name
-        if (!cardData.cardName || cardData.cardName.trim() === '') {
-          errors.cardName = 'Nom sur la carte requis';
-        }
-        
-        // Validate expiry date
-        if (!cardData.expiryDate || !cardData.expiryDate.match(/^\d{2}\/\d{2}$/)) {
-          errors.expiryDate = 'Date d\'expiration invalide (MM/YY)';
-        }
-        
-        // Validate CVV
-        if (!cardData.cvv || !cardData.cvv.match(/^\d{3,4}$/)) {
-          errors.cvv = 'CVV invalide';
-        }
-      }
-      
-      // For Stripe, we rely on Stripe Elements validation
-      
-      setLocalErrors(errors);
-      return { hasErrors: Object.keys(errors).length > 0, errors };
-    },
-    getFirstErrorElement: () => {
-      return document.querySelector(`.${styles.paymentGateway} .${styles.inputError}`);
-    },
-    // Add a method to get the current payment method
-    getPaymentMethod: () => paymentMethod
-  }));
-  
   // Handle payment method change
   const handlePaymentMethodChange = (method) => (event) => {
     // Prevent any default form submission
@@ -104,54 +58,7 @@ const PaymentGateway = forwardRef(({ onPaymentDataChange, abonnementPageData, to
 
     setPaymentMethod(method);
 
-    // Clear credit card errors when switching away from credit card payment
-    if (method !== 'credit-card') {
-      setLocalErrors({});
-    }
-
     onPaymentDataChange({ method });
-  };
-  
-  // Handle card data change
-  const handleCardDataChange = (e) => {
-    const { name, value } = e.target;
-    let formattedValue = value;
-    
-    // Format card number with spaces every 4 digits
-    if (name === 'cardNumber') {
-      formattedValue = value
-        .replace(/\s/g, '') // Remove existing spaces
-        .replace(/(.{4})/g, '$1 ') // Add space after every 4 chars
-        .trim(); // Remove trailing space
-    } 
-    // Format expiry date as MM/YY
-    else if (name === 'expiryDate') {
-      const clean = value.replace(/\D/g, '');
-      
-      if (clean.length > 2) {
-        formattedValue = `${clean.slice(0, 2)}/${clean.slice(2, 4)}`;
-      } else {
-        formattedValue = clean;
-      }
-    }
-    
-    setCardData(prev => ({ ...prev, [name]: formattedValue }));
-    
-    // Clear validation error when field is changed
-    if (localErrors[name]) {
-      setLocalErrors(prev => {
-        const newErrors = { ...prev };
-        delete newErrors[name];
-        return newErrors;
-      });
-    }
-    
-    // Notify parent of payment data change
-    onPaymentDataChange({ 
-      method: paymentMethod, 
-      ...cardData, 
-      [name]: formattedValue 
-    });
   };
   
   // Handle Stripe payment completion
@@ -210,15 +117,15 @@ const PaymentGateway = forwardRef(({ onPaymentDataChange, abonnementPageData, to
       {paymentMethod === 'stripe' && (
         <div className={styles.stripeContainer}>
           {clientSecret ? (
-            <StripePaymentWrapper
+            <StripePaymentForm
               onPaymentComplete={handleStripePaymentComplete}
               onError={handleStripePaymentError}
             />
           ) : (
-            <div className={styles.loadingMessage}>
-              Préparation du formulaire de paiement...
-            </div>
-          )}
+              <div className={styles.loadingMessage}>
+                Préparation du formulaire de paiement...
+              </div>
+            )}
 
           {localErrors.stripePayment && (
             <p className={styles.errorText}>{localErrors.stripePayment}</p>
