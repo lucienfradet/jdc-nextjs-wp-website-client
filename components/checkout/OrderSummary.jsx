@@ -5,7 +5,12 @@ import styles from '@/styles/checkout/OrderSummary.module.css';
 import WPImage from '@/components/WPImage';
 import DrawerCart from "@/components/DrawerCart";
 
-export default function OrderSummary({ cart, getCartTotal, deliveryMethod = 'shipping' }) {
+export default function OrderSummary({ 
+  cart, 
+  getCartTotal, 
+  deliveryMethod = 'shipping',
+  hideModifyCart = false
+}) {
   const [subtotal, setSubtotal] = useState(0);
   const [tax, setTax] = useState(0);
   const [shipping, setShipping] = useState(0);
@@ -30,7 +35,7 @@ export default function OrderSummary({ cart, getCartTotal, deliveryMethod = 'shi
     setShipping(shouldApplyShipping ? 15 : 0);
     
     // Calculate total
-    setTotal(subtotalValue + (gst + qst) + (hasShippableItems ? 15 : 0));
+    setTotal(subtotalValue + (gst + qst) + (shouldApplyShipping ? 15 : 0));
   }, [cart, getCartTotal, deliveryMethod]);
   
   const formatCurrency = (amount) => {
@@ -93,15 +98,17 @@ export default function OrderSummary({ cart, getCartTotal, deliveryMethod = 'shi
         </div>
       </div>
       
-      <div className={styles.returnToCart}>
-        <DrawerCart
-          trigger={{
-            content: (
-              <span className={styles.modifyCartLink}>Modifier le panier</span>
-            ),
-          }}
-        />
-      </div>
+      {!hideModifyCart && (
+        <div className={styles.returnToCart}>
+          <DrawerCart
+            trigger={{
+              content: (
+                <span className={styles.modifyCartLink}>Modifier le panier</span>
+              ),
+            }}
+          />
+        </div>
+      )}
     </div>
   );
 }

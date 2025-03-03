@@ -4,12 +4,15 @@ import { useState } from 'react';
 import { PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import styles from '@/styles/checkout/PaymentGateway.module.css';
 
-const StripePaymentForm = ({ onPaymentComplete, onError }) => {
+const StripePaymentForm = ({ onPaymentComplete, onError, isSubmitting }) => {
   const stripe = useStripe();
   const elements = useElements();
   
-  const [isLoading, setIsLoading] = useState(false);
+  const [localIsLoading, setLocalIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
+  
+  // Combined loading state
+  const isLoading = localIsLoading || isSubmitting;
   
   // Handle form submission
   const handlePaymentSubmit = async (e) => {
@@ -20,7 +23,7 @@ const StripePaymentForm = ({ onPaymentComplete, onError }) => {
       return;
     }
     
-    setIsLoading(true);
+    setLocalIsLoading(true);
     setErrorMessage(null);
     
     // Trigger form validation and create payment method
@@ -28,7 +31,7 @@ const StripePaymentForm = ({ onPaymentComplete, onError }) => {
     
     if (submitError) {
       setErrorMessage(submitError.message);
-      setIsLoading(false);
+      setLocalIsLoading(false);
       onError && onError(submitError);
       return;
     }
@@ -50,7 +53,7 @@ const StripePaymentForm = ({ onPaymentComplete, onError }) => {
       onError && onError(new Error("Unexpected payment status"));
     }
     
-    setIsLoading(false);
+    setLocalIsLoading(false);
   };
   
   return (
