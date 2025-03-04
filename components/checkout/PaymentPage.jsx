@@ -189,7 +189,11 @@ const PaymentPageContent = ({
               </div>
               
               <div className={styles.infoSection}>
-                <h3>Adresse de facturation</h3>
+                {customerData.shippingSameAsBilling ? (
+                  <h3>Adresse de livraison</h3>
+                ) : (
+                    <h3>Adresse de facturation</h3>
+                  )}
                 <p>{customerData.billingAddress1}</p>
                 {customerData.billingAddress2 && <p>{customerData.billingAddress2}</p>}
                 <p>{customerData.billingCity}, {customerData.billingState} {customerData.billingPostcode}</p>

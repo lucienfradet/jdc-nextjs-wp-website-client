@@ -39,8 +39,6 @@ const CheckoutForm = forwardRef(({
 
         // Shipping info (only used if deliveryMethod is 'shipping')
         shippingSameAsBilling: true,
-        shippingFirstName: '',
-        shippingLastName: '',
         shippingAddress1: '',
         shippingAddress2: '',
         shippingCity: '',
@@ -89,8 +87,7 @@ const CheckoutForm = forwardRef(({
 
           // Validate shipping address if shipping is selected and "same as billing" is not checked
           if (hasShippableItems && formData.deliveryMethod === 'shipping' && !formData.shippingSameAsBilling) {
-            ['shippingFirstName', 'shippingLastName', 'shippingAddress1', 
-              'shippingCity', 'shippingState', 'shippingPostcode'].forEach(field => {
+            ['shippingAddress1', 'shippingCity', 'shippingState', 'shippingPostcode'].forEach(field => {
                 if (!formData[field]) {
                   errors[field] = 'Ce champ est requis';
                 }
@@ -137,8 +134,6 @@ const CheckoutForm = forwardRef(({
         // If user checked "shipping same as billing", copy billing address to shipping
         if (name === 'shippingSameAsBilling') {
           if (e.target.checked) {
-            newData.shippingFirstName = newData.billingFirstName;
-            newData.shippingLastName = newData.billingLastName;
             newData.shippingAddress1 = newData.billingAddress1;
             newData.shippingAddress2 = newData.billingAddress2;
             newData.shippingCity = newData.billingCity;
@@ -291,7 +286,7 @@ const CheckoutForm = forwardRef(({
 
           {/* Billing Information */}
           <section className={styles.formSection}>
-            <h3>Informations personnelles</h3>
+            <h3>Coordonnées de contact</h3>
 
             <div className={styles.formRow}>
               <div className={styles.formGroup}>
@@ -349,9 +344,9 @@ const CheckoutForm = forwardRef(({
           </section>
 
           {/* Only show address fields if this is not a pickup-only order */}
-          {!isPickupOnlyOrder && (
+          {!isPickupOnlyOrder && formData.deliveryMethod !== 'pickup' && (
             <section className={styles.formSection}>
-              <h3>Adresse de facturation</h3>
+              <h3>Informations de facturation</h3>
 
               <div className={styles.formGroup}>
                 <label htmlFor="billingAddress1">Adresse</label>
@@ -484,38 +479,6 @@ const CheckoutForm = forwardRef(({
 
               {!formData.shippingSameAsBilling && (
                 <>
-                  <div className={styles.formRow}>
-                    <div className={styles.formGroup}>
-                      <label htmlFor="shippingFirstName">Prénom</label>
-                      <input
-                        type="text"
-                        id="shippingFirstName"
-                        name="shippingFirstName"
-                        value={formData.shippingFirstName}
-                        onChange={handleInputChange}
-                        className={localErrors.shippingFirstName ? styles.inputError : ''}
-                      />
-                      {localErrors.shippingFirstName && (
-                        <p className={styles.errorText}>{localErrors.shippingFirstName}</p>
-                      )}
-                    </div>
-
-                    <div className={styles.formGroup}>
-                      <label htmlFor="shippingLastName">Nom</label>
-                      <input
-                        type="text"
-                        id="shippingLastName"
-                        name="shippingLastName"
-                        value={formData.shippingLastName}
-                        onChange={handleInputChange}
-                        className={localErrors.shippingLastName ? styles.inputError : ''}
-                      />
-                      {localErrors.shippingLastName && (
-                        <p className={styles.errorText}>{localErrors.shippingLastName}</p>
-                      )}
-                    </div>
-                  </div>
-
                   <div className={styles.formGroup}>
                     <label htmlFor="shippingAddress1">Adresse</label>
                     <input
