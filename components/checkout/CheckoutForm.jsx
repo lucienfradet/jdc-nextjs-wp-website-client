@@ -17,6 +17,7 @@ const CheckoutForm = forwardRef(({
       // Initialize with saved form data if available, otherwise use defaults
       if (savedFormData) {
         return savedFormData;
+        console.log("hellp")
       }
 
       return {

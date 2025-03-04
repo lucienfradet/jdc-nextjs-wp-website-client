@@ -41,6 +41,7 @@ export default function CheckoutPage({
 
   // Add state to store saved form data
   const [savedFormData, setSavedFormData] = useState(null);
+  const [isFormDataLoaded, setIsFormDataLoaded] = useState(false);
 
   // Create refs for the child components
   const checkoutFormRef = useRef(null);
@@ -79,8 +80,10 @@ export default function CheckoutPage({
         if (storedFormData) {
           setSavedFormData(JSON.parse(storedFormData));
         }
+        setIsFormDataLoaded(true);
       } catch (error) {
         console.error('Error loading saved form data:', error);
+        setIsFormDataLoaded(true); // Mark as loaded even if there's an error
       }
     };
     
@@ -196,16 +199,18 @@ export default function CheckoutPage({
                 abonnementPageContent={abonnementPageData.acfFields}
               />
 
-              <CheckoutForm 
-                ref={checkoutFormRef}
-                cart={cart} 
-                paymentMethod={paymentMethod}
-                pointDeChute={pointDeChute} 
-                hasShippableItems={hasShippableItems}
-                onFormDataChange={handleFormDataChange}
-                onDeliveryMethodChange={handleDeliveryMethodChange}
-                savedFormData={savedFormData}
-              />
+              {isFormDataLoaded && (
+                <CheckoutForm 
+                  ref={checkoutFormRef}
+                  cart={cart} 
+                  paymentMethod={paymentMethod}
+                  pointDeChute={pointDeChute} 
+                  hasShippableItems={hasShippableItems}
+                  onFormDataChange={handleFormDataChange}
+                  onDeliveryMethodChange={handleDeliveryMethodChange}
+                  savedFormData={savedFormData}
+                />
+              )}
 
               <div className={styles.submitSection}>
                 {paymentMethod === 'bank-transfer' ? (
