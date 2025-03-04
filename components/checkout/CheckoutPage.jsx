@@ -91,21 +91,7 @@ export default function CheckoutPage({
     e.preventDefault();
     setIsSubmitting(true);
     
-    // If bank transfer is selected, no validation needed
     if (paymentMethod === 'bank-transfer') {
-      // Process the order without stripe
-      try {
-        // For bank transfer, simply redirect to order confirmation
-        setTimeout(() => {
-          router.push('/order-confirmation');
-        }, 1000);
-      } catch (error) {
-        console.error('Error processing order:', error);
-        setFormErrors({
-          submission: error.message || 'Une erreur est survenue lors du traitement de votre commande'
-        });
-        setIsSubmitting(false);
-      }
       return;
     }
     

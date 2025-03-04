@@ -93,6 +93,7 @@ export function StripeProvider({ children }) {
         borderRadius: '4px',
       },
     },
+    locale: 'fr',
     clientSecret
   };
   
