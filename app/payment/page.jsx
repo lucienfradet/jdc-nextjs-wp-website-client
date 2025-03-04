@@ -21,11 +21,12 @@ export default function Page() {
           return;
         }
 
-        const [headerData, footerData, abonnementPageData, siteIconUrl] = await Promise.all([
+        const [headerData, footerData, abonnementPageData, siteIconUrl, pointsRes] = await Promise.all([
           getPageFieldsByName("header"),
           getPageFieldsByName("footer"),
           getPageFieldsByName("abonnement"),
-          fetchSiteIcon()
+          fetchSiteIcon(),
+          fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/point_de_chute`, { cache: "no-store" })
         ]);
 
         if (!headerData || !footerData) {
@@ -33,11 +34,18 @@ export default function Page() {
           return;
         }
 
+        if (!pointsRes.ok) {
+          console.error("Error fetching point de chute data");
+        }
+
+        const pointDeChute = await pointsRes.json();
+
         setPageData({
           headerData,
           footerData,
           abonnementPageData,
-          siteIconUrl
+          siteIconUrl,
+          pointDeChute
         });
       } catch (error) {
         console.error("Error loading data:", error);
@@ -59,6 +67,7 @@ export default function Page() {
       footerData={pageData.footerData}
       abonnementPageData={pageData.abonnementPageData}
       siteIconUrl={pageData.siteIconUrl}
+      pointDeChute={pageData.pointDeChute}
     />
   );
 }

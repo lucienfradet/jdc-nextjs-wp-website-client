@@ -7,6 +7,7 @@ import CheckoutPage from '@/components/checkout/CheckoutPage';
 
 export default function Page() {
   const [pageData, setPageData] = useState(null);
+  const [savedFormData, setSavedFormData] = useState(null);
 
   useEffect(() => {
     async function fetchData() {
@@ -43,12 +44,27 @@ export default function Page() {
     }
 
     fetchData();
+
+
+    const loadSavedFormData = () => {
+      try {
+        const storedFormData = sessionStorage.getItem('checkoutFormData');
+        if (storedFormData) {
+          setSavedFormData(JSON.parse(storedFormData));
+        }
+      } catch (error) {
+        console.error('Error loading saved form data:', error);
+      }
+    };
+
+    loadSavedFormData();
   }, []);
 
   // Only render the CheckoutPage when we have data
   if (!pageData) {
     return null; // Let the LoadingWrapper handle the loading UI
   }
+
 
   return (
     <CheckoutPage
@@ -57,6 +73,7 @@ export default function Page() {
       abonnementPageData={pageData.abonnementPageData}
       siteIconUrl={pageData.siteIconUrl}
       pointDeChute={pageData.pointDeChute}
+      savedFormData={savedFormData}
     />
   );
 }

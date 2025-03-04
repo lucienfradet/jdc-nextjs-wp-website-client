@@ -17,7 +17,8 @@ import MobileFooter from "@/components/mobile/Footer";
 const PaymentPageContent = ({ 
   headerData,
   footerData,
-  siteIconUrl
+  siteIconUrl,
+  pointDeChute
 }) => {
   const router = useRouter();
   const [isMobile, setIsMobile] = useState(false);
@@ -40,19 +41,21 @@ const PaymentPageContent = ({
   // Load saved form data from session storage
   useEffect(() => {
     try {
-      const savedFormData = sessionStorage.getItem('checkoutFormData');
+      const formData = sessionStorage.getItem('checkoutFormData');
+      const paymentMethod = sessionStorage.getItem('checkoutPaymentMethod');
       const savedDeliveryMethod = sessionStorage.getItem('deliveryMethod');
       
-      if (savedFormData) {
-        setCustomerData(JSON.parse(savedFormData));
-      } else {
-        // If no form data is found, redirect back to checkout
+      if (!formData || paymentMethod !== 'stripe') {
+        // If no form data or if payment method isn't stripe, redirect back to checkout
         router.push('/checkout');
+        return;
       }
       
       if (savedDeliveryMethod) {
         setDeliveryMethod(savedDeliveryMethod);
       }
+
+      setCustomerData(JSON.parse(formData));
       
       setIsLoading(false);
     } catch (error) {
@@ -204,10 +207,32 @@ const PaymentPageContent = ({
                 </div>
               )}
               
-              {customerData.selectedPickupLocation && (
+              {customerData.selectedPickupLocation && pointDeChute && (
                 <div className={styles.infoSection}>
                   <h3>Point de chute sélectionné</h3>
-                  <p>ID: {customerData.selectedPickupLocation}</p>
+                  {(() => {
+                    const selectedPoint = pointDeChute.find(
+                      point => point.id.toString() === customerData.selectedPickupLocation.toString()
+                    );
+
+                    if (selectedPoint) {
+                      return (
+                        <>
+                          <p><strong>{selectedPoint.location_name}</strong></p>
+                          <p>{selectedPoint.adresse.adresse}</p>
+                          <p>{selectedPoint.adresse.code_postale} {selectedPoint.adresse.city}</p>
+                          <p>{selectedPoint.adresse.province}, {selectedPoint.adresse.pays}</p>
+                          {selectedPoint.description_instructions && (
+                            <p className={styles.pickupInstructions}>
+                              <small><strong>Instructions: </strong>{selectedPoint.description_instructions}</small>
+                            </p>
+                          )}
+                        </>
+                      );
+                    }
+
+                    return <p>ID: {customerData.selectedPickupLocation}</p>;
+                  })()}
                 </div>
               )}
             </div>

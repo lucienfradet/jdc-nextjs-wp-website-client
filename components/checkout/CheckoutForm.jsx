@@ -11,37 +11,45 @@ const CheckoutForm = forwardRef(({
   hasShippableItems,
   onFormDataChange,
   onDeliveryMethodChange,
+  savedFormData
 }, ref) => {
-    const [formData, setFormData] = useState({
-      // Delivery method options
-      deliveryMethod: hasShippableItems ? 'shipping' : 'pickup', // Default to shipping if there are shippable items
+    const [formData, setFormData] = useState(() => {
+      // Initialize with saved form data if available, otherwise use defaults
+      if (savedFormData) {
+        return savedFormData;
+      }
 
-      // Billing info
-      billingFirstName: '',
-      billingLastName: '',
-      billingEmail: '',
-      billingConfirmEmail: '',
-      billingPhone: '',
-      billingAddress1: '',
-      billingAddress2: '',
-      billingCity: '',
-      billingState: '',
-      billingPostcode: '',
-      billingCountry: 'CA',
+      return {
+        // Delivery method options
+        deliveryMethod: hasShippableItems ? 'shipping' : 'pickup', // Default to shipping if there are shippable items
 
-      // Shipping info (only used if deliveryMethod is 'shipping')
-      shippingSameAsBilling: true,
-      shippingFirstName: '',
-      shippingLastName: '',
-      shippingAddress1: '',
-      shippingAddress2: '',
-      shippingCity: '',
-      shippingState: '',
-      shippingPostcode: '',
-      shippingCountry: 'CA',
+        // Billing info
+        billingFirstName: '',
+        billingLastName: '',
+        billingEmail: '',
+        billingConfirmEmail: '',
+        billingPhone: '',
+        billingAddress1: '',
+        billingAddress2: '',
+        billingCity: '',
+        billingState: '',
+        billingPostcode: '',
+        billingCountry: 'CA',
 
-      // Pickup location (used if cart has items with shipping_class="only_pickup" or deliveryMethod is 'pickup')
-      selectedPickupLocation: ''
+        // Shipping info (only used if deliveryMethod is 'shipping')
+        shippingSameAsBilling: true,
+        shippingFirstName: '',
+        shippingLastName: '',
+        shippingAddress1: '',
+        shippingAddress2: '',
+        shippingCity: '',
+        shippingState: '',
+        shippingPostcode: '',
+        shippingCountry: 'CA',
+
+        // Pickup location (used if cart has items with shipping_class="only_pickup" or deliveryMethod is 'pickup')
+        selectedPickupLocation: ''
+      }
     });
 
     const [localErrors, setLocalErrors] = useState({});

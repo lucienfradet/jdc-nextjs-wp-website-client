@@ -28,7 +28,19 @@ export default function CheckoutPage({
   const [formErrors, setFormErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [deliveryMethod, setDeliveryMethod] = useState('shipping');
-  const [paymentMethod, setPaymentMethod] = useState('bank-transfer');
+  // Load payment method from sessionStorage or use default
+  const [paymentMethod, setPaymentMethod] = useState(() => {
+    // Try to get saved payment method, default to 'bank-transfer' if not found
+    try {
+      const savedMethod = sessionStorage.getItem('checkoutPaymentMethod');
+      return savedMethod || 'bank-transfer';
+    } catch (error) {
+      return 'bank-transfer';
+    }
+  });
+
+  // Add state to store saved form data
+  const [savedFormData, setSavedFormData] = useState(null);
 
   // Create refs for the child components
   const checkoutFormRef = useRef(null);
@@ -59,6 +71,22 @@ export default function CheckoutPage({
     };
   }, []);
 
+  // Load saved form data from session storage on mount
+  useEffect(() => {
+    const loadSavedFormData = () => {
+      try {
+        const storedFormData = sessionStorage.getItem('checkoutFormData');
+        if (storedFormData) {
+          setSavedFormData(JSON.parse(storedFormData));
+        }
+      } catch (error) {
+        console.error('Error loading saved form data:', error);
+      }
+    };
+    
+    loadSavedFormData();
+  }, []);
+
   // Handle delivery method change
   const handleDeliveryMethodChange = (method) => {
     setDeliveryMethod(method);
@@ -72,6 +100,13 @@ export default function CheckoutPage({
   // Handle payment method change
   const handlePaymentMethodChange = (method) => {
     setPaymentMethod(method);
+    
+    // Save the selected payment method to sessionStorage
+    try {
+      sessionStorage.setItem('checkoutPaymentMethod', method);
+    } catch (error) {
+      console.error('Error saving payment method to sessionStorage:', error);
+    }
   };
   
   // Focus on the first error element
@@ -115,6 +150,7 @@ export default function CheckoutPage({
     try {
       // Store the form data in session storage to access on the payment page
       sessionStorage.setItem('checkoutFormData', JSON.stringify(formData));
+      sessionStorage.setItem('checkoutPaymentMethod', paymentMethod);
       sessionStorage.setItem('deliveryMethod', deliveryMethod);
       
       // Redirect to the payment page
@@ -168,6 +204,7 @@ export default function CheckoutPage({
                 hasShippableItems={hasShippableItems}
                 onFormDataChange={handleFormDataChange}
                 onDeliveryMethodChange={handleDeliveryMethodChange}
+                savedFormData={savedFormData}
               />
 
               <div className={styles.submitSection}>
