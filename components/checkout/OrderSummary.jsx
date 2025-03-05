@@ -16,14 +16,15 @@ export default function OrderSummary({
     getShippingCost,
     taxes,
     getCartTotal,
-    deliveryMethod,
-    updateDeliveryMethod
+    deliveryMethod
   } = useCart();
+  
   const [subtotal, setSubtotal] = useState(0);
   const [shipping, setShipping] = useState(0);
   const [total, setTotal] = useState(0);
   const [hasShippableItems, setHasShippableItems] = useState(false);
   
+  // Update values whenever cart, taxes, or deliveryMethod changes
   useEffect(() => {
     // Calculate totals
     const subtotalValue = getCartSubtotal();
@@ -39,13 +40,6 @@ export default function OrderSummary({
     // Calculate total
     setTotal(getCartTotal());
   }, [cart, getCartSubtotal, getCartTotal, taxes, deliveryMethod, getShippingCost]);
-
-  // Handle delivery method change from outside the component (e.g. checkout form)
-  useEffect(() => {
-    if (deliveryMethod) {
-      updateDeliveryMethod(deliveryMethod);
-    }
-  }, [deliveryMethod, updateDeliveryMethod]);
   
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('fr-CA', {
@@ -105,7 +99,7 @@ export default function OrderSummary({
         
         {hasShippableItems && (
           <div className={styles.totalRow}>
-            <span>Livraison</span>
+            <span>Livraison{deliveryMethod === 'pickup' ? ' (Cueillette)' : ''}</span>
             <span>{shipping > 0 ? formatCurrency(shipping) : 'Gratuit'}</span>
           </div>
         )}

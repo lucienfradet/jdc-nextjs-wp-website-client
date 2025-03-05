@@ -22,7 +22,7 @@ export default function CheckoutPage({
 }) {
   const router = useRouter();
   const [isMobile, setIsMobile] = useState(false);
-  const { cart, getCartSubtotal, getCartTotal, getShippingCost, taxes, updateProvince } = useCart();
+  const { cart, getCartSubtotal, getCartTotal, getShippingCost, taxes, updateProvince, updateDeliveryMethod } = useCart();
   const [hasShippableItems, setHasShippableItems] = useState(false);
   const [formData, setFormData] = useState({});
   const [formErrors, setFormErrors] = useState({});
@@ -93,6 +93,8 @@ export default function CheckoutPage({
   // Handle delivery method change
   const handleDeliveryMethodChange = (method) => {
     setDeliveryMethod(method);
+    // This is the key change - update CartContext immediately
+    updateDeliveryMethod(method);
   }
 
   // Handle form data change
