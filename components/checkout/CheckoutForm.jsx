@@ -11,6 +11,7 @@ const CheckoutForm = forwardRef(({
   hasShippableItems,
   onFormDataChange,
   onDeliveryMethodChange,
+  onProvinceChange,
   savedFormData
 }, ref) => {
     const [formData, setFormData] = useState(() => {
@@ -126,6 +127,11 @@ const CheckoutForm = forwardRef(({
       setFormData(prev => {
         const newData = { ...prev, [name]: value };
 
+        // If province changes, update the tax calculation
+        if (name === 'billingState' && onProvinceChange) {
+          onProvinceChange(value);
+        }
+
         // If delivery method changes
         if (name === 'deliveryMethod') {
           // Do nothing special, just update the value
@@ -205,7 +211,6 @@ const CheckoutForm = forwardRef(({
     const renderPickupLocationSelector = () => {
       // Only show pickup selector if there are pickup-only items OR if pickup is selected as delivery method
       if ((!hasPickupOnlyItems && formData.deliveryMethod !== 'pickup') || !pointDeChute || pointDeChute.length === 0) {
-        console.log("returning null")
         return null;
       }
 

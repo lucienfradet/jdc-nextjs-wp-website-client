@@ -22,7 +22,7 @@ export default function CheckoutPage({
 }) {
   const router = useRouter();
   const [isMobile, setIsMobile] = useState(false);
-  const { cart, getCartTotal } = useCart();
+  const { cart, getCartSubtotal, getCartTotal, getShippingCost, taxes, updateProvince } = useCart();
   const [hasShippableItems, setHasShippableItems] = useState(false);
   const [formData, setFormData] = useState({});
   const [formErrors, setFormErrors] = useState({});
@@ -98,6 +98,13 @@ export default function CheckoutPage({
   // Handle form data change
   const handleFormDataChange = (data) => {
     setFormData(data);
+  };
+
+  // Handle province change
+  const handleProvinceChange = (province) => {
+    if (province) {
+      updateProvince(province);
+    }
   };
   
   // Handle payment method change
@@ -208,6 +215,7 @@ export default function CheckoutPage({
                   hasShippableItems={hasShippableItems}
                   onFormDataChange={handleFormDataChange}
                   onDeliveryMethodChange={handleDeliveryMethodChange}
+                  onProvinceChange={handleProvinceChange}
                   savedFormData={savedFormData}
                 />
               )}
@@ -243,9 +251,7 @@ export default function CheckoutPage({
 
             <div className={styles.summaryColumn}>
               <OrderSummary 
-                cart={cart} 
-                getCartTotal={getCartTotal}
-                deliveryMethod={deliveryMethod}
+                hideModifyCart={true}
               />
             </div>
           </div>

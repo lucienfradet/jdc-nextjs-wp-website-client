@@ -4,39 +4,48 @@ import { useState, useEffect } from 'react';
 import styles from '@/styles/checkout/OrderSummary.module.css';
 import WPImage from '@/components/WPImage';
 import DrawerCart from "@/components/DrawerCart";
+import { formatTaxRate } from '@/lib/taxUtils';
+import { useCart } from '@/context/CartContext';
 
 export default function OrderSummary({ 
-  cart, 
-  getCartTotal, 
-  deliveryMethod = 'shipping',
   hideModifyCart = false
 }) {
+  const { 
+    cart, 
+    getCartSubtotal, 
+    getShippingCost,
+    taxes,
+    getCartTotal,
+    deliveryMethod,
+    updateDeliveryMethod
+  } = useCart();
   const [subtotal, setSubtotal] = useState(0);
-  const [tax, setTax] = useState(0);
   const [shipping, setShipping] = useState(0);
   const [total, setTotal] = useState(0);
   const [hasShippableItems, setHasShippableItems] = useState(false);
   
   useEffect(() => {
     // Calculate totals
-    const subtotalValue = getCartTotal();
+    const subtotalValue = getCartSubtotal();
     setSubtotal(subtotalValue);
-    
-    // Calculate tax (for now, applying 5% GST and 9.975% QST in Quebec)
-    const gst = subtotalValue * 0.05;
-    const qst = subtotalValue * 0.09975;
-    setTax(gst + qst);
     
     // For now, flat shipping rate
     // In a real implementation, this would be calculated based on shipping address and items
     const shippableItems = cart.some(item => item.shipping_class !== 'only_pickup');
-    const shouldApplyShipping = shippableItems && deliveryMethod === 'shipping';
     setHasShippableItems(shippableItems);
-    setShipping(shouldApplyShipping ? 15 : 0);
+    
+    setShipping(getShippingCost());
     
     // Calculate total
-    setTotal(subtotalValue + (gst + qst) + (shouldApplyShipping ? 15 : 0));
-  }, [cart, getCartTotal, deliveryMethod]);
+    setTotal(getCartTotal());
+  }, [cart, getCartSubtotal, getCartTotal, taxes, deliveryMethod, getShippingCost]);
+
+  // Handle delivery method change from outside the component (e.g. checkout form)
+  useEffect(() => {
+    if (deliveryMethod) {
+      updateDeliveryMethod(deliveryMethod);
+    }
+  }, [deliveryMethod, updateDeliveryMethod]);
   
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('fr-CA', {
@@ -70,6 +79,11 @@ export default function OrderSummary({
                   Cueillette seulement
                 </div>
               )}
+              {item.tax_status === 'none' && (
+                <div className={styles.taxExempt}>
+                  Exempt de taxes
+                </div>
+              )}
             </div>
           </div>
         ))}
@@ -80,18 +94,22 @@ export default function OrderSummary({
           <span>Sous-total</span>
           <span>{formatCurrency(subtotal)}</span>
         </div>
-        <div className={styles.totalRow}>
-          <span>Taxes (GST/QST)</span>
-          <span>{formatCurrency(tax)}</span>
-        </div>
-        <div className={styles.totalRow}>
-          {hasShippableItems && (
-            <>
-              <span>Livraison</span>
-              <span>{shipping > 0 ? formatCurrency(shipping) : 'Gratuit'}</span>
-            </>
-          )}
-        </div>
+        
+        {/* Tax Rows */}
+        {Object.entries(taxes.taxSummary).map(([taxName, taxInfo]) => (
+          <div key={taxName} className={styles.totalRow}>
+            <span>{taxName} ({formatTaxRate(taxInfo.rate)})</span>
+            <span>{formatCurrency(taxInfo.amount)}</span>
+          </div>
+        ))}
+        
+        {hasShippableItems && (
+          <div className={styles.totalRow}>
+            <span>Livraison</span>
+            <span>{shipping > 0 ? formatCurrency(shipping) : 'Gratuit'}</span>
+          </div>
+        )}
+        
         <div className={`${styles.totalRow} ${styles.grandTotal}`}>
           <span>Total</span>
           <span>{formatCurrency(total)}</span>

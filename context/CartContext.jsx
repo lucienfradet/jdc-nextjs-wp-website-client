@@ -1,6 +1,8 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState } from 'react';
+import { getTaxLabels, formatTaxRate } from '@/lib/taxUtils';
+import shippingCalculator from '@/lib/shipping/ShippingCalculator';
 
 const CartContext = createContext();
 
@@ -9,6 +11,14 @@ export function CartProvider({ children }) {
   const [cart, setCart] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [showFeedback, setShowFeedback] = useState(false);
+  const [taxes, setTaxes] = useState({
+    items: [],
+    taxSummary: {},
+    totalTax: 0
+  });
+  const [province, setProvince] = useState('QC'); // Default to Quebec
+  const [deliveryMethod, setDeliveryMethod] = useState('shipping'); // Default to shipping
+  const [shippingLoaded, setShippingLoaded] = useState(false);
 
   // Load cart from localStorage on component mount
   useEffect(() => {
@@ -26,6 +36,15 @@ export function CartProvider({ children }) {
     };
 
     loadCart();
+
+    // Initialize shipping calculator
+    const initShipping = async () => {
+      await shippingCalculator.initialize();
+      setShippingLoaded(true);
+    };
+    
+    //THIS IS NOT READY
+    // initShipping();
   }, []);
 
   // Save cart to localStorage whenever it changes
@@ -44,6 +63,52 @@ export function CartProvider({ children }) {
       return () => clearTimeout(timer);
     }
   }, [showFeedback]);
+
+  // Calculate taxes whenever cart or province changes
+  useEffect(() => {
+    const calculateTaxes = async () => {
+      if (cart.length === 0) {
+        setTaxes({
+          items: [],
+          taxSummary: {},
+          totalTax: 0
+        });
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/calculate-taxes', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            items: cart,
+            province: province
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to calculate taxes');
+        }
+
+        const taxData = await response.json();
+        setTaxes(taxData);
+      } catch (error) {
+        console.error('Error calculating taxes:', error);
+        // Set default empty taxes on error
+        setTaxes({
+          items: [],
+          taxSummary: {},
+          totalTax: 0
+        });
+      }
+    };
+
+    if (!isLoading && cart.length > 0) {
+      calculateTaxes();
+    }
+  }, [cart, province, isLoading]);
 
   const addToCart = (product, quantity = 1) => {
     // Make sure quantity is a number
@@ -95,15 +160,46 @@ export function CartProvider({ children }) {
     setCart([]);
   };
 
-  const getCartTotal = () => {
+  const getCartSubtotal = () => {
     return cart.reduce((total, item) => {
       const price = parseFloat(item.price || 0);
       return total + (price * item.quantity);
     }, 0);
   };
 
+  const getShippingCost = () => {
+    // If shipping calculator isn't loaded yet, use a default value
+    if (!shippingLoaded) {
+      const shippableItems = cart.some(item => item.shipping_class !== 'only_pickup');
+      console.log(deliveryMethod)
+      return shippableItems && deliveryMethod === 'shipping' ? 15 : 0;
+    }
+    
+    // Otherwise, use the shipping calculator
+    return shippingCalculator.calculateShipping(cart, deliveryMethod);
+  };
+
+  const getCartTotal = () => {
+    const subtotal = getCartSubtotal();
+    const shipping = getShippingCost();
+    return subtotal + taxes.totalTax + shipping;
+  };
+
   const getTotalItems = () => {
     return cart.reduce((total, item) => total + item.quantity, 0);
+  };
+
+  const updateProvince = (provinceCode) => {
+    if (!provinceCode) return; // Safety check
+
+    // Use setTimeout to move the state update out of the render cycle
+    setTimeout(() => {
+      setProvince(provinceCode.toUpperCase());
+    }, 0);
+  };
+
+  const updateDeliveryMethod = (method) => {
+    setDeliveryMethod(method);
   };
 
   return (
@@ -113,11 +209,18 @@ export function CartProvider({ children }) {
       removeFromCart,
       updateQuantity,
       clearCart,
+      getCartSubtotal,
       getCartTotal,
       getTotalItems,
+      getShippingCost,
+      taxes,
+      updateProvince,
+      province,
       isLoading,
       showFeedback,
-      setShowFeedback
+      setShowFeedback,
+      deliveryMethod,
+      updateDeliveryMethod
     }}>
       {children}
       {showFeedback && (

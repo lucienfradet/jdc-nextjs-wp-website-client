@@ -30,7 +30,8 @@ export function StripeProvider({ children }) {
           amount,
           currency: 'cad',
           paymentMethodType: 'card',
-          metadata
+          metadata,
+          idempotencyKey: metadata.order_number
         }),
       });
       

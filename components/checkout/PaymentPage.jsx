@@ -22,13 +22,13 @@ const PaymentPageContent = ({
 }) => {
   const router = useRouter();
   const [isMobile, setIsMobile] = useState(false);
-  const { cart, getCartTotal, clearCart } = useCart();
+  const { cart, getCartSubtotal, getCartTotal, getShippingCost, taxes, updateProvince } = useCart();
   const [customerData, setCustomerData] = useState(null);
   const [deliveryMethod, setDeliveryMethod] = useState('shipping');
-  const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [orderComplete, setOrderComplete] = useState(false);
   const [paymentError, setPaymentError] = useState(null);
+  const [orderNumber, setOrderNumber] = useState(null);
 
   // Get stripe context
   const { 
@@ -40,28 +40,37 @@ const PaymentPageContent = ({
 
   // Load saved form data from session storage
   useEffect(() => {
-    try {
-      const formData = sessionStorage.getItem('checkoutFormData');
-      const paymentMethod = sessionStorage.getItem('checkoutPaymentMethod');
-      const savedDeliveryMethod = sessionStorage.getItem('deliveryMethod');
-      
-      if (!formData || paymentMethod !== 'stripe') {
-        // If no form data or if payment method isn't stripe, redirect back to checkout
-        router.push('/checkout');
-        return;
-      }
-      
-      if (savedDeliveryMethod) {
-        setDeliveryMethod(savedDeliveryMethod);
-      }
+    async function fetchData() {
+      try {
+        const formData = sessionStorage.getItem('checkoutFormData');
+        const paymentMethod = sessionStorage.getItem('checkoutPaymentMethod');
+        const savedDeliveryMethod = sessionStorage.getItem('deliveryMethod');
 
-      setCustomerData(JSON.parse(formData));
-      
-      setIsLoading(false);
-    } catch (error) {
-      console.error('Error loading saved data:', error);
-      router.push('/checkout');
+        if (!formData || paymentMethod !== 'stripe') {
+          // If no form data or if payment method isn't stripe, redirect back to checkout
+          router.push('/checkout');
+          return;
+        }
+
+        if (savedDeliveryMethod) {
+          setDeliveryMethod(savedDeliveryMethod);
+        }
+
+        const parsedData = JSON.parse(formData);
+
+        // Set the province for tax calculation if available
+        if (parsedData.billingState) {
+          updateProvince(parsedData.billingState);
+        }
+
+        setCustomerData(JSON.parse(formData));
+      } catch (error) {
+        console.error('Error loading saved data:', error);
+        router.push('/checkout');
+      }
     }
+
+    fetchData();
   }, [router]);
 
   // Mobile detection
@@ -78,21 +87,59 @@ const PaymentPageContent = ({
     };
   }, []);
 
+  // Generate a unique order number (format: JDC-YYYYMMDD-XXXX)
+  const generateOrderNumber = () => {
+    const prefix = 'JDC';
+    const date = new Date();
+    const dateStr = date.getFullYear() +
+      String(date.getMonth() + 1).padStart(2, '0') +
+      String(date.getDate()).padStart(2, '0');
+    const randomNum = Math.floor(1000 + Math.random() * 9000); // 4-digit random number
+    
+    return `${prefix}-${dateStr}-${randomNum}`;
+  };
+
   // Initialize Stripe payment intent
   useEffect(() => {
     const initializeStripePayment = async () => {
-      if (cart.length > 0 && !clientSecret) {
-        await createPaymentIntent(getCartTotal(), {
-          customerEmail: customerData?.billingEmail || 'no-email@example.com',
-          orderItems: 'Order items from cart'
-        });
+      // Only proceed if we haven't already created a payment intent
+      if (cart.length > 0 && !clientSecret && customerData && !orderNumber) {
+        // Generate custom order number
+        const generatedOrderNumber = generateOrderNumber();
+        setOrderNumber(generatedOrderNumber);
+        console.log('createPaymentIntent with number:' + generatedOrderNumber);
+
+        // check if pointDeChute needs to be sent
+        let selectedPoint = undefined;
+        if (pointDeChute && deliveryMethod !== 'shipping') {
+          selectedPoint = pointDeChute.find(
+            point => point.id.toString() === customerData.selectedPickupLocation.toString()
+          );
+        }
+
+        const metadata = {
+          // Order identification
+          order_number: generatedOrderNumber,
+          
+          // Basic customer information (minimal)
+          customer_email: customerData.billingEmail || '',
+          customer_name: `${customerData.billingFirstName} ${customerData.billingLastName}`.trim(),
+          
+          // Basic order info
+          order_total: getCartTotal().toString(),
+          delivery_method: deliveryMethod,
+          
+          // If delivery method is not shipping, include pickup location details
+          pickup_location_id: deliveryMethod === 'shipping' ? '' : customerData.selectedPickupLocation || '',
+          pickup_location_name: deliveryMethod === 'shipping' ? '' : selectedPoint?.location_name || ''
+        };
+
+        await createPaymentIntent(getCartTotal(), metadata);
       }
     };
     
-    if (customerData && !isLoading) {
-      initializeStripePayment();
-    }
-  }, [customerData, isLoading, cart, getCartTotal, clientSecret, createPaymentIntent]);
+    initializeStripePayment();
+  }, [customerData, cart, getCartTotal, clientSecret, createPaymentIntent, deliveryMethod, orderNumber]);
 
   // Handle successful payment
   const handlePaymentComplete = async (paymentIntent) => {
@@ -111,15 +158,16 @@ const PaymentPageContent = ({
       // Order created successfully
       if (orderResult.orderId) {
         // Clear cart and show success message
-        clearCart();
         setOrderComplete(true);
         
         // Clear session storage
         sessionStorage.removeItem('checkoutFormData');
+        sessionStorage.removeItem('checkoutPaymentMethod');
         sessionStorage.removeItem('deliveryMethod');
         
         // Redirect to confirmation page after 2 seconds
         setTimeout(() => {
+          clearCart();
           router.push('/order-confirmation');
         }, 2000);
       }
@@ -138,11 +186,7 @@ const PaymentPageContent = ({
     setIsSubmitting(false);
   };
 
-  if (isLoading) {
-    return <div className={styles.loading}>Chargement...</div>;
-  }
-  
-  if (cart.length === 0) {
+  if (cart.length === 0 && !orderComplete) {
     return <div className={styles.emptyCart}>Votre panier est vide</div>;
   }
   
@@ -153,6 +197,12 @@ const PaymentPageContent = ({
         <p>Votre commande a été traitée avec succès. Vous allez être redirigé vers la page de confirmation.</p>
       </div>
     );
+  }
+
+  if (!customerData || isSubmitting) {
+    // Return null instead of a loading indicator, 
+    // the LoadingWrapper will handle the loading UI
+    return null;
   }
 
   return (
@@ -188,17 +238,18 @@ const PaymentPageContent = ({
                 <p><strong>Téléphone:</strong> {customerData.billingPhone}</p>
               </div>
               
-              <div className={styles.infoSection}>
-                {customerData.shippingSameAsBilling ? (
-                  <h3>Adresse de livraison</h3>
-                ) : (
-                    <h3>Adresse de facturation</h3>
-                  )}
-                <p>{customerData.billingAddress1}</p>
-                {customerData.billingAddress2 && <p>{customerData.billingAddress2}</p>}
-                <p>{customerData.billingCity}, {customerData.billingState} {customerData.billingPostcode}</p>
-                <p>{customerData.billingCountry}</p>
-              </div>
+              {deliveryMethod === 'shipping' && (
+                <div className={styles.infoSection}>
+                  {customerData.shippingSameAsBilling ? (
+                    <h3>Adresse de livraison</h3>
+                  ) : (
+                      <h3>Adresse de facturation</h3>
+                    )}
+                  <p>{customerData.billingAddress1}</p>
+                  {customerData.billingAddress2 && <p>{customerData.billingAddress2}</p>}
+                  <p>{customerData.billingCity}, {customerData.billingState}, {customerData.billingPostcode}</p>
+                </div>
+              )}
               
               {deliveryMethod === 'shipping' && !customerData.shippingSameAsBilling && (
                 <div className={styles.infoSection}>
@@ -206,12 +257,11 @@ const PaymentPageContent = ({
                   <p>{customerData.shippingFirstName} {customerData.shippingLastName}</p>
                   <p>{customerData.shippingAddress1}</p>
                   {customerData.shippingAddress2 && <p>{customerData.shippingAddress2}</p>}
-                  <p>{customerData.shippingCity}, {customerData.shippingState} {customerData.shippingPostcode}</p>
-                  <p>{customerData.shippingCountry}</p>
+                  <p>{customerData.shippingCity}, {customerData.shippingState}, {customerData.shippingPostcode}</p>
                 </div>
               )}
               
-              {customerData.selectedPickupLocation && pointDeChute && (
+              {customerData.selectedPickupLocation && pointDeChute && deliveryMethod !== 'shipping' && (
                 <div className={styles.infoSection}>
                   <h3>Point de chute sélectionné</h3>
                   {(() => {
@@ -276,9 +326,6 @@ const PaymentPageContent = ({
 
           <div className={styles.summaryColumn}>
             <OrderSummary 
-              cart={cart} 
-              getCartTotal={getCartTotal}
-              deliveryMethod={deliveryMethod}
               hideModifyCart={true}
             />
           </div>

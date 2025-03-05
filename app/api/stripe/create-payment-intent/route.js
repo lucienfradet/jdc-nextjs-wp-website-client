@@ -7,7 +7,7 @@ export async function POST(request) {
 
     // Get request body
     const body = await request.json();
-    const { amount, paymentMethodType, currency, metadata } = body;
+    const { amount, paymentMethodType, currency, metadata, idempotencyKey } = body;
 
     // Create the payment intent
     const paymentIntent = await stripe.paymentIntents.create({
@@ -15,7 +15,11 @@ export async function POST(request) {
       currency: currency || 'cad',
       payment_method_types: [paymentMethodType || 'card'],
       metadata: metadata || {}
-    });
+    }, {
+        idempotencyKey
+      });
+
+    console.log(paymentIntent.metadata)
 
     // Return the client secret to the client
     return Response.json({
