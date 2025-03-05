@@ -17,7 +17,14 @@ export function CartProvider({ children }) {
     totalTax: 0
   });
   const [province, setProvince] = useState('QC'); // Default to Quebec
-  const [deliveryMethod, setDeliveryMethod] = useState('shipping'); // Default to shipping
+  const [deliveryMethod, setDeliveryMethod] = useState(() => {
+    try {
+      const savedMethod = sessionStorage.getItem('deliveryMethod');
+      return savedMethod || 'shipping'; // Default to shipping if not found
+    } catch (error) {
+      return 'shipping';
+    }
+  });
   const [shippingLoaded, setShippingLoaded] = useState(false);
 
   // Load cart from localStorage on component mount
@@ -200,6 +207,12 @@ export function CartProvider({ children }) {
 
   const updateDeliveryMethod = (method) => {
     setDeliveryMethod(method);
+    // Also save to sessionStorage
+    try {
+      sessionStorage.setItem('deliveryMethod', method);
+    } catch (error) {
+      console.error('Error saving delivery method to sessionStorage:', error);
+    }
   };
 
   return (

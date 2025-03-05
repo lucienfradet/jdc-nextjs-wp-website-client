@@ -22,7 +22,7 @@ const PaymentPageContent = ({
 }) => {
   const router = useRouter();
   const [isMobile, setIsMobile] = useState(false);
-  const { cart, getCartSubtotal, getCartTotal, getShippingCost, taxes, updateProvince } = useCart();
+  const { cart, getCartTotal, updateProvince, updateDeliveryMethod } = useCart();
   const [customerData, setCustomerData] = useState(null);
   const [deliveryMethod, setDeliveryMethod] = useState('shipping');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -54,6 +54,7 @@ const PaymentPageContent = ({
 
         if (savedDeliveryMethod) {
           setDeliveryMethod(savedDeliveryMethod);
+          updateDeliveryMethod(savedDeliveryMethod);
         }
 
         const parsedData = JSON.parse(formData);
@@ -71,7 +72,7 @@ const PaymentPageContent = ({
     }
 
     fetchData();
-  }, [router]);
+  }, [router, updateProvince, updateDeliveryMethod]);
 
   // Mobile detection
   useEffect(() => {
@@ -197,6 +198,12 @@ const PaymentPageContent = ({
         <p>Votre commande a été traitée avec succès. Vous allez être redirigé vers la page de confirmation.</p>
       </div>
     );
+  }
+
+  const handleDeliveryMethodChange = (method) => {
+    setDeliveryMethod(method);
+    // Add this line to directly update the cart context
+    updateDeliveryMethod(method);
   }
 
   if (!customerData || isSubmitting) {
