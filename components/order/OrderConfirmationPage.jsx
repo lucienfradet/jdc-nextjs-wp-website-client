@@ -2,15 +2,44 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter, useSearchParams } from 'next/navigation'; // Add useSearchParams
 import CustomHead from '@/components/CustomHead';
 import DesktopHeader from "@/components/desktop/Header";
 import MobileHeader from "@/components/mobile/Header";
 import DesktopFooter from "@/components/desktop/Footer";
 import MobileFooter from "@/components/mobile/Footer";
 import styles from '@/styles/checkout/OrderConfirmationPage.module.css';
+import { useCart } from '@/context/CartContext';
 
 export default function OrderConfirmationPage({ headerData, footerData, siteIconUrl }) {
   const [isMobile, setIsMobile] = useState(false);
+  const [orderData, setOrderData] = useState(null);
+  const router = useRouter();
+  const { clearCart } = useCart();
+  const searchParams = useSearchParams();
+  
+  // Check for order in URL first, then sessionStorage
+  useEffect(() => {
+    // Try to get order ID from URL
+    const orderIdFromUrl = searchParams.get('order');
+    
+    if (orderIdFromUrl && !orderData) {
+      setOrderData({ orderId: orderIdFromUrl });
+      clearCart();
+      return;
+    }
+    
+    // If not in URL, check sessionStorage
+    const storedOrderData = sessionStorage.getItem('orderConfirmation');
+    if (storedOrderData) {
+      setOrderData(JSON.parse(storedOrderData));
+      sessionStorage.removeItem('orderConfirmation');
+      clearCart();
+    } else {
+      // No order data found
+      router.push('/');
+    }
+  }, []);
   
   // Mobile detection
   useEffect(() => {
@@ -18,13 +47,14 @@ export default function OrderConfirmationPage({ headerData, footerData, siteIcon
       setIsMobile(window.innerWidth <= 991);
     };
     
-    window.addEventListener('resize', handleResize);
-    handleResize(); // Initial check
+    window.addEventListener("resize", handleResize);
+    handleResize();
     
-    return () => {
-      window.removeEventListener('resize', handleResize);
-    };
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
+  
+  // Show loading state
+  if (!orderData) return null;
   
   return (
     <>
@@ -53,7 +83,7 @@ export default function OrderConfirmationPage({ headerData, footerData, siteIcon
           <h1>Merci pour votre commande!</h1>
           
           <p className={styles.orderNumber}>
-            Numéro de commande: <strong>PLACE HOLDER</strong>
+            Numéro de commande: <strong>{orderData.orderId}</strong>
           </p>
           
           <p className={styles.confirmationMessage}>
@@ -72,8 +102,7 @@ export default function OrderConfirmationPage({ headerData, footerData, siteIcon
           <div className={styles.contactInfo}>
             <p>
               Pour toute question concernant votre commande, n'hésitez pas à
-              nous contacter par courriel à <a
-                href="mailto:contact@jardindeschefs.com">contact@jardindeschefs.com</a>.
+              nous contacter par courriel à <a href="mailto:contact@jardindeschefs.com">contact@jardindeschefs.com</a>.
             </p>
           </div>
           

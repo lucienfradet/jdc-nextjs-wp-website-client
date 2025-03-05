@@ -1,8 +1,8 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState } from 'react';
-import { getTaxLabels, formatTaxRate } from '@/lib/taxUtils';
 import shippingCalculator from '@/lib/shipping/ShippingCalculator';
+import DrawerCart from '@/components/DrawerCart';
 
 const CartContext = createContext();
 
@@ -178,7 +178,6 @@ export function CartProvider({ children }) {
     // If shipping calculator isn't loaded yet, use a default value
     if (!shippingLoaded) {
       const shippableItems = cart.some(item => item.shipping_class !== 'only_pickup');
-      console.log(deliveryMethod)
       return shippableItems && deliveryMethod === 'shipping' ? 15 : 0;
     }
     
@@ -236,11 +235,20 @@ export function CartProvider({ children }) {
       updateDeliveryMethod
     }}>
       {children}
-      {showFeedback && (
-        <div className="cart-feedback">
-          Item ajouté au panier!
-        </div>
-      )}
+
+      <DrawerCart
+        trigger={{
+          content: (
+            <>
+              {showFeedback && (
+                <div className="cart-feedback">
+                  Item ajouté au panier!
+                </div>
+              )}
+            </>
+          ),
+        }}
+      />
     </CartContext.Provider>
   );
 }

@@ -22,7 +22,7 @@ const PaymentPageContent = ({
 }) => {
   const router = useRouter();
   const [isMobile, setIsMobile] = useState(false);
-  const { cart, getCartTotal, updateProvince, updateDeliveryMethod } = useCart();
+  const { cart, getCartTotal, clearCart, updateProvince, updateDeliveryMethod } = useCart();
   const [customerData, setCustomerData] = useState(null);
   const [deliveryMethod, setDeliveryMethod] = useState('shipping');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -155,21 +155,27 @@ const PaymentPageContent = ({
         deliveryMethod,
         pickupLocation: customerData.selectedPickupLocation || null
       }, paymentIntent.id);
+      console.log(orderResult);
       
       // Order created successfully
       if (orderResult.orderId) {
-        // Clear cart and show success message
-        setOrderComplete(true);
-        
+        // Store order info in sessionStorage before clearing cart
+        sessionStorage.setItem('orderConfirmation', JSON.stringify({
+          orderId: orderResult.orderId,
+          total: getCartTotal(),
+          date: new Date().toISOString()
+        }));
+
         // Clear session storage
         sessionStorage.removeItem('checkoutFormData');
         sessionStorage.removeItem('checkoutPaymentMethod');
         sessionStorage.removeItem('deliveryMethod');
+
+        setOrderComplete(true);
         
         // Redirect to confirmation page after 2 seconds
         setTimeout(() => {
-          clearCart();
-          router.push('/order-confirmation');
+          router.push('/order-confirmation?order=' + orderResult.orderId);
         }, 2000);
       }
     } catch (error) {
