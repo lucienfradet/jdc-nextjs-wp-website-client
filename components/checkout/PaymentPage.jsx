@@ -22,7 +22,7 @@ const PaymentPageContent = ({
 }) => {
   const router = useRouter();
   const [isMobile, setIsMobile] = useState(false);
-  const { cart, getCartTotal, clearCart, updateProvince, updateDeliveryMethod } = useCart();
+  const { cart, getCartTotal, updateProvince, updateDeliveryMethod } = useCart();
   const [customerData, setCustomerData] = useState(null);
   const [deliveryMethod, setDeliveryMethod] = useState('shipping');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -105,10 +105,18 @@ const PaymentPageContent = ({
     const initializeStripePayment = async () => {
       // Only proceed if we haven't already created a payment intent
       if (cart.length > 0 && !clientSecret && customerData && !orderNumber) {
-        // Generate custom order number
-        const generatedOrderNumber = generateOrderNumber();
-        setOrderNumber(generatedOrderNumber);
-        console.log('createPaymentIntent with number:' + generatedOrderNumber);
+        // First check if we already have an orderNumber in sessionStorage
+        let orderNum = sessionStorage.getItem('orderNumber');
+
+        // If no orderNumber exists yet, generate a new one and save it
+        if (!orderNum) {
+          orderNum = generateOrderNumber();
+          sessionStorage.setItem('orderNumber', orderNum);
+          setOrderNumber(orderNum);
+        } else {
+          // If it exists in sessionStorage but not in state, update state
+          setOrderNumber(orderNum);
+        }
 
         // check if pointDeChute needs to be sent
         let selectedPoint = undefined;
@@ -120,7 +128,7 @@ const PaymentPageContent = ({
 
         const metadata = {
           // Order identification
-          order_number: generatedOrderNumber,
+          order_number: orderNum,
           
           // Basic customer information (minimal)
           customer_email: customerData.billingEmail || '',
@@ -140,22 +148,32 @@ const PaymentPageContent = ({
     };
     
     initializeStripePayment();
-  }, [customerData, cart, getCartTotal, clientSecret, createPaymentIntent, deliveryMethod, orderNumber]);
+  }, [customerData, clientSecret]);
 
   // Handle successful payment
   const handlePaymentComplete = async (paymentIntent) => {
     setIsSubmitting(true);
+
+    // Get the order number from sessionStorage
+    const orderNum = sessionStorage.getItem('orderNumber');
+    
+    if (!orderNum) {
+      throw new Error('Order number not found. Please try again.');
+    }
     
     try {
       // Create order record in database
       const orderResult = await completeOrder({
-        customer: customerData,
-        items: cart,
-        total: getCartTotal(),
-        deliveryMethod,
-        pickupLocation: customerData.selectedPickupLocation || null
-      }, paymentIntent.id);
-      console.log(orderResult);
+        orderNumber: orderNum,
+        orderData: {
+          customer: customerData,
+          items: cart,
+          total: getCartTotal(),
+          deliveryMethod,
+          pickupLocation: customerData.selectedPickupLocation || null
+        },
+        paymentIntentId: paymentIntent.id
+      });
       
       // Order created successfully
       if (orderResult.orderId) {
@@ -170,6 +188,7 @@ const PaymentPageContent = ({
         sessionStorage.removeItem('checkoutFormData');
         sessionStorage.removeItem('checkoutPaymentMethod');
         sessionStorage.removeItem('deliveryMethod');
+        sessionStorage.removeItem('orderNumber');
 
         setOrderComplete(true);
         
@@ -204,12 +223,6 @@ const PaymentPageContent = ({
         <p>Votre commande a été traitée avec succès. Vous allez être redirigé vers la page de confirmation.</p>
       </div>
     );
-  }
-
-  const handleDeliveryMethodChange = (method) => {
-    setDeliveryMethod(method);
-    // Add this line to directly update the cart context
-    updateDeliveryMethod(method);
   }
 
   if (!customerData || isSubmitting) {

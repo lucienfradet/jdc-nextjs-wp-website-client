@@ -53,14 +53,18 @@ export function StripeProvider({ children }) {
   };
   
   // Create a function to complete the order after payment
-  const completeOrder = async (orderData, paymentIntentId) => {
+  const completeOrder = async ({ orderNumber, orderData, paymentIntentId }) => {
     try {
+      console.log("order data after completion: ", orderNumber)
+      console.log("order data after completion: ", orderData)
+      console.log("order data after completion: ", paymentIntentId)
       const response = await fetch('/api/orders/create', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
+          orderNumber,
           orderData,
           paymentIntentId
         }),

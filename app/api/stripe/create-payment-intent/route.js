@@ -19,7 +19,7 @@ export async function POST(request) {
         idempotencyKey
       });
 
-    console.log(paymentIntent.metadata)
+    // console.log(paymentIntent.metadata)
 
     // Return the client secret to the client
     return Response.json({
