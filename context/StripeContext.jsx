@@ -44,71 +44,68 @@ export function StripeProvider({ children }) {
         return false;
       }
       
-      setClientSecret(data.clientSecret);
-
-      const orderNumber = data.orderNumber;
-      setOrderNumber(orderNumber);
-
-      // Get paymentIntentId from the response data
+      // Store important information from the response
+      const newOrderNumber = data.orderNumber;
       const paymentIntentId = data.paymentIntentId;
 
-      if (!orderNumber || !paymentIntentId) {
+      if (!newOrderNumber || !paymentIntentId) {
         throw new Error('Missing orderNumber or paymentIntentId in the response');
       }
 
-      // Create a pending order
+      // Set the client secret for Stripe Elements
+      setClientSecret(data.clientSecret);
+      setOrderNumber(newOrderNumber);
+
+      // Step 2: Create a pending order
       const pendingOrderResponse = await fetch('/api/orders/create-pending', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          orderNumber,
+          orderNumber: newOrderNumber,
           orderData,
-          paymentIntentId
+          paymentIntentId,
+          stripeTotal: amount,
+          status: 'pending'
         }),
       });
-      
-      const pendingOrderData = await pendingOrderResponse.json();
 
-      if (pendingOrderData.error) {
-        setPaymentStatus('error');
-        setPaymentError(pendingOrderData.error);
-        return false;
+      if (!pendingOrderResponse.ok) {
+        const errorData = await pendingOrderResponse.json();
+        throw new Error(errorData.error || 'Failed to create pending order');
       }
 
+      // Success - the pending order was created
+      // The webhook will handle the actual payment confirmation
       return true;
     } catch (error) {
+      console.error('Error in payment flow:', error);
       setPaymentStatus('error');
       setPaymentError(error.message);
       return false;
     }
   };
   
-  // Create a function to complete the order after payment
-  const completeOrder = async ({ orderNumber, paymentIntentId }) => {
-    try {
-      const response = await fetch('/api/orders/update-succeeded', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          orderNumber,
-          paymentIntentId
-        }),
-      });
+  const handlePaymentSuccess = (paymentIntent) => {
+    // Store data in session storage for the confirmation page
+    if (orderNumber) {
+      sessionStorage.setItem('orderConfirmation', JSON.stringify({
+        orderNumber,
+        paymentIntentId: paymentIntent.id,
+        amount: paymentIntent.amount / 100, // Convert from cents
+        status: 'processing' // The webhook will update to 'paid' when it processes
+      }));
       
-      return await response.json();
-    } catch (error) {
-      console.error('Error completing order:', error);
-      throw error;
+      setPaymentStatus('succeeded');
+      return true;
     }
+    return false;
   };
   
-  // Reset payment state
   const resetPayment = () => {
     setClientSecret(null);
+    setOrderNumber(null);
     setPaymentStatus('idle');
     setPaymentError(null);
   };
@@ -134,7 +131,7 @@ export function StripeProvider({ children }) {
   return (
     <StripeContext.Provider value={{
       createPaymentIntent,
-      completeOrder,
+      handlePaymentSuccess,
       resetPayment,
       paymentStatus,
       paymentError,

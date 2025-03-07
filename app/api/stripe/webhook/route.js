@@ -18,24 +18,21 @@ export async function POST(request) {
       signature,
       process.env.STRIPE_WEBHOOK_SECRET
     );
+
+    console.log(`Processing webhook event: ${event.type}`);
     
     // Handle specific events
     switch (event.type) {
       case 'payment_intent.succeeded':
-        const paymentIntent = event.data.object;
-        console.log(`Payment succeeded: ${paymentIntent.id}`);
-        // call the /api/orders/update-suceeded
+        await handlePaymentSucceeded(event.data.object);
         break;
         
       case 'payment_intent.payment_failed':
-        const failedPayment = event.data.object;
-        console.log(`Payment failed: ${failedPayment.id}`);
-        // call the api/orders/update-failed
-        // Handle failed payment (notify user, etc.)
+        await handlePaymentFailed(event.data.object);
         break;
         
       case 'payment_intent.created':
-        // Handle payment intent creation (optional)
+        // Just log the event, no action needed
         console.log(`Payment intent created: ${event.data.object.id}`);
         break;
         
@@ -53,5 +50,84 @@ export async function POST(request) {
       status: 400,
       headers: { 'Content-Type': 'application/json' }
     });
+  }
+}
+
+async function handlePaymentSucceeded(paymentIntent) {
+  console.log(`Payment succeeded: ${paymentIntent.id}`);
+  
+  // Extract metadata from the payment intent
+  const { orderNumber } = paymentIntent.metadata || {};
+  
+  if (!orderNumber) {
+    console.error('No order number found in payment intent metadata');
+    return;
+  }
+  
+  try {
+    // Call the API to update the order status
+    const response = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/orders/update-succeeded`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        orderNumber,
+        paymentIntentId: paymentIntent.id,
+        paymentData: {
+          amount: paymentIntent.amount,
+          currency: paymentIntent.currency,
+          payment_method: paymentIntent.payment_method,
+          payment_method_types: paymentIntent.payment_method_types,
+        }
+      }),
+    });
+    
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'Failed to update order');
+    }
+    
+    const result = await response.json();
+    console.log('Order updated successfully:', result);
+  } catch (error) {
+    console.error('Error updating order:', error);
+  }
+}
+
+async function handlePaymentFailed(paymentIntent) {
+  console.log(`Payment failed: ${paymentIntent.id}`);
+  
+  // Extract metadata from the payment intent
+  const { orderNumber } = paymentIntent.metadata || {};
+  
+  if (!orderNumber) {
+    console.error('No order number found in payment intent metadata');
+    return;
+  }
+  
+  try {
+    // Call the API to update the order status
+    const response = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/orders/update-failed`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        orderNumber,
+        paymentIntentId: paymentIntent.id,
+        failureReason: paymentIntent.last_payment_error?.message || 'Unknown error'
+      }),
+    });
+    
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'Failed to update order');
+    }
+    
+    const result = await response.json();
+    console.log('Order marked as failed:', result);
+  } catch (error) {
+    console.error('Error updating order status:', error);
   }
 }

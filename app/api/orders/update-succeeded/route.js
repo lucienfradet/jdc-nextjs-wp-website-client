@@ -1,25 +1,58 @@
-// Create a new order in your database
+// app/api/orders/update-succeeded/route.js
+import { NextResponse } from 'next/server';
+
 export async function POST(request) {
   try {
     const body = await request.json();
-    const { orderNumber, orderData, paymentIntentId } = body;
+    const { orderNumber, paymentIntentId, paymentData } = body;
     
-    // Update order status in your database
-    //
-    // Here you would:
-    // 1. Create a new order in your database
-    // 2. Associate it with the payment intent ID
-    // 3. Return the order ID/details
+    // Validation
+    if (!orderNumber || !paymentIntentId) {
+      return NextResponse.json(
+        { error: 'Missing required fields' },
+        { status: 400 }
+      );
+    }
+
+    // Implement idempotency - check if order is already processed
+    // Here you'd typically query your database to see if this order has already been marked as paid
     
-    return Response.json({ 
-      orderNumber: orderNumber,
-      orderData: orderData,
-      paymentIntentId: paymentIntentId
+    // For example:
+    // const existingOrder = await db.orders.findOne({ 
+    //   where: { 
+    //     orderNumber,
+    //     status: 'paid'
+    //   }
+    // });
+    
+    // if (existingOrder) {
+    //   return NextResponse.json({ 
+    //     message: 'Order already processed',
+    //     orderNumber 
+    //   });
+    // }
+    
+    // In a real implementation, you would:
+    // 1. Update the order status in your database
+    // 2. Send confirmation email to the customer
+    // 3. Update inventory
+    // 4. Create invoice/receipt
+    
+    console.log('Order payment succeeded:', orderNumber, paymentIntentId);
+    
+    // For now, we'll just return a success response
+    return NextResponse.json({
+      success: true,
+      message: 'Order updated successfully',
+      orderNumber,
+      status: 'paid',
+      paymentIntentId
     });
   } catch (error) {
-    console.error('Error creating order:', error);
-    return Response.json({ 
-      error: error.message 
-    }, { status: 500 });
+    console.error('Error updating order:', error);
+    return NextResponse.json(
+      { error: error.message || 'Failed to update order' },
+      { status: 500 }
+    );
   }
 }

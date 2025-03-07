@@ -33,9 +33,8 @@ const PaymentPageContent = ({
   const { 
     clientSecret, 
     createPaymentIntent, 
-    completeOrder, 
-    orderNumber,
-    resetPayment 
+    paymentStatus,
+    orderNumber
   } = useStripeContext();
 
   // Load saved form data from session storage
@@ -132,23 +131,10 @@ const PaymentPageContent = ({
   }, [customerData, clientSecret, cart]);
 
   // Handle successful payment
-  const handlePaymentComplete = async (paymentIntent) => {
+  const handlePaymentComplete = async () => {
     setIsSubmitting(true);
 
     try {
-      // update order-pending to complete in database
-      const orderResult = await completeOrder({
-        orderNumber: orderNumber,
-        paymentIntentId: paymentIntent.id
-      });
-      
-      // Order updated successfully
-      if (orderResult) {
-        // Store order info in sessionStorage before clearing cart
-        sessionStorage.setItem('orderConfirmation', JSON.stringify(
-          orderResult
-        ));
-
         // Clear session storage
         sessionStorage.removeItem('checkoutFormData');
         sessionStorage.removeItem('checkoutPaymentMethod');
@@ -158,9 +144,8 @@ const PaymentPageContent = ({
         
         // Redirect to confirmation page after 2 seconds
         setTimeout(() => {
-          router.push('/order-confirmation?order=' + orderResult.orderNumber);
+          router.push('/order-confirmation?order=' + orderNumber);
         }, 2000);
-      }
     } catch (error) {
       console.error('Error completing order:', error);
       setPaymentError(error.message || 'Une erreur est survenue lors du traitement de votre commande');
@@ -168,6 +153,13 @@ const PaymentPageContent = ({
       setIsSubmitting(false);
     }
   };
+
+  // Watch for payment status changes
+  useEffect(() => {
+    if (paymentStatus === 'succeeded') {
+      setOrderComplete(true);
+    }
+  }, [paymentStatus]);
 
   // Handle payment error
   const handlePaymentError = (error) => {
