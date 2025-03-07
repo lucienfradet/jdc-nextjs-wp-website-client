@@ -115,32 +115,34 @@ const PaymentPageContent = ({
           pickup_location_name: deliveryMethod === 'shipping' ? '' : selectedPoint?.location_name || ''
         };
 
-        await createPaymentIntent(getCartTotal(), metadata);
+
+        const orderData = {
+          customer: customerData,
+          items: cart,
+          total: getCartTotal(),
+          deliveryMethod,
+          pickupLocation: customerData.selectedPickupLocation || null
+        }
+
+        await createPaymentIntent(getCartTotal(), orderData, metadata);
       }
     };
     
     initializeStripePayment();
-  }, [customerData, clientSecret]);
+  }, [customerData, clientSecret, cart]);
 
   // Handle successful payment
   const handlePaymentComplete = async (paymentIntent) => {
     setIsSubmitting(true);
 
     try {
-      // Create order record in database
+      // update order-pending to complete in database
       const orderResult = await completeOrder({
         orderNumber: orderNumber,
-        orderData: {
-          customer: customerData,
-          items: cart,
-          total: getCartTotal(),
-          deliveryMethod,
-          pickupLocation: customerData.selectedPickupLocation || null
-        },
         paymentIntentId: paymentIntent.id
       });
       
-      // Order created successfully
+      // Order updated successfully
       if (orderResult) {
         // Store order info in sessionStorage before clearing cart
         sessionStorage.setItem('orderConfirmation', JSON.stringify(

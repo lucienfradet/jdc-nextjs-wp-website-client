@@ -41,7 +41,8 @@ export async function POST(request) {
     // Return the client secret to the client
     return Response.json({
       clientSecret: paymentIntent.client_secret,
-      orderNumber: paymentIntent.metadata.orderNumber
+      orderNumber: paymentIntent.metadata.orderNumber,
+      paymentIntentId: paymentIntent.id
     });
   } catch (error) {
     console.error('Error creating payment intent:', error);

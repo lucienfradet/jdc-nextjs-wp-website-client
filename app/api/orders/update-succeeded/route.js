@@ -4,6 +4,8 @@ export async function POST(request) {
     const body = await request.json();
     const { orderNumber, orderData, paymentIntentId } = body;
     
+    // Update order status in your database
+    //
     // Here you would:
     // 1. Create a new order in your database
     // 2. Associate it with the payment intent ID

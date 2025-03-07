@@ -24,13 +24,13 @@ export async function POST(request) {
       case 'payment_intent.succeeded':
         const paymentIntent = event.data.object;
         console.log(`Payment succeeded: ${paymentIntent.id}`);
-        // Update order status in your database
-        // Send confirmation emails, etc.
+        // call the /api/orders/update-suceeded
         break;
         
       case 'payment_intent.payment_failed':
         const failedPayment = event.data.object;
         console.log(`Payment failed: ${failedPayment.id}`);
+        // call the api/orders/update-failed
         // Handle failed payment (notify user, etc.)
         break;
         

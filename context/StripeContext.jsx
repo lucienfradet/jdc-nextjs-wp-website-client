@@ -17,7 +17,7 @@ export function StripeProvider({ children }) {
   const [paymentError, setPaymentError] = useState(null);
   
   // Create a function to initialize a payment intent
-  const createPaymentIntent = async (amount, metadata = {}) => {
+  const createPaymentIntent = async (amount, orderData, metadata = {}) => {
     try {
       setPaymentStatus('processing');
       setPaymentError(null);
@@ -45,7 +45,38 @@ export function StripeProvider({ children }) {
       }
       
       setClientSecret(data.clientSecret);
-      setOrderNumber(data.orderNumber);
+
+      const orderNumber = data.orderNumber;
+      setOrderNumber(orderNumber);
+
+      // Get paymentIntentId from the response data
+      const paymentIntentId = data.paymentIntentId;
+
+      if (!orderNumber || !paymentIntentId) {
+        throw new Error('Missing orderNumber or paymentIntentId in the response');
+      }
+
+      // Create a pending order
+      const pendingOrderResponse = await fetch('/api/orders/create-pending', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          orderNumber,
+          orderData,
+          paymentIntentId
+        }),
+      });
+      
+      const pendingOrderData = await pendingOrderResponse.json();
+
+      if (pendingOrderData.error) {
+        setPaymentStatus('error');
+        setPaymentError(pendingOrderData.error);
+        return false;
+      }
+
       return true;
     } catch (error) {
       setPaymentStatus('error');
@@ -55,16 +86,15 @@ export function StripeProvider({ children }) {
   };
   
   // Create a function to complete the order after payment
-  const completeOrder = async ({ orderNumber, orderData, paymentIntentId }) => {
+  const completeOrder = async ({ orderNumber, paymentIntentId }) => {
     try {
-      const response = await fetch('/api/orders/create', {
+      const response = await fetch('/api/orders/update-succeeded', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           orderNumber,
-          orderData,
           paymentIntentId
         }),
       });
