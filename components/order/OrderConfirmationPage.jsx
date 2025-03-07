@@ -13,33 +13,48 @@ import { useCart } from '@/context/CartContext';
 
 export default function OrderConfirmationPage({ headerData, footerData, siteIconUrl }) {
   const [isMobile, setIsMobile] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [orderData, setOrderData] = useState(null);
   const router = useRouter();
   const { clearCart } = useCart();
   const searchParams = useSearchParams();
   
-  // Check for order in URL first, then sessionStorage
   useEffect(() => {
-    // Try to get order ID from URL
-    const orderIdFromUrl = searchParams.get('order');
-    
-    if (orderIdFromUrl && !orderData) {
-      setOrderData({ orderId: orderIdFromUrl });
-      clearCart();
-      return;
-    }
-    
-    // If not in URL, check sessionStorage
-    const storedOrderData = sessionStorage.getItem('orderConfirmation');
-    if (storedOrderData) {
-      setOrderData(JSON.parse(storedOrderData));
-      sessionStorage.removeItem('orderConfirmation');
-      clearCart();
-    } else {
-      // No order data found
+    // Check for order in URL first, then sessionStorage
+    const loadOrderData = async () => {
+      // Try to get order ID from URL
+      const orderNumberFromUrl = searchParams.get('order');
+
+      if (orderNumberFromUrl && !orderData) {
+        setOrderData({ orderNumber: orderNumberFromUrl });
+        clearCart();
+        setIsLoading(false);
+        return;
+      }
+
+      // If not in URL, check sessionStorage
+      const storedOrderData = sessionStorage.getItem('orderConfirmation');
+      if (storedOrderData) {
+        setOrderData(JSON.parse(storedOrderData));
+        sessionStorage.removeItem('orderConfirmation');
+        clearCart();
+        setIsLoading(false);
+        return;
+      }
+
+      // No order data found in either place
+      setIsLoading(false);
+    };
+
+    loadOrderData();
+  }, [searchParams, clearCart]);
+
+  // check if redirection is needed
+  useEffect(() => {
+    if (!isLoading && !orderData) {
       router.push('/');
     }
-  }, []);
+  }, [isLoading, orderData, router]);
   
   // Mobile detection
   useEffect(() => {
@@ -83,7 +98,7 @@ export default function OrderConfirmationPage({ headerData, footerData, siteIcon
           <h1>Merci pour votre commande!</h1>
           
           <p className={styles.orderNumber}>
-            Numéro de commande: <strong>{orderData.orderId}</strong>
+            Numéro de commande: <strong>{orderData.orderNumber}</strong>
           </p>
           
           <p className={styles.confirmationMessage}>

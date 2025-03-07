@@ -28,13 +28,13 @@ const PaymentPageContent = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [orderComplete, setOrderComplete] = useState(false);
   const [paymentError, setPaymentError] = useState(null);
-  const [orderNumber, setOrderNumber] = useState(null);
 
   // Get stripe context
   const { 
     clientSecret, 
     createPaymentIntent, 
     completeOrder, 
+    orderNumber,
     resetPayment 
   } = useStripeContext();
 
@@ -88,36 +88,11 @@ const PaymentPageContent = ({
     };
   }, []);
 
-  // Generate a unique order number (format: JDC-YYYYMMDD-XXXX)
-  const generateOrderNumber = () => {
-    const prefix = 'JDC';
-    const date = new Date();
-    const dateStr = date.getFullYear() +
-      String(date.getMonth() + 1).padStart(2, '0') +
-      String(date.getDate()).padStart(2, '0');
-    const randomNum = Math.floor(1000 + Math.random() * 9000); // 4-digit random number
-    
-    return `${prefix}-${dateStr}-${randomNum}`;
-  };
-
   // Initialize Stripe payment intent
   useEffect(() => {
     const initializeStripePayment = async () => {
       // Only proceed if we haven't already created a payment intent
       if (cart.length > 0 && !clientSecret && customerData && !orderNumber) {
-        // First check if we already have an orderNumber in sessionStorage
-        let orderNum = sessionStorage.getItem('orderNumber');
-
-        // If no orderNumber exists yet, generate a new one and save it
-        if (!orderNum) {
-          orderNum = generateOrderNumber();
-          sessionStorage.setItem('orderNumber', orderNum);
-          setOrderNumber(orderNum);
-        } else {
-          // If it exists in sessionStorage but not in state, update state
-          setOrderNumber(orderNum);
-        }
-
         // check if pointDeChute needs to be sent
         let selectedPoint = undefined;
         if (pointDeChute && deliveryMethod !== 'shipping') {
@@ -127,9 +102,6 @@ const PaymentPageContent = ({
         }
 
         const metadata = {
-          // Order identification
-          order_number: orderNum,
-          
           // Basic customer information (minimal)
           customer_email: customerData.billingEmail || '',
           customer_name: `${customerData.billingFirstName} ${customerData.billingLastName}`.trim(),
@@ -154,17 +126,10 @@ const PaymentPageContent = ({
   const handlePaymentComplete = async (paymentIntent) => {
     setIsSubmitting(true);
 
-    // Get the order number from sessionStorage
-    const orderNum = sessionStorage.getItem('orderNumber');
-    
-    if (!orderNum) {
-      throw new Error('Order number not found. Please try again.');
-    }
-    
     try {
       // Create order record in database
       const orderResult = await completeOrder({
-        orderNumber: orderNum,
+        orderNumber: orderNumber,
         orderData: {
           customer: customerData,
           items: cart,
@@ -176,25 +141,22 @@ const PaymentPageContent = ({
       });
       
       // Order created successfully
-      if (orderResult.orderId) {
+      if (orderResult) {
         // Store order info in sessionStorage before clearing cart
-        sessionStorage.setItem('orderConfirmation', JSON.stringify({
-          orderId: orderResult.orderId,
-          total: getCartTotal(),
-          date: new Date().toISOString()
-        }));
+        sessionStorage.setItem('orderConfirmation', JSON.stringify(
+          orderResult
+        ));
 
         // Clear session storage
         sessionStorage.removeItem('checkoutFormData');
         sessionStorage.removeItem('checkoutPaymentMethod');
         sessionStorage.removeItem('deliveryMethod');
-        sessionStorage.removeItem('orderNumber');
 
         setOrderComplete(true);
         
         // Redirect to confirmation page after 2 seconds
         setTimeout(() => {
-          router.push('/order-confirmation?order=' + orderResult.orderId);
+          router.push('/order-confirmation?order=' + orderResult.orderNumber);
         }, 2000);
       }
     } catch (error) {

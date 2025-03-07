@@ -12,6 +12,7 @@ const StripeContext = createContext();
 
 export function StripeProvider({ children }) {
   const [clientSecret, setClientSecret] = useState(null);
+  const [orderNumber, setOrderNumber] = useState(null);
   const [paymentStatus, setPaymentStatus] = useState('idle'); // idle, processing, succeeded, error
   const [paymentError, setPaymentError] = useState(null);
   
@@ -44,6 +45,7 @@ export function StripeProvider({ children }) {
       }
       
       setClientSecret(data.clientSecret);
+      setOrderNumber(data.orderNumber);
       return true;
     } catch (error) {
       setPaymentStatus('error');
@@ -55,9 +57,6 @@ export function StripeProvider({ children }) {
   // Create a function to complete the order after payment
   const completeOrder = async ({ orderNumber, orderData, paymentIntentId }) => {
     try {
-      console.log("order data after completion: ", orderNumber)
-      console.log("order data after completion: ", orderData)
-      console.log("order data after completion: ", paymentIntentId)
       const response = await fetch('/api/orders/create', {
         method: 'POST',
         headers: {
@@ -109,7 +108,8 @@ export function StripeProvider({ children }) {
       resetPayment,
       paymentStatus,
       paymentError,
-      clientSecret
+      clientSecret,
+      orderNumber
     }}>
       {clientSecret ? (
         <Elements 
