@@ -16,6 +16,7 @@ export function CartProvider({ children }) {
     taxSummary: {},
     totalTax: 0
   });
+  const [taxError, setTaxError] = useState(false);
   const [province, setProvince] = useState('QC'); // Default to Quebec
   const [deliveryMethod, setDeliveryMethod] = useState(() => {
     try {
@@ -80,6 +81,7 @@ export function CartProvider({ children }) {
           taxSummary: {},
           totalTax: 0
         });
+        setTaxError(false);
         return;
       }
 
@@ -100,15 +102,18 @@ export function CartProvider({ children }) {
         }
 
         const taxData = await response.json();
+        
+        // Check if the response contains an error property
+        if (taxData.error) {
+          throw new Error(taxData.error);
+        }
+        
         setTaxes(taxData);
+        setTaxError(false);
       } catch (error) {
         console.error('Error calculating taxes:', error);
-        // Set default empty taxes on error
-        setTaxes({
-          items: [],
-          taxSummary: {},
-          totalTax: 0
-        });
+        // Instead of setting taxes to 0, mark that we have a tax error
+        setTaxError(true);
       }
     };
 
@@ -188,6 +193,12 @@ export function CartProvider({ children }) {
   const getCartTotal = () => {
     const subtotal = getCartSubtotal();
     const shipping = getShippingCost();
+    
+    // Return null if there's a tax error, indicating the total can't be calculated
+    if (taxError) {
+      return null;
+    }
+    
     return subtotal + taxes.totalTax + shipping;
   };
 
@@ -214,6 +225,11 @@ export function CartProvider({ children }) {
     }
   };
 
+  // Check if the cart can proceed to checkout
+  const canCheckout = () => {
+    return !taxError && cart.length > 0;
+  };
+
   return (
     <CartContext.Provider value={{
       cart,
@@ -226,13 +242,15 @@ export function CartProvider({ children }) {
       getTotalItems,
       getShippingCost,
       taxes,
+      taxError,
       updateProvince,
       province,
       isLoading,
       showFeedback,
       setShowFeedback,
       deliveryMethod,
-      updateDeliveryMethod
+      updateDeliveryMethod,
+      canCheckout
     }}>
       {children}
 

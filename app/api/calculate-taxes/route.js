@@ -1,4 +1,4 @@
-import { getPageFieldsByName } from '@/lib/api';
+import { fetchTaxRates } from '@/lib/wooCommerce';
 import { getTaxLabels } from '@/lib/taxUtils';
 
 export async function POST(request) {
@@ -6,18 +6,31 @@ export async function POST(request) {
     // Get request body (cart items and province)
     const { items, province } = await request.json();
     
-    // Fetch tax rates from CMS
-    const taxValues = await getPageFieldsByName('tax-values');
-    if (!taxValues || !taxValues.acfFields) {
-      throw new Error('Tax values not found');
+    const taxRatesData = await fetchTaxRates();
+    
+    // Format taxRatesData
+    const federalRate = taxRatesData.find(tax => 
+      tax.country === 'CA' && (!tax.state || tax.state === '')
+    ).rate / 100;
+
+    // Check if province is found in tax rates data
+    if (!federalRate) {
+      throw new Error(`Federal tax rate not found`);
     }
-    
-    const taxRates = taxValues.acfFields.canada;
-    const federalRate = taxRates.federal / 100;  // Convert to decimal
-    const provincialRates = taxRates.provinces;
-    
-    // Default to 0 if province not found
-    const provincialRate = (provincialRates[province.toLowerCase()] || 0) / 100;
+
+    const provincialRateRaw = taxRatesData.filter(tax => 
+      tax.country === 'CA' && tax.state.toLowerCase() === province.toLowerCase()
+    )
+
+    console.log(province);
+    console.log(provincialRateRaw)
+
+    // Check if province is found in tax rates data
+    if (provincialRateRaw.length === 0) {
+      throw new Error(`Tax rates for province ${province} not found`);
+    }
+
+    const provincialRate = provincialRateRaw[0].rate / 100;
     
     // Get tax labels based on province
     const { federalLabel, provincialLabel } = getTaxLabels(province);

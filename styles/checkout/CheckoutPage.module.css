@@ -151,6 +151,12 @@
   border: 1px solid var(--green);
 }
 
+.taxErrorMessage {
+  color: var(--red);
+  text-align: center;
+  font-weight: bold;
+}
+
 /* Media Queries */
 @media (max-width: 991px) {
   .checkoutContainer {

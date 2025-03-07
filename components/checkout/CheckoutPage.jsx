@@ -22,7 +22,17 @@ export default function CheckoutPage({
 }) {
   const router = useRouter();
   const [isMobile, setIsMobile] = useState(false);
-  const { cart, getCartSubtotal, getCartTotal, getShippingCost, taxes, updateProvince, updateDeliveryMethod } = useCart();
+  const { 
+    cart, 
+    getCartSubtotal, 
+    getCartTotal, 
+    getShippingCost, 
+    taxes, 
+    taxError, 
+    canCheckout, 
+    updateProvince, 
+    updateDeliveryMethod 
+  } = useCart();
   const [hasShippableItems, setHasShippableItems] = useState(false);
   const [formData, setFormData] = useState({});
   const [formErrors, setFormErrors] = useState({});
@@ -136,6 +146,15 @@ export default function CheckoutPage({
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Check if checkout is allowed (no tax errors)
+    if (!canCheckout()) {
+      setFormErrors({
+        submission: 'Le calcul des taxes a échoué. Impossible de finaliser la commande.'
+      });
+      return;
+    }
+    
     setIsSubmitting(true);
     
     if (paymentMethod === 'bank-transfer') {
@@ -198,6 +217,14 @@ export default function CheckoutPage({
       <main className={styles.checkoutContainer}>
         <h1 className={styles.pageTitle}>Finaliser votre commande</h1>
 
+        {/* Tax error alert banner */}
+        {taxError && (
+          <div className={styles.taxErrorAlert || 'error-alert'}>
+            <strong>Attention:</strong> Nous n'avons pas pu calculer les taxes pour votre commande. 
+            Veuillez réessayer ultérieurement ou contacter notre service client pour obtenir de l'aide.
+          </div>
+        )}
+
         <form onSubmit={handleSubmit} className={styles.checkoutForm}>
           <div className={styles.checkoutColumns}>
             <div className={styles.formColumn}>
@@ -231,14 +258,22 @@ export default function CheckoutPage({
                     </a>
                   </div>
                 ) : (
-                    <button 
-                      type="submit" 
-                      className={styles.submitButton}
-                      disabled={isSubmitting}
-                    >
-                      {isSubmitting ? 'Traitement en cours...' : 'Confirmer la commande'}
-                    </button>
-                  )}
+                  <button 
+                    type="submit" 
+                    className={styles.submitButton}
+                    disabled={isSubmitting || !canCheckout()}
+                  >
+                    {isSubmitting ? 'Traitement en cours...' : 'Confirmer la commande'}
+                  </button>
+                )}
+
+                {/* Display message when checkout is disabled due to tax error */}
+                {taxError && (
+                  <div className={styles.taxErrorMessage || 'error-message'}>
+                      Le calcul des taxes a échoué.<br />
+                      La finalisation de la commande n'est pas disponible pour le moment.
+                  </div>
+                )}
 
                 {Object.keys(formErrors).length > 0 && (
                   <div className={styles.formErrorSummary}>
