@@ -44,3 +44,7 @@ Email:
   Go to WP Mail SMTP > Email Test, send a test email, and check if it arrives.
 
 (Or use Postfix?)
+
+NEED TO DISABLE XML-RPC on wordpress and hardened its security!
+
+Implement Cloudflare reverse proxy as security features
