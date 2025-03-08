@@ -60,7 +60,7 @@ Response: Tax breakdown and totals
 
 ## Deployment
 
-- Development
+### Development
 ```bash
 sudo docker compose -f docker-compose.yml -f docker-compose.dev.yml up
 
@@ -69,10 +69,55 @@ npm run dev
 stripe listen --forward-to localhost:3000/api/stripe/webhook
 ```
 
-- Production
+#### How to create local Database
+```bash
+# Initialize Prisma (first-time setup)
+npx prisma generate
+
+npx prisma migrate dev --name initial_schema
+```
+
+#### How to update local Database
+
+__IMPORTANT__
+When changing schema, data migration is not auto-managed if fields are __deleted__ or __renamed__!
+Proper data management should be created manually in ```/prisma/migrations/[timestamp]_NAME_OF_THE_CHANGE/migration.sql```
+
+```bash
+# Update schema and migrate changes (If changes made to prisma/shema.prisma)
+npx prisma migrate dev --name NAME_OF_THE_CHANGES --create-only
+
+# !! Edit migration file if needed !!
+
+# Apply the migrations
+# (Prisma detects that there's a pending (unapplied) migration and applies it.
+# It doesn't create a new migration file.)
+npx prisma migrate dev
+```
+
+#### Inspecting the local Database
+```bash
+# Starts a web server (usually on port 5555) http://localhost:5555
+npx prisma studio
+```
+
+### Production
 ```bash
 sudo docker compose -f docker-compose.yml -f docker-compose.prod.yml up
 ```
+
+#### Update local Database in production
+
+Make sure that all migration files are safe to run and wont result in data loss!
+```bash
+npx prisma migrate deploy
+```
+
+##### Important Differences Between Commands
+
+- ```migrate dev``` is for development: it generates new migrations and applies them
+- ```migrate deploy``` is for production: it only applies existing migrations
+- Always run ```migrate dev``` in development first, commit the migrations, then run ```migrate deploy``` in production
 
 ### .env files
 - frontend/.env
@@ -107,3 +152,14 @@ Content is managed through the WordPress backend:
 1. In the WooCommerce dashboard, go to Settings > Tax
 2. Update tax rates for different provinces
 3. The frontend will use these rates for calculations
+
+## Important Security Checks
+
+### File permisisons
+```
+chmod 600 .env*
+```
+
+### Server security
+- ufw
+- fail2ban
