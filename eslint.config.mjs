@@ -13,8 +13,10 @@ export default [
   {
     files: ["**/*.{js,mjs,cjs,jsx}"],
     languageOptions: { 
-      globals: globals.browser,
-      process: "readonly" // Add process as a global variable
+      globals: {
+        ...globals.browser,
+        process: "readonly" // Correctly add process as a global variable
+      }
     },
     plugins: {
       react: pluginReact

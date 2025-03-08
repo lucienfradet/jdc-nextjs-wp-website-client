@@ -24,10 +24,7 @@ export default function CheckoutPage({
   const [isMobile, setIsMobile] = useState(false);
   const { 
     cart, 
-    getCartSubtotal, 
     getCartTotal, 
-    getShippingCost, 
-    taxes, 
     taxError, 
     canCheckout, 
     updateProvince, 
@@ -45,6 +42,7 @@ export default function CheckoutPage({
       const savedMethod = sessionStorage.getItem('checkoutPaymentMethod');
       return savedMethod || 'bank-transfer';
     } catch (error) {
+      console.log('Error accessing sessionStorage:', error);
       return 'bank-transfer';
     }
   });
@@ -220,8 +218,8 @@ export default function CheckoutPage({
         {/* Tax error alert banner */}
         {taxError && (
           <div className={styles.taxErrorAlert || 'error-alert'}>
-            <strong>Attention:</strong> Nous n'avons pas pu calculer les taxes pour votre commande. 
-            Veuillez réessayer ultérieurement ou contacter notre service client pour obtenir de l'aide.
+            <strong>Attention:</strong> Nous n&apos;avons pas pu calculer les taxes pour votre commande. 
+            Veuillez réessayer ultérieurement ou contacter notre service client pour obtenir de l&apos;aide.
           </div>
         )}
 
@@ -271,7 +269,7 @@ export default function CheckoutPage({
                 {taxError && (
                   <div className={styles.taxErrorMessage || 'error-message'}>
                       Le calcul des taxes a échoué.<br />
-                      La finalisation de la commande n'est pas disponible pour le moment.
+                      La finalisation de la commande n&apos;est pas disponible pour le moment.
                   </div>
                 )}
 

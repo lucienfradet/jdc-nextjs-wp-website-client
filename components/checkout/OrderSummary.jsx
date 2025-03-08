@@ -89,6 +89,13 @@ export default function OrderSummary({
           <span>{formatCurrency(subtotal)}</span>
         </div>
         
+        {hasShippableItems && (
+          <div className={styles.totalRow}>
+            <span>Livraison{deliveryMethod === 'pickup' ? ' (Cueillette)' : ''}</span>
+            <span>{shipping > 0 ? formatCurrency(shipping) : 'Gratuit'}</span>
+          </div>
+        )}
+
         {/* Tax Rows */}
         {Object.entries(taxes.taxSummary).map(([taxName, taxInfo]) => (
           <div key={taxName} className={styles.totalRow}>
@@ -96,13 +103,6 @@ export default function OrderSummary({
             <span>{formatCurrency(taxInfo.amount)}</span>
           </div>
         ))}
-        
-        {hasShippableItems && (
-          <div className={styles.totalRow}>
-            <span>Livraison{deliveryMethod === 'pickup' ? ' (Cueillette)' : ''}</span>
-            <span>{shipping > 0 ? formatCurrency(shipping) : 'Gratuit'}</span>
-          </div>
-        )}
         
         <div className={`${styles.totalRow} ${styles.grandTotal}`}>
           <span>Total</span>

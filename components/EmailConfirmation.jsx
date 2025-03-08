@@ -33,6 +33,8 @@ const EmailConfirmation = ({
   // Future implementation: Email domain checking and typo detection
   useEffect(() => {
     // Placeholder for future email validation with external libraries
+    // Preventing unused variable error
+    console.log(setEmailTypoSuggestion);
     // This could check for common typos like gmail.con instead of gmail.com
     /* 
     if (formData.billingEmail && isValidEmailFormat(formData.billingEmail)) {

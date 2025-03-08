@@ -18,7 +18,6 @@ const CheckoutForm = forwardRef(({
       // Initialize with saved form data if available, otherwise use defaults
       if (savedFormData) {
         return savedFormData;
-        console.log("hellp")
       }
 
       return {
@@ -478,7 +477,7 @@ const CheckoutForm = forwardRef(({
                       }
                     })}
                   />
-                  L'adresse de livraison est la même que l'adresse de facturation
+                  L&apos;adresse de livraison est la même que l&apos;adresse de facturation
                 </label>
               </div>
 

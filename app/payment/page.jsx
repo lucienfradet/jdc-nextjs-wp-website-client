@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { getPageFieldsByName } from '@/lib/api';
 import { fetchSiteIcon } from "@/lib/api";
 import PaymentPage from '@/components/checkout/PaymentPage';
-import { useRouter } from 'next/navigation';
+import { notFound, useRouter } from 'next/navigation';
 
 export default function Page() {
   const router = useRouter();
@@ -31,7 +31,7 @@ export default function Page() {
 
         if (!headerData || !footerData) {
           console.error("Data not found.");
-          return;
+          notFound();
         }
 
         if (!pointsRes.ok) {

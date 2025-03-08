@@ -1,6 +1,7 @@
 import { getPageFieldsByName } from '@/lib/api';
 import { fetchSiteIcon } from "@/lib/api";
 import HomePage from '@/components/HomePage';
+import { notFound } from 'next/navigation';
 
 export default async function Page() {
   // Fetch data on the server
@@ -11,9 +12,7 @@ export default async function Page() {
 
   if (!pageData || !headerData || !footerData) {
     console.error("Data not found. Returning 404.");
-    return {
-      notFound: true,
-    };
+    notFound();
   }
 
   return (

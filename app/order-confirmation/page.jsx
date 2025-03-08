@@ -1,6 +1,8 @@
+import { Suspense } from 'react';
 import { getPageFieldsByName } from '@/lib/api';
 import { fetchSiteIcon } from "@/lib/api";
 import OrderConfirmationPage from '@/components/order/OrderConfirmationPage';
+import { notFound } from 'next/navigation';
 
 export default async function Page() {
   // Fetch data on the server
@@ -12,16 +14,16 @@ export default async function Page() {
 
   if (!headerData || !footerData) {
     console.error("Data not found. Returning 404.");
-    return {
-      notFound: true,
-    };
+    notFound();
   }
 
   return (
-    <OrderConfirmationPage
-      headerData={headerData}
-      footerData={footerData}
-      siteIconUrl={siteIconUrl}
-    />
+    <Suspense fallback={<div>Loading order details...</div>}>
+      <OrderConfirmationPage
+        headerData={headerData}
+        footerData={footerData}
+        siteIconUrl={siteIconUrl}
+      />
+    </Suspense>
   );
 }

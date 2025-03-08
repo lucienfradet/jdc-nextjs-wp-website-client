@@ -116,14 +116,14 @@ export default function OrderConfirmationPage({ headerData, footerData, siteIcon
           
           <div className={styles.contactInfo}>
             <p>
-              Pour toute question concernant votre commande, n'hésitez pas à
+              Pour toute question concernant votre commande, n&apos;hésitez pas à
               nous contacter par courriel à <a href="mailto:contact@jardindeschefs.com">contact@jardindeschefs.com</a>.
             </p>
           </div>
           
           <div className={styles.buttonContainer}>
             <Link href="/" className={styles.returnButton}>
-              Retourner à l'accueil
+              Retourner à l&apos;accueil
             </Link>
           </div>
         </div>

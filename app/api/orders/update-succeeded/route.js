@@ -4,7 +4,7 @@ import { NextResponse } from 'next/server';
 export async function POST(request) {
   try {
     const body = await request.json();
-    const { orderNumber, paymentIntentId, paymentData } = body;
+    const { orderNumber, paymentIntentId } = body;
     
     // Validation
     if (!orderNumber || !paymentIntentId) {

@@ -75,11 +75,14 @@ export function CartProvider({ children }) {
   // Calculate taxes whenever cart or province changes
   useEffect(() => {
     const calculateTaxes = async () => {
+      const shippingCost = getShippingCost();
+
       if (cart.length === 0) {
         setTaxes({
           items: [],
           taxSummary: {},
-          totalTax: 0
+          totalTax: 0,
+          appliedToShipping: false
         });
         setTaxError(false);
         return;
@@ -93,7 +96,8 @@ export function CartProvider({ children }) {
           },
           body: JSON.stringify({
             items: cart,
-            province: province
+            province: province,
+            shipping: shippingCost
           }),
         });
 
@@ -120,7 +124,7 @@ export function CartProvider({ children }) {
     if (!isLoading && cart.length > 0) {
       calculateTaxes();
     }
-  }, [cart, province, isLoading]);
+  }, [cart, province, isLoading, deliveryMethod, shippingLoaded]);
 
   const addToCart = (product, quantity = 1) => {
     // Make sure quantity is a number

@@ -34,11 +34,6 @@ export default function ProductDetail({ product, headerData, footerData, siteIco
     if (newQuantity < 1) return;
     
     setQuantity(newQuantity);
-    
-    // If in cart view, update the cart quantity directly
-    if (showRemove && cartItem) {
-      updateQuantity(product.id, newQuantity);
-    }
   };
 
   const handleAddToCart = () => {

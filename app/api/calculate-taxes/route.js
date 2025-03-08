@@ -4,7 +4,7 @@ import { getTaxLabels } from '@/lib/taxUtils';
 export async function POST(request) {
   try {
     // Get request body (cart items and province)
-    const { items, province } = await request.json();
+    const { items, province, shipping } = await request.json();
     
     const taxRatesData = await fetchTaxRates();
     
@@ -21,9 +21,6 @@ export async function POST(request) {
     const provincialRateRaw = taxRatesData.filter(tax => 
       tax.country === 'CA' && tax.state.toLowerCase() === province.toLowerCase()
     )
-
-    console.log(province);
-    console.log(provincialRateRaw)
 
     // Check if province is found in tax rates data
     if (provincialRateRaw.length === 0) {
@@ -85,6 +82,18 @@ export async function POST(request) {
       (sum, tax) => sum + tax.amount, 
       0
     );
+
+    // Add taxes to shipping if needed
+    result.appliedToShipping = provincialRateRaw[0].shipping;
+    if (result.appliedToShipping) {
+      result.totalTax += (shipping * federalRate + shipping * provincialRate);
+      if (provincialLabel) {
+        result.taxSummary[provincialLabel].amount += shipping * provincialRate;
+        result.taxSummary[federalLabel].amount += shipping * federalRate;
+      } else {
+        result.taxSummary[federalLabel].amount += shipping * federalRate;
+      }
+    }
     
     return Response.json(result);
   } catch (error) {
