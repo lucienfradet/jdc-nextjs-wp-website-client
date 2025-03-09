@@ -22,7 +22,7 @@ const PaymentPageContent = ({
 }) => {
   const router = useRouter();
   const [isMobile, setIsMobile] = useState(false);
-  const { cart, getCartTotal, updateProvince, updateDeliveryMethod } = useCart();
+  const { cart, taxes, getCartTotal, updateProvince, updateDeliveryMethod } = useCart();
   const [customerData, setCustomerData] = useState(null);
   const [deliveryMethod, setDeliveryMethod] = useState('shipping');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -123,12 +123,12 @@ const PaymentPageContent = ({
           pickupLocation: customerData.selectedPickupLocation || null
         }
 
-        await createPaymentIntent(getCartTotal(), orderData, metadata);
+        await createPaymentIntent(getCartTotal(), orderData, taxes, metadata);
       }
     };
     
     initializeStripePayment();
-  }, [customerData, clientSecret, cart]);
+  }, [customerData, clientSecret, cart, taxes]);
 
   // Handle successful payment
   const handlePaymentComplete = async () => {

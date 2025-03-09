@@ -70,16 +70,25 @@ stripe listen --forward-to localhost:3000/api/stripe/webhook
 ```
 
 #### How to create local Database
+
+In order to use .env.development instead of the default .env, update ```package.js``` with this:
+```json
+"scripts": {
+    "prisma:dev": "dotenv -e .env.development -- npx prisma"
+},
+```
+Then you can use these commands:
 ```bash
 # Initialize Prisma (first-time setup)
-npx prisma generate
+npm run prisma:dev -- generate
 
-npx prisma migrate dev --name initial_schema
+npm run prisma:dev -- migrate dev --name initial_schema
 ```
 
 #### How to update local Database
 
 __IMPORTANT__
+
 When changing schema, data migration is not auto-managed if fields are __deleted__ or __renamed__!
 Proper data management should be created manually in ```/prisma/migrations/[timestamp]_NAME_OF_THE_CHANGE/migration.sql```
 

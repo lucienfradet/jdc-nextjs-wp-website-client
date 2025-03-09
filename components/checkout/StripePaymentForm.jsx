@@ -8,7 +8,7 @@ import styles from '@/styles/checkout/PaymentGateway.module.css';
 const StripePaymentForm = ({ onPaymentComplete, onError, isSubmitting }) => {
   const stripe = useStripe();
   const elements = useElements();
-  const { handlePaymentSuccess } = useStripeContext();
+  const { createPendingOrder, handlePaymentSuccess } = useStripeContext();
   
   const [localIsLoading, setLocalIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
@@ -27,46 +27,61 @@ const StripePaymentForm = ({ onPaymentComplete, onError, isSubmitting }) => {
     
     setLocalIsLoading(true);
     setErrorMessage(null);
-    
-    // Trigger form validation and create payment method
-    const { error: submitError } = await elements.submit();
-    
-    if (submitError) {
-      setErrorMessage(submitError.message);
-      setLocalIsLoading(false);
-      onError && onError(submitError);
-      return;
-    }
-    
-    // Confirm the payment
-    const { error, paymentIntent } = await stripe.confirmPayment({
-      elements,
-      redirect: 'if_required',
-      confirmParams: {
-        return_url: `${window.location.origin}/order-confirmation`,
+
+    try {
+      // Create the pending order in the local db
+      await createPendingOrder();
+
+      // Trigger form validation and create payment method
+      const { error: submitError } = await elements.submit();
+
+      if (submitError) {
+        setErrorMessage(submitError.message);
+        setLocalIsLoading(false);
+        onError && onError(submitError);
+        return;
       }
-    });
 
-    if (error) {
-      // Handle error in UI
-      setErrorMessage(error.message);
-      onError && onError(error);
-    } else if (paymentIntent && paymentIntent.status === 'succeeded') {
-      // Payment completed - while the webhook will handle the actual order processing,
-      // we still need to handle the UI/UX flow for the user
-      handlePaymentSuccess(paymentIntent);
-      onPaymentComplete && onPaymentComplete(paymentIntent);
-    } else if (paymentIntent && paymentIntent.status === 'processing') {
-      // Payment is processing - it's async in the background but we can still
-      // move the user to a success page since our webhook will handle the final state
-      handlePaymentSuccess(paymentIntent);
-      onPaymentComplete && onPaymentComplete(paymentIntent);
-    } else {
-      setErrorMessage("Une erreur inattendue s'est produite.");
-      onError && onError(new Error("Unexpected payment status"));
+      // Confirm the payment
+      const { error, paymentIntent } = await stripe.confirmPayment({
+        elements,
+        redirect: 'if_required',
+        confirmParams: {
+          return_url: `${window.location.origin}/order-confirmation`,
+        }
+      });
+
+      if (error) {
+        // Handle error in UI
+        setErrorMessage(error.message);
+        onError && onError(error);
+      } else if (paymentIntent && paymentIntent.status === 'succeeded') {
+        // Payment completed - while the webhook will handle the actual order processing,
+        // we still need to handle the UI/UX flow for the user
+        handlePaymentSuccess(paymentIntent);
+        onPaymentComplete && onPaymentComplete(paymentIntent);
+      } else if (paymentIntent && paymentIntent.status === 'processing') {
+        // Payment is processing - it's async in the background but we can still
+        // move the user to a success page since our webhook will handle the final state
+        handlePaymentSuccess(paymentIntent);
+        onPaymentComplete && onPaymentComplete(paymentIntent);
+      } else {
+        setErrorMessage("Une erreur inattendue s'est produite.");
+        onError && onError(new Error("Unexpected payment status"));
+      }
+    } catch (error) {
+      // Check if it's a "not ready" error
+      if (error.message.includes('not fully loaded')) {
+        setErrorMessage("Nous éprouvons un ralentissement de service, le formulaire de paiement n'est pas prêt à la soumission. Veuillez patienter quelques secondes et réessayer.");
+      } else {
+        setErrorMessage(error.message || 'Failed to process payment');
+        onError && onError(error);
+        setLocalIsLoading(false);
+      }
+      return; // Stop payment flow
+    } finally {
+      setLocalIsLoading(false);
     }
-
-    setLocalIsLoading(false);
   };
 
   return (

@@ -1,4 +1,4 @@
-// This is your Prisma schema file,
+// This is your Prisma schema file
 generator client {
   provider = "prisma-client-js"
 }
@@ -10,58 +10,95 @@ datasource db {
 
 model Customer {
   id               Int      @id @default(autoincrement())
-  email            String   @unique
+  email            String   
   firstName        String
   lastName         String
   phone            String?
-  address1         String?
-  address2         String?
-  city             String?
-  state            String?
-  postalCode       String?
-  country          String?  @default("CA")
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
   orders           Order[]
+
+  @@index([email]) // Add an index for faster lookups by email
 }
 
 model Order {
-  id               String    @id @default(uuid())
-  orderNumber      String    @unique
-  customerId       Int
-  customer         Customer  @relation(fields: [customerId], references: [id])
-  status           String    @default("pending")
-  paymentStatus    String    @default("pending")
-  paymentMethod    String
-  paymentIntentId  String?
-  subtotal         Decimal   @db.Decimal(10, 2)
-  tax              Decimal   @db.Decimal(10, 2)
-  shipping         Decimal   @db.Decimal(10, 2)
-  total            Decimal   @db.Decimal(10, 2)
-  deliveryMethod   String    @default("shipping")
-  pickupLocationId Int?
-  pickupLocation   PickupLocation? @relation(fields: [pickupLocationId], references: [id])
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @updatedAt
-  items            OrderItem[]
+  id                String    @id @default(uuid())
+  orderNumber       String    @unique
+  
+  // Customer relationship
+  customerId        Int
+  customer          Customer  @relation(fields: [customerId], references: [id])
+  
+  // Billing address
+  billingAddress1   String?
+  billingAddress2   String?
+  billingCity       String?
+  billingState      String?
+  billingPostcode   String?
+  billingCountry    String?   @default("CA")
+  
+  // Shipping address
+  shippingSameAsBilling Boolean @default(true)
+  shippingAddress1  String?
+  shippingAddress2  String?
+  shippingCity      String?
+  shippingState     String?
+  shippingPostcode  String?
+  shippingCountry   String?   @default("CA")
+  
+  // Order status
+  status            String    @default("pending") // pending, processing, completed, cancelled, etc.
+  
+  // Payment details
+  paymentStatus     String    @default("pending") // pending, paid, failed, refunded, etc.
+  paymentMethod     String    // stripe, bank-transfer, etc.
+  paymentIntentId   String?   @unique  // Make this unique for lookup by webhook
+  
+  // Financial details
+  subtotal          Decimal   @db.Decimal(10, 2)
+  tax               Decimal   @db.Decimal(10, 2)
+  taxDetails        String?   @db.Text // JSON with detailed tax breakdown
+  shipping          Decimal   @db.Decimal(10, 2)
+  total             Decimal   @db.Decimal(10, 2)
+  
+  // Delivery details
+  deliveryMethod    String    @default("shipping") // shipping, pickup
+  pickupLocationId  Int?
+  pickupLocation    PickupLocation? @relation(fields: [pickupLocationId], references: [id])
+  
+  // Notes
+  notes             String?   @db.Text  // Customer notes about the order
+  
+  // Timestamps
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  
+  // Items
+  items             OrderItem[]
+
+  @@index([paymentIntentId]) // Add an index for faster lookups by paymentIntentId
+  @@index([orderNumber]) // Add an index for faster lookups by orderNumber
 }
 
 model OrderItem {
-  id          Int      @id @default(autoincrement())
-  orderId     String
-  order       Order    @relation(fields: [orderId], references: [id])
-  productId   Int
-  name        String
-  price       Decimal  @db.Decimal(10, 2)
-  quantity    Int
-  subtotal    Decimal  @db.Decimal(10, 2)
-  tax         Decimal  @db.Decimal(10, 2)
-  total       Decimal  @db.Decimal(10, 2)
-  createdAt   DateTime @default(now())
+  id             Int      @id @default(autoincrement())
+  orderId        String
+  order          Order    @relation(fields: [orderId], references: [id])
+  productId      Int
+  name           String
+  price          Decimal  @db.Decimal(10, 2)
+  quantity       Int
+  subtotal       Decimal  @db.Decimal(10, 2)
+  tax            Decimal  @db.Decimal(10, 2)
+  total          Decimal  @db.Decimal(10, 2)
+  shippingClass  String?  // Track if it was shipping or pickup-only
+  isPickupOnly   Boolean  @default(false)
+  createdAt      DateTime @default(now())
 }
 
 model PickupLocation {
   id                  Int      @id @default(autoincrement())
+  wordpressId         Int      @unique // For matching with WordPress data
   name                String
   address             String
   city                String
@@ -73,16 +110,4 @@ model PickupLocation {
   orders              Order[]
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt
-}
-
-model PaymentIntent {
-  id                String    @id
-  orderNumber       String
-  amount            Decimal   @db.Decimal(10, 2)
-  currency          String    @default("cad")
-  status            String    @default("created")
-  paymentMethod     String?
-  clientSecret      String
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
 }

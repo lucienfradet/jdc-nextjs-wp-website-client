@@ -12,6 +12,8 @@ export async function POST(request) {
         { status: 400 }
       );
     }
+
+    console.log(orderData.taxes);
     
     // Check for duplicate - don't create the same order twice
     // Here you'd typically query your database to see if this order already exists

@@ -14,6 +14,11 @@ export async function POST(request) {
       );
     }
 
+    // !!
+    // Here a strategy should be put in place in order to make sure the db had time to create the
+    // pending order before the webhook returns
+    // !!
+
     // Implement idempotency - check if order is already processed
     // Here you'd typically query your database to see if this order has already been marked as paid
     

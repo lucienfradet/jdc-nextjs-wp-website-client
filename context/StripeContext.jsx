@@ -15,9 +15,11 @@ export function StripeProvider({ children }) {
   const [orderNumber, setOrderNumber] = useState(null);
   const [paymentStatus, setPaymentStatus] = useState('idle'); // idle, processing, succeeded, error
   const [paymentError, setPaymentError] = useState(null);
+  const [orderData, setOrderData] = useState(null);
+  const [paymentIntentId, setPaymentId] = useState(null);
   
   // Create a function to initialize a payment intent
-  const createPaymentIntent = async (amount, orderData, metadata = {}) => {
+  const createPaymentIntent = async (amount, orderData, taxes, metadata = {}) => {
     try {
       setPaymentStatus('processing');
       setPaymentError(null);
@@ -35,7 +37,7 @@ export function StripeProvider({ children }) {
           idempotencyKey: metadata.order_number
         }),
       });
-      
+
       const data = await response.json();
       
       if (data.error) {
@@ -54,19 +56,40 @@ export function StripeProvider({ children }) {
 
       // Set the client secret for Stripe Elements
       setClientSecret(data.clientSecret);
+      setPaymentId(paymentIntentId);
       setOrderNumber(newOrderNumber);
+      // Store order data for later use when payment is initiated
+      setOrderData({
+        ...orderData,
+        taxes: taxes
+      });
 
-      // Step 2: Create a pending order
+      return true;
+    } catch (error) {
+      console.error('Error in payment flow:', error);
+      setPaymentStatus('error');
+      setPaymentError(error.message);
+      return false;
+    }
+  };
+
+  const createPendingOrder = async () => {
+    try {
+      // Safety check - ensure all required data is available
+      if (!orderNumber || !orderData || !paymentIntentId) {
+        throw new Error('Payment information not fully loaded. Please wait a moment and try again.');
+      }
+
+      // Create a pending order
       const pendingOrderResponse = await fetch('/api/orders/create-pending', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          orderNumber: newOrderNumber,
+          orderNumber: orderNumber,
           orderData,
           paymentIntentId,
-          stripeTotal: amount,
           status: 'pending'
         }),
       });
@@ -80,12 +103,10 @@ export function StripeProvider({ children }) {
       // The webhook will handle the actual payment confirmation
       return true;
     } catch (error) {
-      console.error('Error in payment flow:', error);
-      setPaymentStatus('error');
-      setPaymentError(error.message);
-      return false;
+      console.error('Error creating pending order:', error);
+      throw error;
     }
-  };
+  }
   
   const handlePaymentSuccess = (paymentIntent) => {
     // Store data in session storage for the confirmation page
@@ -131,6 +152,7 @@ export function StripeProvider({ children }) {
   return (
     <StripeContext.Provider value={{
       createPaymentIntent,
+      createPendingOrder,
       handlePaymentSuccess,
       resetPayment,
       paymentStatus,
