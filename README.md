@@ -108,6 +108,11 @@ npx prisma migrate dev
 ```bash
 # Starts a web server (usually on port 5555) http://localhost:5555
 npx prisma studio
+
+# or
+
+
+npm run prisma:dev -- studio
 ```
 
 ### Production

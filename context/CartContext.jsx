@@ -23,6 +23,7 @@ export function CartProvider({ children }) {
       const savedMethod = sessionStorage.getItem('deliveryMethod');
       return savedMethod || 'shipping'; // Default to shipping if not found
     } catch (error) {
+      console.log("error while trying to get saved deliveryMethod from session storage, defaulting to 'shipping'. error: ", error);
       return 'shipping';
     }
   });
@@ -50,6 +51,10 @@ export function CartProvider({ children }) {
       await shippingCalculator.initialize();
       setShippingLoaded(true);
     };
+    
+    if (initShipping) {
+      console.log("initShipping is not coded yet, see CartContext:50");
+    }
     
     //THIS IS NOT READY
     // initShipping();

@@ -47,7 +47,8 @@ const CheckoutForm = forwardRef(({
         shippingCountry: 'CA',
 
         // Pickup location (used if cart has items with shipping_class="only_pickup" or deliveryMethod is 'pickup')
-        selectedPickupLocation: ''
+        selectedPickupLocation: '',
+        selectedPickupLocationName: ''
       }
     });
 
@@ -154,6 +155,14 @@ const CheckoutForm = forwardRef(({
           const shippingField = name.replace('billing', 'shipping');
           if (shippingField in newData) {
             newData[shippingField] = value;
+          }
+        }
+
+        // Update selectedPickupLocationName when selectedPickupLocation changes
+        if (name === 'selectedPickupLocation') {
+          const selectedPoint = pointDeChute.find(point => point.id.toString() === value);
+          if (selectedPoint) {
+            newData.selectedPickupLocationName = selectedPoint.location_name;
           }
         }
 

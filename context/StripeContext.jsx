@@ -19,7 +19,7 @@ export function StripeProvider({ children }) {
   const [paymentIntentId, setPaymentId] = useState(null);
   
   // Create a function to initialize a payment intent
-  const createPaymentIntent = async (amount, orderData, taxes, metadata = {}) => {
+  const createPaymentIntent = async (amount, orderData, taxes, shippingCost, metadata = {}) => {
     try {
       setPaymentStatus('processing');
       setPaymentError(null);
@@ -61,7 +61,8 @@ export function StripeProvider({ children }) {
       // Store order data for later use when payment is initiated
       setOrderData({
         ...orderData,
-        taxes: taxes
+        taxes: taxes,
+        shippingCost
       });
 
       return true;
@@ -79,6 +80,16 @@ export function StripeProvider({ children }) {
       if (!orderNumber || !orderData || !paymentIntentId) {
         throw new Error('Payment information not fully loaded. Please wait a moment and try again.');
       }
+
+      console.log(
+        "body: ",
+        {
+          orderNumber: orderNumber,
+          orderData,
+          paymentIntentId,
+          status: 'pending'
+        }
+      )
 
       // Create a pending order
       const pendingOrderResponse = await fetch('/api/orders/create-pending', {

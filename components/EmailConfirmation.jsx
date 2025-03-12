@@ -1,6 +1,5 @@
 "use client";
 
-import { useState, useEffect } from 'react';
 import styles from '@/styles/checkout/CheckoutForm.module.css';
 
 const EmailConfirmation = ({ 
@@ -9,7 +8,7 @@ const EmailConfirmation = ({
   localErrors, 
   setLocalErrors 
 }) => {
-  const [emailTypoSuggestion, setEmailTypoSuggestion] = useState(null);
+  // const [emailTypoSuggestion, setEmailTypoSuggestion] = useState(null);
   
   // Check if emails match when either field changes or during validation
   const validateEmails = () => {
@@ -31,10 +30,7 @@ const EmailConfirmation = ({
   };
   
   // Future implementation: Email domain checking and typo detection
-  useEffect(() => {
-    // Placeholder for future email validation with external libraries
-    // Preventing unused variable error
-    console.log(setEmailTypoSuggestion);
+  // useEffect(() => {
     // This could check for common typos like gmail.con instead of gmail.com
     /* 
     if (formData.billingEmail && isValidEmailFormat(formData.billingEmail)) {
@@ -46,7 +42,7 @@ const EmailConfirmation = ({
       }
     }
     */
-  }, [formData.billingEmail]);
+  // }, [formData.billingEmail]);
   
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -88,11 +84,14 @@ const EmailConfirmation = ({
         )}
         
         {/* Typo suggestion UI */}
+        {/*
         {emailTypoSuggestion && (
           <p className={styles.suggestionText}>
             Vouliez-vous dire <strong>{emailTypoSuggestion}</strong>?
           </p>
         )}
+        */}
+
       </div>
       
       <div className={styles.formGroup}>
