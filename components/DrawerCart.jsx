@@ -11,8 +11,8 @@ import IconButton from '@mui/material/IconButton';
 
 export default function DrawerCart({ trigger }) {
   const [open, setOpen] = useState(false);
-  const cartContext = useCart ? useCart() : { cart: [], getCartTotal: () => 0 };
-  const { cart, getCartTotal } = cartContext;
+  const cartContext = useCart ? useCart() : { cart: [], getCartSubtotal: () => 0 };
+  const { cart, getCartSubtotal } = cartContext;
   const triggerRef = useRef(null);
   
   const toggleDrawer = (state) => (event) => {
@@ -83,7 +83,7 @@ export default function DrawerCart({ trigger }) {
                 </div>
                 <div className={styles.cartTotal}>
                   <span>Total: </span>
-                  <span className={styles.totalAmount}>{formatPrice(getCartTotal())}</span>
+                  <span className={styles.totalAmount}>{formatPrice(getCartSubtotal())}</span>
                 </div>
               </>
             )}

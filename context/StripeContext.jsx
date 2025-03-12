@@ -81,16 +81,6 @@ export function StripeProvider({ children }) {
         throw new Error('Payment information not fully loaded. Please wait a moment and try again.');
       }
 
-      console.log(
-        "body: ",
-        {
-          orderNumber: orderNumber,
-          orderData,
-          paymentIntentId,
-          status: 'pending'
-        }
-      )
-
       // Create a pending order
       const pendingOrderResponse = await fetch('/api/orders/create-pending', {
         method: 'POST',

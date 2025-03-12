@@ -88,7 +88,7 @@ export default function ProductDetail({ product, headerData, footerData, siteIco
 
             {product.description && (
               <div className={styles.description}>
-                <h2>Détailes du produit</h2>
+                <h2>Détails du produit</h2>
                 <div dangerouslySetInnerHTML={{ __html: product.description }} />
               </div>
             )}

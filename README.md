@@ -102,6 +102,9 @@ npx prisma migrate dev --name NAME_OF_THE_CHANGES --create-only
 # (Prisma detects that there's a pending (unapplied) migration and applies it.
 # It doesn't create a new migration file.)
 npx prisma migrate dev
+
+# regenerate the prisma client
+npm run prisma:dev -- generate
 ```
 
 #### Inspecting the local Database
@@ -110,7 +113,6 @@ npx prisma migrate dev
 npx prisma studio
 
 # or
-
 
 npm run prisma:dev -- studio
 ```

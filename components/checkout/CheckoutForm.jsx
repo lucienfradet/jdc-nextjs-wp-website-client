@@ -78,7 +78,7 @@ const CheckoutForm = forwardRef(({
         }
 
         // Only validate address if we have shippable items
-        if (!isPickupOnlyOrder) {
+        if (!isPickupOnlyOrder && formData.deliveryMethod === 'shipping') {
           // Validate billing address
           ['billingAddress1', 'billingCity', 'billingState', 'billingPostcode'].forEach(field => {
             if (!formData[field]) {

@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import prisma from '@/lib/prisma';
 
 export async function POST(request) {
   try {
@@ -13,21 +14,53 @@ export async function POST(request) {
       );
     }
     
-    // Implement idempotency - similar to the success handler
+    // Find order in database
+    const order = await prisma.order.findFirst({
+      where: {
+        orderNumber: orderNumber,
+        paymentIntentId: paymentIntentId
+      }
+    });
     
-    // In a real implementation, you would:
-    // 1. Update the order status in your database to 'failed'
-    // 2. Potentially notify the customer about the failed payment
-    // 3. Log the failure reason for your records
+    if (!order) {
+      return NextResponse.json(
+        { error: 'Order not found' },
+        { status: 404 }
+      );
+    }
+    
+    // Implement idempotency - check if order is already marked as failed
+    if (order.paymentStatus === 'failed' && order.status === 'cancelled') {
+      return NextResponse.json({
+        success: true,
+        message: 'Order already marked as failed',
+        orderNumber,
+        status: 'cancelled',
+        paymentIntentId
+      });
+    }
+    
+    // Update order status
+    const updatedOrder = await prisma.order.update({
+      where: { id: order.id },
+      data: {
+        paymentStatus: 'failed',
+        status: 'cancelled',
+        notes: order.notes 
+          ? `${order.notes}\n\nPayment failed: ${failureReason || 'Unknown reason'}`
+          : `Payment failed: ${failureReason || 'Unknown reason'}`,
+        updatedAt: new Date()
+      }
+    });
     
     console.log('Order payment failed:', orderNumber, paymentIntentId, failureReason);
     
-    // For now, we'll just return a response
     return NextResponse.json({
       success: true,
       message: 'Order marked as failed',
       orderNumber,
-      status: 'failed',
+      status: updatedOrder.status,
+      paymentStatus: updatedOrder.paymentStatus,
       paymentIntentId,
       failureReason
     });

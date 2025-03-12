@@ -13,8 +13,6 @@ export async function POST(request) {
         { status: 400 }
       );
     }
-
-    console.log(orderData)
     
     console.log('Creating pending order:', orderNumber, paymentIntentId);
 
