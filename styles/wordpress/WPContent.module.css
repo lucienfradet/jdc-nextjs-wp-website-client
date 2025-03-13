@@ -1,0 +1,220 @@
+.wpContent {
+  /* Base styles for WordPress content */
+  width: 100%;
+  overflow: hidden; /* Prevent overflow issues */
+  line-height: 1.7;
+  color: var(--green);
+  font-size: 1.1rem;
+}
+
+/* WordPress alignment classes */
+.wpContent :global(.alignleft) {
+  float: left;
+  margin: 0.5rem 1.5rem 1rem 0;
+  max-width: 50%;
+}
+
+.wpContent :global(.alignright) {
+  float: right;
+  margin: 0.5rem 0 1rem 1.5rem;
+  max-width: 50%;
+}
+
+.wpContent :global(.aligncenter) {
+  display: block;
+  margin: 1.5rem auto;
+  text-align: center;
+}
+
+/* WordPress caption and image styles */
+.wpContent :global(.wp-caption) {
+  max-width: 100%;
+  margin-bottom: 1.5rem;
+}
+
+.wpContent :global(.wp-caption img) {
+  max-width: 100%;
+  height: auto;
+  border-radius: 4px;
+}
+
+.wpContent :global(.wp-caption-text) {
+  font-size: 0.9rem;
+  font-style: italic;
+  text-align: center;
+  margin-top: 0.5rem;
+  color: var(--green);
+  opacity: 0.8;
+}
+
+/* WordPress gallery */
+.wpContent :global(.gallery) {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+
+.wpContent :global(.gallery-item) {
+  flex: 1 0 auto;
+}
+
+/* WordPress blocks */
+.wpContent :global(.wp-block-image) {
+  margin: 1.5rem 0;
+}
+
+.wpContent :global(.wp-block-image img) {
+  max-width: 100%;
+  height: auto;
+}
+
+.wpContent :global(.wp-block-image.alignwide),
+.wpContent :global(.wp-block-image.alignfull) {
+  margin-left: -1rem;
+  margin-right: -1rem;
+  max-width: calc(100% + 2rem);
+}
+
+/* Special handling for side-by-side content */
+.wpContent :global(.has-media-on-the-right),
+.wpContent :global(.wp-block-media-text.is-stacked-on-mobile) {
+  display: grid;
+  grid-template-columns: 50% 50%;
+  align-items: center;
+  margin: 1.5rem 0;
+  gap: 2rem;
+}
+
+.wpContent :global(.has-media-on-the-right.is-stacked-on-mobile),
+.wpContent :global(.wp-block-media-text.is-stacked-on-mobile.has-media-on-the-right) {
+  grid-template-columns: 50% 50%;
+  grid-template-areas: "content media";
+}
+
+.wpContent :global(.wp-block-media-text__media) {
+  grid-area: media;
+}
+
+.wpContent :global(.wp-block-media-text__content) {
+  grid-area: content;
+  padding: 0 1rem;
+}
+
+/* WordPress columns */
+.wpContent :global(.wp-block-columns) {
+  display: flex;
+  gap: 2rem;
+  margin: 1.5rem 0;
+}
+
+.wpContent :global(.wp-block-column) {
+  flex: 1;
+}
+
+/* Basic content elements */
+.wpContent p {
+  margin-bottom: 1.25rem;
+}
+
+.wpContent h2 {
+  font-size: 1.8rem;
+  margin: 1.5rem 0 1rem;
+  color: var(--green);
+}
+
+.wpContent h3 {
+  font-size: 1.5rem;
+  margin: 1.25rem 0 1rem;
+  color: var(--green);
+}
+
+.wpContent h4 {
+  font-size: 1.3rem;
+  margin: 1.25rem 0 1rem;
+  color: var(--green);
+}
+
+.wpContent h5, .wpContent h6 {
+  font-size: 1.1rem;
+  margin: 1.25rem 0 1rem;
+  color: var(--green);
+  font-weight: bold;
+}
+
+.wpContent ul, 
+.wpContent ol {
+  margin: 1.25rem 0;
+  padding-left: 1.5rem;
+}
+
+.wpContent li {
+  margin-bottom: 0.5rem;
+}
+
+.wpContent img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 4px;
+}
+
+.wpContent a {
+  color: var(--orange);
+  text-decoration: underline;
+  transition: color 0.2s;
+}
+
+.wpContent a:hover {
+  color: var(--red);
+}
+
+.wpContent blockquote {
+  margin: 1.5rem 0;
+  padding: 1rem 1.5rem;
+  border-left: 4px solid var(--orange);
+  background-color: rgba(245, 240, 225, 0.5);
+  font-style: italic;
+  color: var(--green);
+}
+
+.wpContent table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+}
+
+.wpContent th,
+.wpContent td {
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--green);
+  text-align: left;
+}
+
+.wpContent th {
+  background-color: rgba(36, 49, 27, 0.1);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .wpContent :global(.alignleft),
+  .wpContent :global(.alignright) {
+    float: none;
+    display: block;
+    margin: 1.5rem auto;
+    max-width: 100%;
+  }
+  
+  .wpContent :global(.has-media-on-the-right),
+  .wpContent :global(.wp-block-media-text),
+  .wpContent :global(.wp-block-columns) {
+    display: block;
+  }
+  
+  .wpContent :global(.wp-block-column) {
+    margin-bottom: 1.5rem;
+  }
+  
+  .wpContent :global(.wp-block-media-text__content) {
+    padding: 1rem 0 0 0;
+  }
+}

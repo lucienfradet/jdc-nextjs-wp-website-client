@@ -1,4 +1,5 @@
 import WPImage from '@/components/WPImage';
+import WPContent from '@/components/wordpress/WPContent';
 import styles from '@/styles/events/EventDetail.module.css';
 
 export default function EventDetail({ post }) {
@@ -28,10 +29,7 @@ export default function EventDetail({ post }) {
         </div>
       )}
       
-      <div 
-        className={styles.content}
-        dangerouslySetInnerHTML={{ __html: content }}
-      ></div>
+      <WPContent content={content} className={styles.content} />
     </article>
   );
 }
