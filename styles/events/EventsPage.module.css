@@ -1,0 +1,30 @@
+.eventsPage {
+  padding-top: var(--header-height);
+  background-color: var(--green);
+  min-height: 100vh;
+  color: var(--beige);
+}
+
+.pageTitle {
+  text-align: center;
+  font-size: 3rem;
+  margin: 3rem 0;
+  color: var(--beige);
+}
+
+@media (max-width: 991px) {
+  .eventsPage {
+    padding-top: var(--header-height-mobile);
+  }
+  
+  .pageTitle {
+    font-size: 2.5rem;
+    margin: 2rem 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .pageTitle {
+    font-size: 2rem;
+  }
+}
