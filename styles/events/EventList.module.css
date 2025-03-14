@@ -1,15 +1,99 @@
 .eventList {
   width: 100%;
-  max-width: 1200px;
+  max-width: 900px;
   margin: 0 auto;
   padding: 2rem 1rem;
 }
 
-.eventGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-  gap: 2rem;
+.eventPosts {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem; /* Minimal spacing between posts */
   margin-bottom: 3rem;
+}
+
+.eventPost {
+  background-color: var(--beige);
+  border-radius: 8px;
+  overflow: hidden;
+  /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); */
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* .eventPost:hover { */
+/*   transform: translateY(-3px); */
+/*   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); */
+/* } */
+
+.postHeader {
+  padding: 1.5rem 1.5rem 1rem;
+}
+
+.postMeta {
+  margin-bottom: 0.5rem;
+}
+
+.postDate {
+  color: var(--orange);
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.postTitle {
+  font-size: 1.8rem;
+  margin: 0;
+  line-height: 1.3;
+}
+
+.postTitle a {
+  color: var(--green);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.postTitle a:hover {
+  color: var(--orange);
+}
+
+.postImage {
+  margin-bottom: 1rem;
+}
+
+.postImage img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.postContent {
+  padding: 0 1.5rem;
+  color: var(--green);
+}
+
+.postContent p:last-child {
+  margin-bottom: 0;
+}
+
+.postFooter {
+  padding: 0.5rem 1.5rem 1.5rem;
+  text-align: right;
+}
+
+.readMore {
+  display: inline-block;
+  color: var(--orange);
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.2s;
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--orange);
+  border-radius: 4px;
+}
+
+.readMore:hover {
+  color: var(--beige);
+  background-color: var(--orange);
+  border-color: var(--orange);
 }
 
 .pagination {
@@ -62,18 +146,19 @@
   color: var(--green);
 }
 
-@media (max-width: 991px) {
-  .eventGrid {
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  }
-}
-
 @media (max-width: 768px) {
-  .eventGrid {
-    grid-template-columns: 1fr;
+  .postTitle {
+    font-size: 1.5rem;
   }
   
-  .pagination {
-    flex-wrap: wrap;
+  .postHeader,
+  .postContent,
+  .postFooter {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  
+  .eventPosts {
+    gap: 1.5rem; /* Slightly reduced spacing on mobile */
   }
 }

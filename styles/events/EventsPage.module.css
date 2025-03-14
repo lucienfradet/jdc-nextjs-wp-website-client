@@ -1,15 +1,18 @@
 .eventsPage {
   padding-top: var(--header-height);
-  background-color: var(--green);
+  background-color: var(--beige);
   min-height: 100vh;
-  color: var(--beige);
+  color: var(--green);
+  padding-bottom: 4rem;
 }
 
 .pageTitle {
   text-align: center;
   font-size: 3rem;
-  margin: 3rem 0;
-  color: var(--beige);
+  margin: 4rem 0 2rem 0;
+  color: var(--green);
+  font-weight: 700;
+  text-transform: uppercase;
 }
 
 @media (max-width: 991px) {
@@ -18,13 +21,14 @@
   }
   
   .pageTitle {
-    font-size: 2.5rem;
-    margin: 2rem 0;
+    font-size: 3rem;
+    margin: 4rem 0 0rem 0;
   }
 }
 
 @media (max-width: 768px) {
   .pageTitle {
-    font-size: 2rem;
+    font-size: 2.3rem;
+    margin: 4rem 0 0rem 0;
   }
 }

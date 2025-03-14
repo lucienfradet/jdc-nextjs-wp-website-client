@@ -1,6 +1,5 @@
 'use client';
 
-// components/events/EventsPage.jsx
 import { useState, useEffect } from 'react';
 import EventList from '@/components/events/EventList';
 import CustomHead from '@/components/CustomHead';
@@ -48,7 +47,7 @@ export default function EventsPage({
       )}
 
       <main className={styles.eventsPage}>
-        <h1 className={styles.pageTitle}>Événements</h1>
+        <h1 className={styles.pageTitle}>Blog et Événements</h1>
         <EventList initialData={postsData} />
       </main>
 
