@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, Suspense } from 'react';
 import { useRouter } from 'next/navigation';
 import styles from '@/styles/checkout/CheckoutPage.module.css';
 import { useCart } from '@/context/CartContext';

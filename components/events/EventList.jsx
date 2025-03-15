@@ -6,7 +6,7 @@ import WPImage from '@/components/WPImage';
 import WPContent from '@/components/wordpress/WPContent';
 import styles from '@/styles/events/EventList.module.css';
 
-export default function EventList({ initialData, onContentProcessed }) {
+export default function EventList({ initialData }) {
   const { posts, pagination } = initialData;
   const [processedPosts, setProcessedPosts] = useState([]);
   
@@ -73,12 +73,7 @@ export default function EventList({ initialData, onContentProcessed }) {
     });
 
     setProcessedPosts(processed);
-    
-    // Notify parent component that content is processed
-    if (onContentProcessed && processed.length > 0) {
-      onContentProcessed();
-    }
-  }, [posts, onContentProcessed]);
+  }, [posts]);
 
   // Generate pagination links
   const renderPagination = () => {

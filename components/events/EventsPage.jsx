@@ -8,8 +8,6 @@ import MobileHeader from "@/components/mobile/Header";
 import DesktopFooter from "@/components/desktop/Footer";
 import MobileFooter from "@/components/mobile/Footer";
 import styles from '@/styles/events/EventsPage.module.css';
-import loadingStyles from '@/styles/Loading.module.css';
-import Loading from '@/components/loading/Loading';
 
 export default function EventsPage({ 
   headerData, 
@@ -19,8 +17,6 @@ export default function EventsPage({
   currentPage 
 }) {
   const [isMobile, setIsMobile] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [fadeOut, setFadeOut] = useState(false);
 
   useEffect(() => {
     const handleResize = () => {
@@ -34,11 +30,6 @@ export default function EventsPage({
       window.removeEventListener("resize", handleResize);
     };
   }, []);
-  
-  const handleContentProcessed = () => {
-    setFadeOut(true);
-    setTimeout(() => setIsLoading(false), 500);
-  };
 
   return (
     <>
@@ -56,18 +47,8 @@ export default function EventsPage({
       )}
 
       <main className={styles.eventsPage}>
-        {isLoading && (
-          <div
-            className={`${loadingStyles["loading-container"]} ${fadeOut ? loadingStyles["fade-out"] : ""}`}
-          >
-            <Loading />
-          </div>
-        )}
         <h1 className={styles.pageTitle}>Blog et Événements</h1>
-        <EventList 
-          initialData={postsData} 
-          onContentProcessed={handleContentProcessed}
-        />
+        <EventList initialData={postsData} />
       </main>
 
       {isMobile ? (

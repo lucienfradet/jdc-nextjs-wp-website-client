@@ -12,7 +12,7 @@ export default async function EventsPageRoute({ searchParams }) {
   // Get current page from URL or default to 1
   const { page } = await searchParams;
   const currentPage = parseInt(page || '1', 10);
-  
+
   // Fetch page data and posts in parallel
   const [headerData, footerData, siteIconUrl, postsData] = await Promise.all([
     getPageFieldsByName("header"),
