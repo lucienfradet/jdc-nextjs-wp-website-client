@@ -4,75 +4,83 @@ import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import WPImage from '@/components/WPImage';
 import WPContent from '@/components/wordpress/WPContent';
+import SkeletonEventPost from './SkeletonEventPost';
 import styles from '@/styles/events/EventList.module.css';
 
 export default function EventList({ initialData }) {
   const { posts, pagination } = initialData;
   const [processedPosts, setProcessedPosts] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   
   // Move the processing to useEffect to ensure it runs only client-side
   useEffect(() => {
-    const processed = posts.map(post => {
-      try {
-        // Create a wrapper to parse the HTML properly
-        const wrapper = document.createElement('div');
-        wrapper.innerHTML = post.content;
+    // Set a small minimum delay to avoid flashes of loading state on fast connections
+    const timer = setTimeout(() => {
+      const processed = posts.map(post => {
+        try {
+          // Create a wrapper to parse the HTML properly
+          const wrapper = document.createElement('div');
+          wrapper.innerHTML = post.content;
 
-        // Get all top-level blocks (direct children of the wrapper)
-        const elements = wrapper.children;
+          // Get all top-level blocks (direct children of the wrapper)
+          const elements = wrapper.children;
 
-        // If not many blocks, show everything
-        if (elements.length <= 5) {
-          return {
-            ...post,
-            processedContent: post.content,
-            needsTruncation: false
-          };
-        }
-
-        // Create a new container for the truncated content
-        const container = document.createElement('div');
-
-        // Add the first few elements (typically 3-4 is good for previews)
-        for (let i = 0; i < Math.min(4, elements.length); i++) {
-          if (elements[i]) {
-            container.appendChild(elements[i].cloneNode(true));
+          // If not many blocks, show everything
+          if (elements.length <= 5) {
+            return {
+              ...post,
+              processedContent: post.content,
+              needsTruncation: false
+            };
           }
-        }
 
-        return {
-          ...post,
-          processedContent: container.innerHTML + '<p style="font-weight: bold;">( ... )',
-          needsTruncation: true
-        };
-      } catch (error) {
-        console.error("Error processing post content:", error);
+          // Create a new container for the truncated content
+          const container = document.createElement('div');
 
-        // Fallback to simple string truncation
-        const strippedContent = post.content.replace(/<[^>]*>/g, '');
-        const maxLength = 300; // Shorter for fallback method
+          // Add the first few elements (typically 3-4 is good for previews)
+          for (let i = 0; i < Math.min(4, elements.length); i++) {
+            if (elements[i]) {
+              container.appendChild(elements[i].cloneNode(true));
+            }
+          }
 
-        if (strippedContent.length <= maxLength) {
           return {
             ...post,
-            processedContent: post.content,
-            needsTruncation: false
+            processedContent: container.innerHTML + '<p style="font-weight: bold;">( ... )',
+            needsTruncation: true
+          };
+        } catch (error) {
+          console.error("Error processing post content:", error);
+
+          // Fallback to simple string truncation
+          const strippedContent = post.content.replace(/<[^>]*>/g, '');
+          const maxLength = 300; // Shorter for fallback method
+
+          if (strippedContent.length <= maxLength) {
+            return {
+              ...post,
+              processedContent: post.content,
+              needsTruncation: false
+            };
+          }
+
+          // Simple truncation at paragraph
+          let breakPoint = post.content.lastIndexOf('</p>', maxLength * 4);
+          if (breakPoint === -1) breakPoint = maxLength * 4;
+
+          return {
+            ...post,
+            processedContent: post.content.substring(0, breakPoint) + '...</p>',
+            needsTruncation: true
           };
         }
+      });
 
-        // Simple truncation at paragraph
-        let breakPoint = post.content.lastIndexOf('</p>', maxLength * 4);
-        if (breakPoint === -1) breakPoint = maxLength * 4;
+      setProcessedPosts(processed);
+      setIsLoading(false);
+    }, 500); // Minimum loading time of 500ms to avoid flash
 
-        return {
-          ...post,
-          processedContent: post.content.substring(0, breakPoint) + '...</p>',
-          needsTruncation: true
-        };
-      }
-    });
-
-    setProcessedPosts(processed);
+    return () => clearTimeout(timer);
   }, [posts]);
 
   // Generate pagination links
@@ -132,8 +140,8 @@ export default function EventList({ initialData }) {
     );
   };
   
-  // First render - show a skeleton or simple version while processing
-  if (processedPosts.length === 0) {
+  // Loading state - show skeleton UI
+  if (isLoading) {
     return (
       <div className={styles.eventList}>
         {posts.length === 0 ? (
@@ -142,35 +150,8 @@ export default function EventList({ initialData }) {
           </div>
         ) : (
           <div className={styles.eventPosts}>
-            {posts.map(post => (
-              <article key={post.id} className={styles.eventPost}>
-                <header className={styles.postHeader}>
-                  <div className={styles.postMeta}>
-                    <time className={styles.postDate}>
-                      {new Date(post.date).toLocaleDateString('fr-CA', {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric'
-                      })}
-                    </time>
-                  </div>
-                  <h2 className={styles.postTitle}>
-                    <Link href={`/evenements/${post.slug}`}>
-                      <span dangerouslySetInnerHTML={{ __html: post.title }}></span>
-                    </Link>
-                  </h2>
-                </header>
-                
-                {post.featuredImage && (
-                  <div className={styles.postImage}>
-                    <WPImage image={post.featuredImage} />
-                  </div>
-                )}
-                
-                <div className={styles.postContent}>
-                  <p>Chargement du contenu...</p>
-                </div>
-              </article>
+            {Array.from({ length: posts.length }).map((_, index) => (
+              <SkeletonEventPost key={index} />
             ))}
           </div>
         )}
@@ -179,7 +160,7 @@ export default function EventList({ initialData }) {
     );
   }
   
-  // Full render with processed content
+  // Loaded state - show processed content
   return (
     <div className={styles.eventList}>
       {posts.length === 0 ? (

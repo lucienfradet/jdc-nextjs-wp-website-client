@@ -1,0 +1,179 @@
+.contactBody {
+  position: relative;
+  padding-top: var(--header-height);
+  min-height: calc(100vh - var(--header-height));
+  background: var(--green);
+  color: var(--beige);
+  font-family: "Maname";
+  overflow: hidden;
+  z-index: 0;
+}
+
+/* Background SVG */
+.backgroundSvg {
+  position: absolute;
+  top: -20%;
+  left: -10%;
+  width: 115%;
+  height: auto;
+  z-index: -1;
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.contactSection {
+  position: relative;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 60px 40px;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+/* Map Container */
+.mapContainer {
+  width: 80%;
+  height: 350px;
+  margin: 0 auto;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.googleMap {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+/* Container for info and image */
+.infoContainer {
+  display: flex;
+  width: 80%; /* Match map container width */
+  max-width: 100%;
+  margin: 0 auto; /* Center it like the map */
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+/* Contact info */
+.contactInfo {
+  flex: 1;
+  padding: 30px;
+  border-radius: 10px;
+}
+
+.contactTitle {
+  color: var(--beige);
+  position: relative;
+}
+
+.contactInfo h1 p {
+  font-family: "Roboto";
+  margin-bottom: 5px;
+  font-size: 1.5rem;
+}
+
+.contactInfo p {
+  margin-bottom: 15px;
+  font-size: 1.2rem;
+  line-height: 1.6;
+}
+
+.contactInfo a {
+  text-decoration: underline;
+  transition: color 0.2s ease;
+}
+
+.contactInfo a:hover {
+  color: var(--orange);
+}
+
+/* Side image */
+.sideImageContainer {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  max-width: 400px;
+}
+
+.sideImage {
+  width: 100%;
+  height: auto;
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  object-fit: cover;
+}
+
+/* Mobile Styles */
+@media (max-width: 991px) {
+  .contactBody {
+    padding-top: var(--header-height-mobile);
+    min-height: calc(100vh - var(--header-height-mobile));
+  }
+
+  .mapContainer {
+    width: 100%;
+    height: 400px;
+  }
+  
+  .infoContainer {
+    flex-direction: column;
+  }
+  
+  .contactInfo {
+    width: 100%;
+  }
+  
+  .sideImageContainer {
+    width: 100%;
+    max-width: 100%;
+    margin-top: 20px;
+  }
+  
+  .sideImage {
+    max-width: 350px;
+  }
+  
+  .contactTitle {
+    font-size: 2.2rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .contactSection {
+    padding: 40px 20px;
+  }
+
+  .mapContainer {
+    height: 350px;
+  }
+
+  .contactTitle {
+    font-size: 2rem;
+  }
+
+  .contactInfo p {
+    font-size: 1rem;
+  }
+
+  .backgroundSvg {
+    top: -10%;
+    left: -20%;
+    width: 140%;
+  }
+}
+
+@media (max-width: 480px) {
+  .contactTitle {
+    font-size: 1.8rem;
+  }
+
+  .mapContainer {
+    height: 300px;
+  }
+}
