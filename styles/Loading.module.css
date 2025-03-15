@@ -4,8 +4,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: var(--beige); /* Make sure --beige is defined */
-  z-index: 9999; /* Ensure it's above everything */
+  background-color: var(--beige); /* Hardcoded beige instead of using var */
+  z-index: 9999;
   opacity: 1;
   transition: opacity 0.5s ease-out;
 }
@@ -15,6 +15,53 @@
 }
 
 .lottie-animation {
-  width: 1440px;
-  height: 1024px;
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+}
+
+/* New classes for the loading component */
+.content-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.logo-container {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin-bottom: 1.5rem; /* Equivalent to mb-6 in Tailwind */
+}
+
+.loading-bar-container {
+  width: 200px;
+  height: 6px;
+  background-color: rgba(162, 45, 34, 0.2);
+  border-radius: 3px;
+  overflow: hidden;
+  position: relative;
+}
+
+.loading-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 30%;
+  background-color: #A22D22;
+  border-radius: 3px;
+  animation: loading 1.5s infinite ease-in-out;
+}
+
+@keyframes loading {
+  0% {
+    left: -30%;
+  }
+  100% {
+    left: 100%;
+  }
 }

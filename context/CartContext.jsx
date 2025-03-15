@@ -3,7 +3,7 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import shippingCalculator from '@/lib/shipping/ShippingCalculator';
 import DrawerCart from '@/components/DrawerCart';
-import { isStorageAvailable } from '@/lib/client-storage';
+import { isSessionStorageAvailable } from '@/lib/client-storage';
 
 const CartContext = createContext();
 
@@ -20,7 +20,7 @@ export function CartProvider({ children }) {
   const [taxError, setTaxError] = useState(false);
   const [province, setProvince] = useState('QC'); // Default to Quebec
   const [deliveryMethod, setDeliveryMethod] = useState(() => {
-    if (typeof window !== 'undefined' && isStorageAvailable('session')) {
+    if (typeof window !== 'undefined' && isSessionStorageAvailable()) {
       const savedMethod = sessionStorage.getItem('deliveryMethod');
       return savedMethod || 'shipping';
     }
