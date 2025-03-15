@@ -23,6 +23,7 @@
     "graphql-request": "^7.1.2",
     "html-react-parser": "^5.2.2",
     "next": "^15.2.0",
+    "next-share": "^0.27.0",
     "node-html-parser": "^6.1.13",
     "prisma": "^6.4.1",
     "react": "^19.0.0",
