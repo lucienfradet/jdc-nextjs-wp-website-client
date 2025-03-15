@@ -11,7 +11,7 @@ const nextConfig = {
       },
       {
         protocol: 'https',
-        hostname: process.env.NEXT_PUBLIC_WORDPRESS_BASE_URL|| 'default-domain.com', // Use the third domain or fallback
+        hostname: process.env.NEXT_PUBLIC_WORDPRESS_BASE_URL|| 'wordpress.jardindeschefs.ca', // Use the third domain or fallback
         pathname: '/wp-content/uploads/**',
       },
     ],

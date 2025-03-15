@@ -17,12 +17,15 @@ export default async function Page() {
     notFound();
   }
 
+  const mapsApiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+
   return (
     <ContactPage
       pageData={pageData}
       headerData={headerData}
       footerData={footerData}
       siteIconUrl={siteIconUrl}
+      mapsApiKey={mapsApiKey}
     />
   );
 }

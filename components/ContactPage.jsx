@@ -14,7 +14,8 @@ export default function ContactPage({
   pageData,
   headerData,
   footerData,
-  siteIconUrl
+  siteIconUrl,
+  mapsApiKey
 }) {
   const pageContent = pageData.acfFields;
   const [isMobile, setIsMobile] = useState(false);
@@ -93,7 +94,7 @@ export default function ContactPage({
         <section className={styles.contactSection}>
           <div className={styles.mapContainer}>
             <iframe 
-              src={`https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&q=${encodedAddress}`} 
+              src={`https://www.google.com/maps/embed/v1/place?key=${mapsApiKey}&q=${encodedAddress}`} 
               width="100%" 
               height="450" 
               style={{ border: 0 }} 

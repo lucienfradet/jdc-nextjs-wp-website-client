@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import WPImage from '@/components/WPImage';
 import WPContent from '@/components/wordpress/WPContent';
 import SkeletonEventPost from './SkeletonEventPost';
@@ -11,6 +11,53 @@ export default function EventList({ initialData }) {
   const { posts, pagination } = initialData;
   const [processedPosts, setProcessedPosts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
+  const toastTimeoutRef = useRef(null);
+  
+  // Handle share functionality
+  const sharePost = (post, event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    
+    const postTitle = post.title.replace(/<[^>]*>/g, ''); // Remove HTML tags
+    const postUrl = `${process.env.NEXT_PUBLIC_SITE_URL}/evenements/${post.slug}`;
+    
+    if (navigator.share) {
+      navigator.share({
+        title: postTitle,
+        url: postUrl
+      })
+      .then(() => console.log('Successfully shared'))
+      .catch((error) => console.log('Error sharing:', error));
+    } else {
+      // Fallback for browsers that don't support the Web Share API
+      navigator.clipboard.writeText(postUrl)
+        .then(() => {
+          // Clear any existing timeout
+          if (toastTimeoutRef.current) {
+            clearTimeout(toastTimeoutRef.current);
+          }
+          
+          // Show toast message
+          setToastMessage('Lien copié dans le presse-papier!');
+          setShowToast(true);
+          
+          // Hide message after 3 seconds
+          toastTimeoutRef.current = setTimeout(() => {
+            setShowToast(false);
+          }, 3000);
+        })
+        .catch(() => {
+          setToastMessage('Impossible de copier le lien. Veuillez copier l\'URL manuellement.');
+          setShowToast(true);
+          
+          toastTimeoutRef.current = setTimeout(() => {
+            setShowToast(false);
+          }, 3000);
+        });
+    }
+  };
   
   // Move the processing to useEffect to ensure it runs only client-side
   useEffect(() => {
@@ -140,6 +187,15 @@ export default function EventList({ initialData }) {
     );
   };
   
+  // Clean up timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (toastTimeoutRef.current) {
+        clearTimeout(toastTimeoutRef.current);
+      }
+    };
+  }, []);
+  
   // Loading state - show skeleton UI
   if (isLoading) {
     return (
@@ -163,6 +219,13 @@ export default function EventList({ initialData }) {
   // Loaded state - show processed content
   return (
     <div className={styles.eventList}>
+      {/* Toast notification */}
+      {showToast && (
+        <div className={styles.toast}>
+          {toastMessage}
+        </div>
+      )}
+      
       {posts.length === 0 ? (
         <div className={styles.noEvents}>
           <p>Aucun événement trouvé.</p>
@@ -173,14 +236,29 @@ export default function EventList({ initialData }) {
             {processedPosts.map(post => (
               <article key={post.id} className={styles.eventPost}>
                 <header className={styles.postHeader}>
-                  <div className={styles.postMeta}>
-                    <time className={styles.postDate}>
-                      {new Date(post.date).toLocaleDateString('fr-CA', {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric'
-                      })}
-                    </time>
+                  <div className={styles.headerTop}>
+                    <div className={styles.postMeta}>
+                      <time className={styles.postDate}>
+                        {new Date(post.date).toLocaleDateString('fr-CA', {
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric'
+                        })}
+                      </time>
+                    </div>
+                    <button 
+                      className={styles.shareButton} 
+                      onClick={(e) => sharePost(post, e)}
+                      aria-label="Partager cet article"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <circle cx="18" cy="5" r="3"></circle>
+                        <circle cx="6" cy="12" r="3"></circle>
+                        <circle cx="18" cy="19" r="3"></circle>
+                        <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                        <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                      </svg>
+                    </button>
                   </div>
                   <h2 className={styles.postTitle}>
                     <Link href={`/evenements/${post.slug}`}>

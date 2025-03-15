@@ -120,6 +120,71 @@
   background-color: rgba(36, 49, 27, 0.1);
 }
 
+.toast {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: var(--green);
+  color: white;
+  padding: 12px 24px;
+  border-radius: 4px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  font-size: 1rem;
+  font-weight: 500;
+  animation: fadeIn 0.3s, fadeOut 0.3s 2.7s;
+  max-width: 90%;
+  text-align: center;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translate(-50%, 20px); }
+  to { opacity: 1; transform: translate(-50%, 0); }
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; transform: translate(-50%, 0); }
+  to { opacity: 0; transform: translate(-50%, 20px); }
+}
+
+.headerTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.shareButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--green);
+  padding: 8px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  margin-left: 15px;
+  flex-shrink: 0;
+}
+
+.shareButton:hover {
+  color: var(--orange);
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.shareButton:active {
+  transform: scale(0.95);
+}
+
+/* Adjust the existing title class to work with the new layout */
+.title {
+  margin-bottom: 0;
+  flex: 1;
+}
+
 @media (max-width: 991px) {
   .header,
   .content {
