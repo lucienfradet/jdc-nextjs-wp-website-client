@@ -10,6 +10,6 @@ const WPContent = ({ content, className = '' }) => {
       dangerouslySetInnerHTML={{ __html: content }}
     />
   );
-};
+}; 
 
 export default WPContent;
