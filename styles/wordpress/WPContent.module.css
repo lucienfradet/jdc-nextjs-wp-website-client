@@ -92,6 +92,38 @@
 
 /* WordPress specific classes - with :global() */
 
+/* Group with flex layout */
+.wpContent :global(.wp-block-group.is-layout-flex) {
+  display: flex;
+  width: 100%;
+}
+
+/* Space between justification */
+.wpContent :global(.is-content-justification-space-between) {
+  justify-content: space-between;
+}
+
+/* No wrap setting */
+.wpContent :global(.is-nowrap) {
+  flex-wrap: nowrap;
+}
+
+/* Fixed width content blocks within flex groups */
+.wpContent :global(.wp-block-group.is-layout-flex > p),
+.wpContent :global(.wp-block-group.is-layout-flex > .wp-container-content-1),
+.wpContent :global(.wp-block-group.is-layout-flex > .wp-container-content-2),
+.wpContent :global(.wp-block-group.is-layout-flex > [class*="wp-container-content"]) {
+  width: 48% !important; /* This applies your fixed width setting */
+  margin: 0;
+  flex-basis: 48%;
+  flex-shrink: 0;
+}
+
+/* Fix for text alignment */
+.wpContent :global(.has-text-align-justify) {
+  text-align: justify;
+}
+
 /* Alignment classes */
 .wpContent :global(.alignleft) {
   float: left;
@@ -177,6 +209,10 @@
 /* Images */
 .wpContent :global(.wp-block-image) {
   margin: 1.5rem 0;
+}
+
+.wpContent :global(.wp-block-group .wp-block-image) {
+  padding: 0 1.5rem 0 1.5rem;
 }
 
 .wpContent :global(.wp-block-image img) {
@@ -380,6 +416,144 @@
   height: 100%;
 }
 
+/* Gallery Container */
+.wpContent :global(.wp-block-gallery),
+.wpContent :global(.wp-block-gallery.is-layout-flex) {
+  display: flex;
+  flex-wrap: wrap;
+  list-style-type: none;
+  padding: 0;
+  margin: 1.5rem 0;
+  gap: 16px;
+  width: 100%;
+}
+
+/* Gallery Figure Items */
+.wpContent :global(.wp-block-gallery .wp-block-image),
+.wpContent :global(.wp-block-gallery figure) {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  justify-content: center;
+  position: relative;
+  width: calc(50% - 8px); /* Default 2 columns with gap */
+}
+
+/* For different column counts */
+.wpContent :global(.wp-block-gallery.columns-1 .wp-block-image),
+.wpContent :global(.wp-block-gallery.columns-1 figure) {
+  width: 100%;
+}
+
+.wpContent :global(.wp-block-gallery.columns-2 .wp-block-image),
+.wpContent :global(.wp-block-gallery.columns-2 figure) {
+  width: calc(50% - 8px);
+}
+
+.wpContent :global(.wp-block-gallery.columns-3 .wp-block-image),
+.wpContent :global(.wp-block-gallery.columns-3 figure) {
+  width: calc(33.33% - 11px);
+}
+
+.wpContent :global(.wp-block-gallery.columns-4 .wp-block-image),
+.wpContent :global(.wp-block-gallery.columns-4 figure) {
+  width: calc(25% - 12px);
+}
+
+/* For cropped images */
+.wpContent :global(.wp-block-gallery.is-cropped img) {
+  height: 100%;
+  flex: 1;
+  object-fit: cover;
+  min-height: 200px;
+}
+
+/* For non-cropped images */
+.wpContent :global(.wp-block-gallery:not(.is-cropped) img) {
+  width: 100%;
+  height: auto;
+}
+
+/* Image styling */
+.wpContent :global(.wp-block-gallery img) {
+  width: 100%;
+  display: block;
+  border-radius: 4px;
+  transition: transform 0.3s ease;
+}
+
+/* Image hover effects */
+.wpContent :global(.wp-block-gallery figure:hover img) {
+  transform: scale(1.03);
+}
+
+/* Caption styling */
+.wpContent :global(.wp-block-gallery figcaption) {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  text-align: center;
+  color: var(--green);
+  padding: 0.25rem 0.5rem;
+}
+
+/* Gallery with columns-default (side by side layout) */
+.wpContent :global(.wp-block-gallery.columns-default) {
+  display: flex;
+  flex-wrap: nowrap; /* Keep all images in a single row */
+  gap: 16px;
+  width: 100%;
+  overflow-x: auto; /* Allow horizontal scrolling if needed */
+  padding-bottom: 10px; /* Space for scrollbar */
+  margin: 1.5rem 0;
+}
+
+/* Each figure in the gallery */
+.wpContent :global(.wp-block-gallery.columns-default figure),
+.wpContent :global(.wp-block-gallery.columns-default .wp-block-image) {
+  flex: 0 0 auto; /* Don't grow or shrink */
+  max-width: 250px; /* Set a reasonable max width */
+  margin: 0;
+}
+
+/* For cropped images - equal height */
+.wpContent :global(.wp-block-gallery.columns-default.is-cropped figure),
+.wpContent :global(.wp-block-gallery.columns-default.is-cropped .wp-block-image) {
+  height: 200px; /* Fixed height for cropped images */
+}
+
+.wpContent :global(.wp-block-gallery.columns-default.is-cropped img) {
+  height: 100%;
+  object-fit: cover;
+  width: 100%;
+}
+
+/* Image styling */
+.wpContent :global(.wp-block-gallery.columns-default img) {
+  display: block;
+  border-radius: 4px;
+  transition: transform 0.3s ease;
+}
+
+/* Caption styling */
+.wpContent :global(.wp-block-gallery.columns-default figcaption) {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  text-align: center;
+  color: var(--green);
+}
+
+@media (max-width: 480px) {
+  .wpContent :global(.wp-block-gallery .wp-block-image),
+  .wpContent :global(.wp-block-gallery figure) {
+    width: 100%; /* On very small screens, stack into 1 column */
+  }
+  
+  .wpContent :global(.wp-block-gallery.is-cropped img) {
+    min-height: 180px;
+  }
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .wpContent :global(.alignleft),
@@ -405,5 +579,27 @@
   
   .wpContent :global(.wp-block-media-text__media) {
     margin-bottom: 1rem;
+  }
+
+  .wpContent :global(.wp-block-gallery.columns-3 .wp-block-image),
+  .wpContent :global(.wp-block-gallery.columns-3 figure),
+  .wpContent :global(.wp-block-gallery.columns-4 .wp-block-image),
+  .wpContent :global(.wp-block-gallery.columns-4 figure) {
+    width: calc(50% - 8px); /* On smaller screens, default to 2 columns */
+  }
+
+  .wpContent :global(.wp-block-gallery.columns-default) {
+    /* Keep side-by-side layout but allow scrolling */
+    gap: 12px;
+  }
+  
+  .wpContent :global(.wp-block-gallery.columns-default figure),
+  .wpContent :global(.wp-block-gallery.columns-default .wp-block-image) {
+    max-width: 200px;
+  }
+  
+  .wpContent :global(.wp-block-gallery.columns-default.is-cropped figure),
+  .wpContent :global(.wp-block-gallery.columns-default.is-cropped .wp-block-image) {
+    height: 180px;
   }
 }

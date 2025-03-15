@@ -13,38 +13,65 @@ export default function EventList({ initialData }) {
   // Move the processing to useEffect to ensure it runs only client-side
   useEffect(() => {
     const processed = posts.map(post => {
-      // Strip HTML tags for length calculation
-      const strippedContent = post.content.replace(/<[^>]*>/g, '');
-      const maxLength = 2000;
-      
-      // If content is not too long, show it entirely
-      if (strippedContent.length <= maxLength) {
+      try {
+        // Create a wrapper to parse the HTML properly
+        const wrapper = document.createElement('div');
+        wrapper.innerHTML = post.content;
+
+        // Get all top-level blocks (direct children of the wrapper)
+        const elements = wrapper.children;
+
+        // If not many blocks, show everything
+        if (elements.length <= 5) {
+          return {
+            ...post,
+            processedContent: post.content,
+            needsTruncation: false
+          };
+        }
+
+        // Create a new container for the truncated content
+        const container = document.createElement('div');
+
+        // Add the first few elements (typically 3-4 is good for previews)
+        for (let i = 0; i < Math.min(4, elements.length); i++) {
+          if (elements[i]) {
+            container.appendChild(elements[i].cloneNode(true));
+          }
+        }
+
         return {
           ...post,
-          processedContent: post.content,
-          needsTruncation: false
+          processedContent: container.innerHTML + '<p style="font-weight: bold;">( ... )',
+          needsTruncation: true
+        };
+      } catch (error) {
+        console.error("Error processing post content:", error);
+
+        // Fallback to simple string truncation
+        const strippedContent = post.content.replace(/<[^>]*>/g, '');
+        const maxLength = 300; // Shorter for fallback method
+
+        if (strippedContent.length <= maxLength) {
+          return {
+            ...post,
+            processedContent: post.content,
+            needsTruncation: false
+          };
+        }
+
+        // Simple truncation at paragraph
+        let breakPoint = post.content.lastIndexOf('</p>', maxLength * 4);
+        if (breakPoint === -1) breakPoint = maxLength * 4;
+
+        return {
+          ...post,
+          processedContent: post.content.substring(0, breakPoint) + '...</p>',
+          needsTruncation: true
         };
       }
-      
-      // Content is too long, truncate it
-      // Find a good place to break (end of paragraph, sentence, etc.)
-      let breakPoint = post.content.lastIndexOf('</p>', maxLength);
-      if (breakPoint === -1) {
-        breakPoint = post.content.lastIndexOf('. ', maxLength);
-        if (breakPoint === -1) {
-          breakPoint = maxLength;
-        } else {
-          breakPoint += 1; // Include the period
-        }
-      }
-      
-      return {
-        ...post,
-        processedContent: post.content.substring(0, breakPoint) + '...</p>', 
-        needsTruncation: true
-      };
     });
-    
+
     setProcessedPosts(processed);
   }, [posts]);
 
