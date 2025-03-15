@@ -70,6 +70,12 @@
   text-align: center;
 }
 
+/* Active link styling (same as hover) */
+.nav a.active {
+  background-color: var(--beige);
+  color: var(--green);
+}
+
 .nav a.disabled {
   opacity: 0.5;
   pointer-events: none;

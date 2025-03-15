@@ -1,16 +1,18 @@
 "use client";
 
-import  styles from '@/styles/mobile/Header.module.css';
+import styles from '@/styles/mobile/Header.module.css';
 import { useState, useEffect } from "react";
 import WPImage from '@/components/WPImage';
 import BurgerMenu from "@/components/BurgerMenu";
 import DrawerCart from "@/components/DrawerCart";
 import Link from 'next/link';
 import { useCart } from '@/context/CartContext';
+import { usePathname } from 'next/navigation';
 
 export default function Header({ pageData }) {
   const pageContent = pageData.acfFields;
   const { cart } = useCart();
+  const pathname = usePathname(); // Get current path
   
   // Calculate total items in cart
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
@@ -45,7 +47,7 @@ export default function Header({ pageData }) {
     return () => {
       window.removeEventListener('scroll', handleScroll);
     };
-  }, [burgerState]); // adding burgerState as a dependency (make sure burgerState returns the new state)
+  }, [burgerState]); // adding burgerState as a dependency
 
   return (
     <header className={`${styles.header} ${isHidden ? styles.hidden : ''}`}>
@@ -80,11 +82,36 @@ export default function Header({ pageData }) {
 
       {/* Navigation Links */}
       <nav className={`${styles.nav} ${burgerState === 0 ? styles.active : ''}`}>
-        <a href="/a-propos">{pageContent["a-propos"]}</a>
-        <a href="/abonnement">{pageContent["abonnement"]}</a>
-        <a href="/agrotourisme" className={styles.disabled}>{pageContent["agrotourisme"]}</a>
-        <a href="/evenements">{pageContent["evenements"]}</a>
-        <a href="/contact">{pageContent["contact"]}</a>
+        <a 
+          href="/a-propos" 
+          className={pathname === '/a-propos' ? styles.active : ''}
+        >
+          {pageContent["a-propos"]}
+        </a>
+        <a 
+          href="/abonnement" 
+          className={pathname === '/abonnement' ? styles.active : ''}
+        >
+          {pageContent["abonnement"]}
+        </a>
+        <a 
+          href="/agrotourisme" 
+          className={`${styles.disabled} ${pathname === '/agrotourisme' ? styles.active : ''}`}
+        >
+          {pageContent["agrotourisme"]}
+        </a>
+        <a 
+          href="/evenements" 
+          className={pathname === '/evenements' ? styles.active : ''}
+        >
+          {pageContent["evenements"]}
+        </a>
+        <a 
+          href="/contact" 
+          className={pathname === '/contact' ? styles.active : ''}
+        >
+          {pageContent["contact"]}
+        </a>
       </nav>
     </header>
   );

@@ -18,7 +18,7 @@ export default async function EventsPageRoute({ searchParams }) {
     getPageFieldsByName("header"),
     getPageFieldsByName("footer"),
     fetchSiteIcon(),
-    getPostsByPage(currentPage, 5)
+    getPostsByPage(currentPage, 3)
   ]);
 
   if (!headerData || !footerData) {

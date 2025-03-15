@@ -94,6 +94,15 @@
   width: 100%; /* Expand the line on hover */
 }
 
+/* Active link styling (same as hover) */
+.nav a.active {
+  font-weight: bold; /* Bold text for active page */
+}
+
+.nav a.active::after {
+  width: 100%; /* Full underline for active page */
+}
+
 .nav a.disabled {
   color: grey;
   pointer-events: none;

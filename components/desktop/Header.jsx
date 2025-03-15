@@ -1,23 +1,22 @@
 "use client";
 
 import { useEffect, useState } from 'react';
-import  styles from '@/styles/desktop/Header.module.css';
+import styles from '@/styles/desktop/Header.module.css';
 import WPImage from '@/components/WPImage';
 import Link from 'next/link';
 import DrawerCart from "@/components/DrawerCart";
 import { useCart } from '@/context/CartContext';
+import { usePathname } from 'next/navigation';
 
 export default function Header({ pageData }) {
   const pageContent = pageData.acfFields;
   const { cart } = useCart();
+  const pathname = usePathname(); // Get current path
   
   // Calculate total items in cart
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
 
   //debugging
-  // This will only log ounce when pageData changes
-  // continious logging when react reloads components on state change
-  // (using an empty dependenciy "[]" would have mean it only runs on mount or page reload)
   useEffect(() => {
     // console.log("Header content:", pageContent);
   }, [pageData]); // Only re-log if `pageData` changes
@@ -52,11 +51,36 @@ export default function Header({ pageData }) {
 
       {/* Navigation Links */}
       <nav className={styles.nav}>
-        <a href="/a-propos">{pageContent["a-propos"]}</a>
-        <a href="/abonnement">{pageContent["abonnement"]}</a>
-        <a href="/agrotourisme" className={styles.disabled}>{pageContent["agrotourisme"]}</a>
-        <a href="/evenements">{pageContent["evenements"]}</a>
-        <a href="/contact">{pageContent["contact"]}</a>
+        <a 
+          href="/a-propos" 
+          className={pathname === '/a-propos' ? styles.active : ''}
+        >
+          {pageContent["a-propos"]}
+        </a>
+        <a 
+          href="/abonnement" 
+          className={pathname === '/abonnement' ? styles.active : ''}
+        >
+          {pageContent["abonnement"]}
+        </a>
+        <a 
+          href="/agrotourisme" 
+          className={`${styles.disabled} ${pathname === '/agrotourisme' ? styles.active : ''}`}
+        >
+          {pageContent["agrotourisme"]}
+        </a>
+        <a 
+          href="/evenements" 
+          className={pathname === '/evenements' ? styles.active : ''}
+        >
+          {pageContent["evenements"]}
+        </a>
+        <a 
+          href="/contact" 
+          className={pathname === '/contact' ? styles.active : ''}
+        >
+          {pageContent["contact"]}
+        </a>
       </nav>
 
       {/* Cart Icon with number indicator */}
