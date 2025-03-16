@@ -8,7 +8,6 @@ import { useCart } from '@/context/CartContext';
 import { StripeProvider, useStripe as useStripeContext } from '@/context/StripeContext';
 import StripePaymentForm from '@/components/checkout/StripePaymentForm';
 import OrderSummary from '@/components/checkout/OrderSummary';
-import CustomHead from '@/components/CustomHead';
 import DesktopHeader from "@/components/desktop/Header";
 import MobileHeader from "@/components/mobile/Header";
 import DesktopFooter from "@/components/desktop/Footer";
@@ -17,7 +16,6 @@ import MobileFooter from "@/components/mobile/Footer";
 const PaymentPageContent = ({ 
   headerData,
   footerData,
-  siteIconUrl,
   pointDeChute
 }) => {
   const router = useRouter();
@@ -189,13 +187,6 @@ const PaymentPageContent = ({
 
   return (
     <>
-      <CustomHead
-        title="Paiement par carte - Le Jardin des chefs"
-        description="Paiement sécurisé pour votre commande"
-        canonicalUrl={process.env.NEXT_PUBLIC_SITE_URL + '/payment'}
-        siteIconUrl={siteIconUrl}
-      />
-
       {isMobile ? (
         <MobileHeader pageData={headerData} />
       ) : (

@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import EventDetail from '@/components/events/EventDetail';
-import CustomHead from '@/components/CustomHead';
 import DesktopHeader from "@/components/desktop/Header";
 import MobileHeader from "@/components/mobile/Header";
 import DesktopFooter from "@/components/desktop/Footer";
@@ -13,7 +12,6 @@ import styles from '@/styles/events/EventDetailPage.module.css';
 export default function EventDetailPage({ 
   headerData, 
   footerData, 
-  siteIconUrl, 
   post 
 }) {
   const [isMobile, setIsMobile] = useState(false);
@@ -31,20 +29,8 @@ export default function EventDetailPage({
     };
   }, []);
 
-  // Create a plain text excerpt for meta description by removing HTML tags
-  const plainTextExcerpt = post.excerpt
-    ? post.excerpt.replace(/<[^>]*>?/gm, '').slice(0, 160)
-    : '';
-
   return (
     <>
-      <CustomHead
-        title={`${post.title} - Le Jardin des chefs`}
-        description={plainTextExcerpt}
-        canonicalUrl={`${process.env.NEXT_PUBLIC_SITE_URL}/evenements/${post.slug}`}
-        siteIconUrl={siteIconUrl}
-      />
-
       {isMobile ? (
         <MobileHeader pageData={headerData} />
       ) : (

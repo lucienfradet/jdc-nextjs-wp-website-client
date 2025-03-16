@@ -1,15 +1,41 @@
-import { getPageFieldsByName } from '@/lib/api';
-import { fetchSiteIcon } from "@/lib/api";
+import { getPageFieldsByName } from '@/lib/cachedApi';
 import ContactPage from '@/components/ContactPage';
 import { notFound } from 'next/navigation';
 
+export const revalidate = 3600;
+
+// Generate metadata based on CMS data
+export async function generateMetadata() {
+  // This fetch is now cached
+  const pageData = await getPageFieldsByName("contact");
+  
+  if (!pageData) {
+    return null;
+  }
+  
+  // Access the metadata fields from your CMS data
+  const { acfFields } = pageData;
+  
+  return {
+    title: acfFields["head-title"] || 'Le Jardin des chefs',
+    description: acfFields["head-description"] || undefined,
+    alternates: {
+      canonical: '/contact',
+    },
+    openGraph: {
+      title: acfFields["head-title"] || 'Le Jardin des chefs',
+      description: acfFields["head-description"] || undefined,
+      url: '/contact',
+    },
+  };
+}
+
 export default async function Page() {
   // Fetch data on the server
-  const [pageData, headerData, footerData, siteIconUrl] = await Promise.all([
+  const [pageData, headerData, footerData] = await Promise.all([
     getPageFieldsByName("contact"),
     getPageFieldsByName("header"),
     getPageFieldsByName("footer"),
-    fetchSiteIcon()
   ]);
 
   if (!pageData || !headerData || !footerData) {
@@ -24,7 +50,6 @@ export default async function Page() {
       pageData={pageData}
       headerData={headerData}
       footerData={footerData}
-      siteIconUrl={siteIconUrl}
       mapsApiKey={mapsApiKey}
     />
   );

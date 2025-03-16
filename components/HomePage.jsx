@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from "react";
 import WPImage from "@/components/WPImage";
-import CustomHead from '@/components/CustomHead';
 import DesktopHeader from "@/components/desktop/Header";
 import MobileHeader from "@/components/mobile/Header";
 import DesktopFooter from "@/components/desktop/Footer";
@@ -11,7 +10,7 @@ import Link from "next/link";
 import styles from '@/styles/HomePage.module.css';
 import { convertLineBreaksToHtml, renderContent } from '@/lib/textUtils';
 
-export default function HomePage({ pageData, headerData, footerData, siteIconUrl }) {
+export default function HomePage({ pageData, headerData, footerData }) {
   const pageContent = pageData.acfFields;
   // debug statement
   // console.log("Page Content:", pageContent);
@@ -76,13 +75,6 @@ export default function HomePage({ pageData, headerData, footerData, siteIconUrl
 
   return (
     <>
-      <CustomHead
-        title={pageContent["head-title"]}
-        description={pageContent["head-description"]}
-        canonicalUrl={pageContent["head-url"]}
-        siteIconUrl={siteIconUrl}
-      />
-
       {isMobile ? (
         <MobileHeader pageData={headerData} />
       ) : (

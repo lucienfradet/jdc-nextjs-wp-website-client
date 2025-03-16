@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useImperativeHandle, forwardRef } from 'react';
-import EmailConfirmation from '../EmailConfirmation';
+import EmailConfirmation from './EmailConfirmation';
 import styles from '@/styles/checkout/CheckoutForm.module.css';
 
 const CheckoutForm = forwardRef(({ 

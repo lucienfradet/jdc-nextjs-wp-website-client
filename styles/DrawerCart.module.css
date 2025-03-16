@@ -3,6 +3,10 @@
   padding: 1rem;
 }
 
+.drawerContainer {
+  width: 400px;
+}
+
 .drawerHeader {
   display: flex;
   justify-content: space-between;
@@ -101,4 +105,10 @@
   background-color: var(--beige);
   color: var(--green);
   border-color: var(--green);
+}
+
+@media screen and (max-width: 479px) {
+  .drawerContainer {
+    width: auto;
+  }
 }

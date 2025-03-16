@@ -56,7 +56,7 @@ export default function DrawerCart({ trigger }) {
         keepMounted={false}
         disableRestoreFocus
       >
-        <Box sx={{ width: 400 }} role="presentation">
+        <Box className={styles.drawerContainer} role="presentation">
           <div className={styles.drawerHeader}>
             <h2 className={styles.title}>VOTRE PANIER</h2>
             <IconButton 

@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation'; // Add useSearchParams
-import CustomHead from '@/components/CustomHead';
 import DesktopHeader from "@/components/desktop/Header";
 import MobileHeader from "@/components/mobile/Header";
 import DesktopFooter from "@/components/desktop/Footer";
@@ -11,7 +10,7 @@ import MobileFooter from "@/components/mobile/Footer";
 import styles from '@/styles/checkout/OrderConfirmationPage.module.css';
 import { useCart } from '@/context/CartContext';
 
-export default function OrderConfirmationPage({ headerData, footerData, siteIconUrl }) {
+export default function OrderConfirmationPage({ headerData, footerData }) {
   const [isMobile, setIsMobile] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [orderData, setOrderData] = useState(null);
@@ -73,13 +72,6 @@ export default function OrderConfirmationPage({ headerData, footerData, siteIcon
   
   return (
     <>
-      <CustomHead
-        title="Confirmation de commande - Le Jardin des chefs"
-        description="Merci pour votre commande!"
-        canonicalUrl={process.env.NEXT_PUBLIC_SITE_URL + '/order-confirmation'}
-        siteIconUrl={siteIconUrl}
-      />
-
       {isMobile ? (
         <MobileHeader pageData={headerData} />
       ) : (

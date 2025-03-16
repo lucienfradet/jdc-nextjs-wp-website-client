@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import WPImage from "@/components/WPImage";
-import CustomHead from '@/components/CustomHead';
 import DesktopHeader from "@/components/desktop/Header";
 import MobileHeader from "@/components/mobile/Header";
 import DesktopFooter from "@/components/desktop/Footer";
@@ -14,7 +13,6 @@ export default function ContactPage({
   pageData,
   headerData,
   footerData,
-  siteIconUrl,
   mapsApiKey
 }) {
   const pageContent = pageData.acfFields;
@@ -48,13 +46,6 @@ export default function ContactPage({
 
   return (
     <>
-      <CustomHead
-        title={pageContent["head-title"]}
-        description={pageContent["head-description"]}
-        canonicalUrl={pageContent["head-url"]}
-        siteIconUrl={siteIconUrl}
-      />
-
       {isMobile ? (
         <MobileHeader pageData={headerData} />
       ) : (

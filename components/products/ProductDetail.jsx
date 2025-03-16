@@ -3,14 +3,13 @@
 import { useEffect, useState } from "react";
 import WPImage from "@/components/WPImage";
 import styles from '@/styles/products/ProductDetail.module.css';
-import CustomHead from '@/components/CustomHead';
 import DesktopHeader from "@/components/desktop/Header";
 import MobileHeader from "@/components/mobile/Header";
 import DesktopFooter from "@/components/desktop/Footer";
 import MobileFooter from "@/components/mobile/Footer";
 import { useCart } from '@/context/CartContext';
 
-export default function ProductDetail({ product, headerData, footerData, siteIconUrl }) {
+export default function ProductDetail({ product, headerData, footerData }) {
   const [isMobile, setIsMobile] = useState(false);
   const { addToCart } = useCart();
   const [quantity, setQuantity] = useState(1);
@@ -48,13 +47,6 @@ export default function ProductDetail({ product, headerData, footerData, siteIco
 
   return (
     <>
-      <CustomHead
-        title={`Page de produit: ${product.name}`}
-        description={`Page de produits unique.`}
-        canonicalUrl={`${process.env.NEXT_PUBLIC_SITE_URL}/products/${product.id}`}
-        siteIconUrl={siteIconUrl}
-      />
-
       {isMobile ? (
         <MobileHeader pageData={headerData} />
       ) : (

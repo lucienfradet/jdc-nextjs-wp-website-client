@@ -2,7 +2,6 @@
 
 import { useEffect, useState, useRef } from "react";
 import WPImage from "@/components/WPImage";
-import CustomHead from '@/components/CustomHead';
 import DesktopHeader from "@/components/desktop/Header";
 import MobileHeader from "@/components/mobile/Header";
 import DesktopFooter from "@/components/desktop/Footer";
@@ -15,7 +14,6 @@ export default function Abonnement({
   pageData,
   headerData,
   footerData,
-  siteIconUrl,
   pointDeChute,
   products
 }) {
@@ -48,13 +46,6 @@ export default function Abonnement({
 
   return (
     <>
-      <CustomHead
-        title={pageContent["head-title"]}
-        description={pageContent["head-description"]}
-        canonicalUrl={pageContent["head-url"]}
-        siteIconUrl={siteIconUrl}
-      />
-
       {isMobile ? (
         <MobileHeader pageData={headerData} />
       ) : (

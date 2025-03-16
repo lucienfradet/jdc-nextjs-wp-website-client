@@ -4,6 +4,22 @@ import { fetchSiteIcon } from "@/lib/api";
 import OrderConfirmationPage from '@/components/order/OrderConfirmationPage';
 import { notFound } from 'next/navigation';
 
+const metaTitle = "Confirmation de commande";
+const metaDescription = `Merci pour votre commande!`;
+
+export const metadata = {
+  title: metaTitle,
+  description: metaDescription,
+  alternates: {
+    canonical: "/order-confirmation",
+  },
+  openGraph: {
+    title: metaTitle,
+    description: metaDescription,
+    url: "/order-confirmation",
+  },
+};
+
 export default async function Page() {
   // Fetch data on the server
   const [headerData, footerData, siteIconUrl] = await Promise.all([
