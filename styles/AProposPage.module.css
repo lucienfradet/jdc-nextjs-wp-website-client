@@ -1,0 +1,731 @@
+.aProposBody {
+  padding-top: var(--header-height);
+  overflow: hidden;
+  background: var(--beige);
+  color: var(--green);
+  font-family: 'Maname';
+  position: relative;
+}
+
+.svgBackground {
+  position: absolute;
+  top: 900px; /* Center vertically within the section */
+  left: -23%; /* Center horizontally within the viewport */
+  transform: translate(15vw, -20%); /* Adjust to center the SVG */
+  z-index: 4; /* Place it below the container */
+  pointer-events: none;
+}
+
+.svgBackground svg {
+  width: 120vw;
+  height: auto;
+}
+
+
+/* Section 1 */
+.section1 {
+  position: relative;
+  width: 100%;
+  min-height: 90vh;
+  display: flex;
+  justify-content: flex-end;
+  align-items: stretch;
+  overflow: hidden;
+}
+
+.backgroundContainer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.backgroundImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.contentBox {
+  position: relative;
+  background: rgba(245, 240, 225, 0.85); /* var(--beige) with transparency */
+  width: 40%;
+  min-width: 480px;
+  padding: 3rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  z-index: 5;
+  height: 100%;
+  box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
+}
+
+.contentBox h1 {
+  font-size: 2.5rem;
+  margin-bottom: 1.5rem;
+  font-family: 'Maname';
+  color: var(--green);
+}
+
+.contentBox p {
+  font-family: 'Roboto';
+  font-size: 1rem;
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}
+
+.logoWrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+.logo {
+  width: 150px;
+  height: auto;
+}
+
+/* Section 2 */
+.section2 {
+  position: relative;
+  padding: 3rem 0 0;
+  overflow: hidden;
+  color: var(--beige);
+}
+
+.circlesContainer {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 0rem;
+  z-index: 6;
+  perspective: 1000px;
+}
+
+
+/* Circle animation when coming into view */
+@keyframes initialFlip {
+  0% {
+    transform: rotateY(20deg);
+    opacity: 0.7;
+  }
+  100% {
+    transform: rotateY(0deg);
+    opacity: 1;
+  }
+}
+
+.circle.inView {
+  animation: initialFlip 0.8s ease forwards;
+}
+
+.circle {
+  position: relative;
+  border-radius: 50%;
+  cursor: pointer;
+  transform-style: preserve-3d;
+  transition: transform 0.8s ease;
+}
+
+.circle.flipped {
+  transform: rotateY(180deg);
+}
+
+.circle1 {
+  width: 25vw;
+  height: 25vw;
+  z-index: 1;
+  margin-right: -20px; /* Overlapping effect */
+}
+
+.circle2 {
+  width: 20vw;
+  height: 20vw;
+  z-index: 2;
+}
+
+.circleFront, .circleBack {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.circleBack {
+  transform: rotateY(180deg);
+  background-color: var(--pink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 25px;
+  text-align: center;
+}
+
+.circle2 .circleBack {
+  background-color: var(--red);
+}
+
+.circleBack p {
+  font-family: 'Maname';
+  font-size: 1.8rem;
+  color: var(--beige);
+}
+
+.circleImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.backgroundImageContainer {
+  position: relative;
+  width: 100%;
+  margin-top: -100px; /* Overlap with circles */
+  z-index: 2;
+}
+
+.catchPhraseBox {
+  position: absolute;
+  top: 11rem;
+  right: 8rem;
+  background: rgba(128, 128, 128, 0.8); /* Grey transparent background */
+  padding: 0.8rem 2rem;
+  border-radius: 5px;
+  max-width: 350px;
+  z-index: 4;
+}
+
+.catchPhraseBox p {
+  font-family: 'Maname';
+  font-size: 1.4rem;
+  line-height: 1.5;
+  color: var(--beige);
+  margin-bottom: 13px;
+}
+
+.backgroundImage2 {
+  width: 100%;
+  height: auto;
+  position: relative;
+}
+
+/* Add mask for smooth wave effect */
+.backgroundImageContainer::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--beige);
+  /* Flipped SVG with wave at bottom */
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120' preserveAspectRatio='none'%3E%3Cpath d='M0,0 L1200,0 L1200,60 C950,90 750,0 550,80 C350,160 150,40 0,80 L0,0 Z' fill='%23FFFFFF'/%3E%3C/svg%3E");
+  mask-size: 100% 200%;
+  mask-position: bottom;
+  mask-repeat: no-repeat;
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120' preserveAspectRatio='none'%3E%3Cpath d='M0,0 L1200,0 L1200,60 C950,90 750,0 550,80 C350,160 150,40 0,80 L0,0 Z' fill='%23FFFFFF'/%3E%3C/svg%3E");
+  -webkit-mask-size: 100% 20%;
+  -webkit-mask-position: top;
+  -webkit-mask-repeat: no-repeat;
+  z-index: 3;
+}
+
+/* Section 3 */
+.section3 {
+  padding: 5rem 2rem;
+  background: var(--beige);
+  color: var(--green);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.centerImageContainer {
+  width: 60%;
+  max-width: 600px;
+  margin-bottom: 3rem;
+}
+
+.centerImage {
+  width: 100%;
+  height: auto;
+  border-radius: 2rem;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.centerImage img {
+  border-radius: 2rem;
+}
+
+.historyTextContainer {
+  width: 61%;
+  max-width: 1000px;
+  margin-bottom: 4rem;
+  font-family: 'Roboto';
+  font-size: 1.1rem;
+  line-height: 1.7;
+  text-align: justify;
+}
+
+.newspaperLayout {
+  display: flex;
+  gap: 3rem;
+}
+
+.column {
+  flex: 1;
+}
+
+.column p {
+  margin: 0;
+}
+
+.imageRow {
+  display: flex;
+  justify-content: center;
+  gap: 3rem;
+  max-width: 900px;
+}
+
+/* Section 4 */
+.section4 {
+  padding: 5rem 4rem;
+  background: var(--pink);
+  color: var(--beige);
+  position: relative;
+  overflow: show;
+  margin-bottom: 5rem;
+  min-height: 55vh;
+}
+
+.contentContainer {
+  display: flex;
+  max-width: 1200px;
+  margin: 0 auto;
+  gap: 4rem;
+  position: relative;
+  z-index: 2;
+  align-items: center;
+  justify-content: center;
+  min-height: 40vh;
+}
+
+.textSide {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.textSide h2 {
+  font-size: 3rem;
+  margin-bottom: 2rem;
+  font-family: 'Maname';
+}
+
+.textSide p {
+  font-family: 'Roboto';
+  font-size: 1.2rem;
+  line-height: 1.3;
+  margin-bottom: 1rem;
+}
+
+.videoSide {
+  flex: 1;
+  position: relative;
+}
+
+.videoEmbed {
+  width: 100%;
+  border-radius: 10px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  position: relative;
+  z-index: 2;
+  aspect-ratio: 16/9;
+  height: auto;
+  border: 0px;
+}
+
+.videoBackgroundSVGs {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.videoSvg1 {
+  position: absolute;
+  top: -170px;
+  left: -110px;
+  z-index: 1;
+}
+
+.videoSvg2 {
+  position: absolute;
+  bottom: -170px;
+  right: -30px;
+  z-index: 1;
+}
+
+/* Person image container and alt text display */
+.personImageContainer {
+  position: relative;
+  width: 280px;
+  height: 280px;
+  border-radius: 10px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.personImageContainer:hover {
+  transform: scale(1.05);
+}
+
+.personImage {
+  width: 100%;
+  height: 100%;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.personImageAltText {
+  position: absolute;
+  top: -10%;
+  left: -10%;
+  width: 120%;
+  height: 120%;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 1rem;
+  border-radius: 10px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  font-family: 'Maname';
+  font-size: 1.2rem;
+}
+
+.personImageContainer:hover .personImageAltText,
+.personImageContainer.clicked .personImageAltText {
+  opacity: 1;
+  animation: pulse 1.5s ease-out;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Media Queries for Responsive Design */
+@media (max-width: 991px) {
+  .aProposBody {
+    padding-top: var(--header-height-mobile);
+  }
+
+  .svgBackground {
+    top: 700px;
+    left: -33%;
+    transform: translate(15vw, -20%);
+  }
+
+  .svgBackground svg {
+    width: 150vw;
+  }
+
+  .section1 {
+    flex-direction: column;
+    min-height: auto;
+    padding: 3rem 1.5rem;
+  }
+
+  .contentBox {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    padding: 2rem;
+    background: rgba(245, 240, 225, 0.75); /* var(--beige) with transparency */
+  }
+
+  .contentContainer {
+    flex-direction: column;
+    gap: 3rem;
+  }
+
+  .circle1 {
+    width: 250px;
+    height: 250px;
+    margin-right: -10px;
+  }
+
+  .circle2 {
+    width: 220px;
+    height: 220px;
+  }
+
+
+  .catchPhraseBox {
+    top: 6rem;
+    right: 2rem;
+    padding: 0.4rem 1rem;
+  }
+
+  .backgroundImageContainer {
+    margin-top: -50px;
+  }
+
+  .newspaperLayout {
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  .imageRow {
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+    width: 90%;
+  }
+
+  .videoEmbed {
+    width: 50vw;
+  }
+
+  .videoSvg1 {
+    width: 250px;
+    top: 20px;
+    left: -180px;
+  }
+
+  .videoSvg2 {
+    width: 220px;
+    top: -150px;
+    right: -150px;
+  }
+}
+
+@media (max-width: 768px) {
+  .section1, .section3, .section4 {
+    padding: 3rem 1.5rem;
+  }
+
+  .contentBox h1 {
+    font-size: 2rem;
+  }
+
+  .circle1 {
+    width: 200px;
+    height: 200px;
+    margin-right: -20px;
+  }
+
+  .circle2 {
+    width: 170px;
+    height: 170px;
+  }
+
+  .circleBack p {
+    font-size: 1.2rem;
+  }
+
+  .catchPhraseBox {
+    top: 3.5rem;
+  }
+
+  .catchPhraseBox p {
+    font-size: 1.4rem;
+  }
+
+  .historyTextContainer {
+    width: 90%;
+    font-size: 1rem;
+  }
+
+  .textSide h2 {
+    font-size: 2.2rem;
+  }
+
+  .textSide p {
+    font-size: 1rem;
+  }
+
+  .videoEmbed {
+    width: 60vw;
+  }
+
+  .personImageContainer {
+    width: 250px;
+    height: 250px;
+  }
+}
+
+/* backgroundSVG more media queries */
+
+@media (max-width: 703px) {
+  .svgBackground {
+    top: 790px;
+  }
+}
+
+@media (max-width: 627px) {
+  .svgBackground {
+    top: 830px;
+  }
+}
+
+@media (max-width: 600px) {
+  .section2 {
+    min-height: 115vh; /* Further adjust height for very small devices */
+  }
+  
+  .backgroundImage2 {
+    transform: scale(1.3); /* Zoom in more for smaller devices */
+  }
+
+  .backgroundImageContainer::before {
+    transform: translateY(-60px);
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120' preserveAspectRatio='none'%3E%3Cpath d='M0,0 L1200,0 L1200,60 C950,90 750,0 550,80 C350,160 150,40 0,80 L0,0 Z' fill='%23FFFFFF'/%3E%3C/svg%3E");
+    mask-size: 100% 100%;
+    mask-position: top;
+    mask-repeat: no-repeat;
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120' preserveAspectRatio='none'%3E%3Cpath d='M0,0 L1200,0 L1200,60 C950,90 750,0 550,80 C350,160 150,40 0,80 L0,0 Z' fill='%23FFFFFF'/%3E%3C/svg%3E");
+    -webkit-mask-size: 100% 30%;
+    -webkit-mask-position: top;
+    -webkit-mask-repeat: no-repeat;
+  }
+
+  .circlesContainer {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .circle1 {
+    width: 300px;
+    height: 300px;
+    margin-bottom: 30px
+  }
+
+  .circle2 {
+    width: 300px;
+    height: 300px;
+    margin-bottom: 50px
+  }
+
+  .catchPhraseBox {
+    background: rgba(128, 128, 128, 0.9); /* Grey transparent background */
+    width: 80%;
+    top: 1.0rem;
+    right: 50%;
+    transform: translateX(50%);
+  }
+  
+  .svgBackground {
+    top: -1000px;
+  }
+
+  .textSide {
+    padding: 0 1rem;
+  }
+
+  .textSide p {
+    margin-top: 1rem;
+  }
+
+  .contentContainer {
+    gap: 10px;
+  }
+
+  .videoEmbed {
+    width: 80vw;
+  }
+}
+
+@media (max-width: 480px) {
+  .section1, .section3, .section4 {
+    padding: 2rem 1rem;
+  }
+
+  .contentBox h1 {
+    font-size: 1.8rem;
+  }
+
+  .logo {
+    width: 120px;
+  }
+
+  .circleBack p {
+    font-size: 1rem;
+    padding: 10px;
+  }
+
+  .catchPhraseBox {
+    padding: 1rem;
+  }
+
+  .catchPhraseBox p {
+    font-size: 1rem;
+  }
+
+  .centerImageContainer {
+    width: 90%;
+  }
+
+  .section2 {
+    min-height: 120vh; /* Further adjust height for very small devices */
+  }
+  
+  .backgroundImage2 {
+    transform: scale(2.3); /* Zoom in more for smaller devices */
+  }
+
+  .backgroundImageContainer::before {
+    transform: translateY(-180px);
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120' preserveAspectRatio='none'%3E%3Cpath d='M0,0 L1200,0 L1200,60 C950,90 750,0 550,80 C350,160 150,40 0,80 L0,0 Z' fill='%23FFFFFF'/%3E%3C/svg%3E");
+    mask-size: 100% 100%;
+    mask-position: top;
+    mask-repeat: no-repeat;
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120' preserveAspectRatio='none'%3E%3Cpath d='M0,0 L1200,0 L1200,60 C950,90 750,0 550,80 C350,160 150,40 0,80 L0,0 Z' fill='%23FFFFFF'/%3E%3C/svg%3E");
+    -webkit-mask-size: 200% 70%;
+    -webkit-mask-position: top;
+    -webkit-mask-repeat: no-repeat;
+  }
+
+  .personImage {
+    width: 200px;
+    height: 200px;
+  }
+
+  .textSide h2 {
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+  }
+
+  .personImageContainer {
+    width: 200px;
+    height: 200px;
+  }
+}

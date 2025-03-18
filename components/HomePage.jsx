@@ -13,7 +13,7 @@ import { convertLineBreaksToHtml, renderContent } from '@/lib/textUtils';
 export default function HomePage({ pageData, headerData, footerData }) {
   const pageContent = pageData.acfFields;
   // debug statement
-  // console.log("Page Content:", pageContent);
+  console.log("Page Content:", pageContent);
 
   const [isMobile, setIsMobile] = useState(false);
   const [opacity, setOpacity] = useState(1); // Start with full opacity

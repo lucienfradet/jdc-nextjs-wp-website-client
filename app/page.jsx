@@ -37,9 +37,9 @@ export async function generateMetadata() {
 export default async function Page() {
   // Fetch data on the server
   const [pageData, headerData, footerData, siteIconUrl] = await Promise.all([
-    await getPageFieldsByName("homepage"),
-    await getPageFieldsByName("header", 86400), // 1 day
-    await getPageFieldsByName("footer", 86400) // 1 day
+    getPageFieldsByName("homepage"),
+    getPageFieldsByName("header", 86400), // 1 day
+    getPageFieldsByName("footer", 86400) // 1 day
   ]);
 
   if (!pageData || !headerData || !footerData) {
