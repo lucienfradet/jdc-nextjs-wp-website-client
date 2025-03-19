@@ -363,14 +363,24 @@
   z-index: 6;
 }
 
+.abonnContainer li {
+  position: relative;
+  font-size: 1.4vw;
+  line-height: 1.6;
+  font-weight: bold;
+  max-width: 22vw;
+  z-index: 6;
+}
+
+
 .abonnButton {
   display: inline-block; /* Makes the button inline but still block-like */
   margin: 20px auto 0; /* Center the button horizontally and add spacing */
   padding: 10px 20px; /* Adjust padding for button size */
   font-size: 1.2rem; /* Adjust font size */
   font-weight: bold;
-  color: var(--red); /* Text color */
-  background-color: var(--beige); /* Background color */
+  color: var(--beige); /* Text color */
+  background-color: var(--red); /* Background color */
   border: 5px solid var(--red); /* Border color */
   border-radius: 10px; /* Rounded corners */
   cursor: pointer; /* Change cursor to pointer */
@@ -379,8 +389,8 @@
 }
 
 .abonnButton:hover {
-  color: var(--beige); /* Flip text color */
-  background-color: var(--red); /* Flip background color */
+  color: var(--red); /* Flip text color */
+  background-color: var(--beige); /* Flip background color */
 }
 
 /* Absolute content cluster on the right */
@@ -631,6 +641,15 @@
     line-height: 1.2;
   }
 
+  .abonnContainer li {
+    font-size: 2.1vw; /* Adjust text size */
+    max-width: 100%;
+    text-align: left; /* Justify text to the left */
+    position: relative;
+    padding-left: 1.5em; /* Space for the bullet */
+    line-height: 1.5;
+  }
+
   .abonnButton {
     margin-left: 35vw;
     margin-top: 6vw;
@@ -689,10 +708,10 @@
   }
 
   .imgAbonn1 {
-    transform: translateY(60%);
+    transform: translateY(20%);
   }
   .imgAbonn2 {
-    transform: translateY(95%);
+    transform: translateY(60%);
   }
 
 }
@@ -797,6 +816,7 @@
 
   .columnsWrapper {
     margin: 0 auto 375px auto;
+    background: none;
   }
 
   .column {
@@ -820,5 +840,29 @@
   .collabSVG {
     transform: translate(5vw, -30%); /* Adjust to center the SVG */
     width: 220vw;
+  }
+
+  .abonnContainer p {
+    font-size: 3.5vw; /* Adjust text size */
+  }
+
+  .abonnContainer li {
+    font-size: 3.5vw; /* Adjust text size */
+  }
+
+  .imgAbonn1 {
+    transform: translateY(45%);
+  }
+  .imgAbonn2 {
+    transform: translateY(90%);
+  }
+}
+
+
+@media screen and (max-width: 421px) {
+  .imgCollabBackground {
+    top: -20vw;
+    left: -170vw;
+    width: calc(220vw + 120%);
   }
 }
