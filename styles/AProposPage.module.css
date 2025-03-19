@@ -927,6 +927,7 @@
   .podcastButton {
     font-size: 1.1rem;
     padding: 0.6rem 1.8rem;
+    padding-bottom: 20px;
   }
   
   .podcastImageWrapper {

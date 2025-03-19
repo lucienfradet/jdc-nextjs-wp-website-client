@@ -85,6 +85,25 @@
   color: var(--red);
 }
 
+.inlineImageContainer {
+  width: 100%;
+  height: 150px;
+  margin-bottom: 1rem;
+  overflow: hidden;
+  border-radius: 6px;
+}
+
+.inlineImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.eventCard:hover .inlineImage {
+  transform: scale(1.05);
+}
+
 @media (max-width: 768px) {
   .imageContainer {
     height: 180px;

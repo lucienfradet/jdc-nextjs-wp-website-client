@@ -37,7 +37,7 @@ export default function EventsPage({
       )}
 
       <main className={styles.eventsPage}>
-        <h1 className={styles.pageTitle}>Blog et Événements</h1>
+        <h1 className={styles.pageTitle}>Événements et actualités</h1>
         <EventList initialData={postsData} />
       </main>
 

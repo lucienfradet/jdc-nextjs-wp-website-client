@@ -1,0 +1,117 @@
+.eventsSection {
+  position: relative;
+  background-color: var(--beige);
+  color: var(--green);
+  padding: 80px 0 30px;
+  overflow: hidden;
+  z-index: 2;
+}
+
+.eventsContainer {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.eventsContainer h2 {
+  font-size: clamp(30px, 3vw, 40px);
+  margin-bottom: 30px;
+  text-align: center;
+  color: var(--green);
+}
+
+.eventsScrollContainer {
+  display: flex;
+  overflow-x: auto;
+  padding: 20px 10px;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: thin;
+  -webkit-overflow-scrolling: touch;
+  gap: 20px;
+  padding: 20px;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.eventsScrollContainer a {
+  -webkit-user-drag: none;
+  user-select: none;
+}
+
+.eventsScrollContainer img {
+  -webkit-user-drag: none;
+  user-select: none;
+  pointer-events: none;
+}
+
+.centered {
+  justify-content: center;
+}
+
+/* Custom scrollbar styling */
+.eventsScrollContainer::-webkit-scrollbar {
+  height: 8px;
+}
+
+.eventsScrollContainer::-webkit-scrollbar-thumb {
+  background-color: var(--orange);
+  border-radius: 4px;
+}
+
+.eventsScrollContainer::-webkit-scrollbar-track {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+.eventCardWrapper {
+  flex: 0 0 auto;
+  width: 325px;
+  scroll-snap-align: start;
+  transition: transform 0.3s ease;
+}
+
+.eventCardWrapper:hover {
+  transform: translateY(-5px);
+}
+
+.loading, .noEvents {
+  padding: 30px;
+  text-align: center;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  width: 100%;
+  color: var(--beige);
+}
+
+.scrollHint {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 0.9rem;
+  color: var(--green-transparent);
+  opacity: 0.8;
+}
+
+/* Media queries for responsive design */
+@media screen and (max-width: 991px) {
+  .eventCardWrapper {
+    width: 280px;
+  }
+  
+  .eventsSection {
+    padding: 60px 0 20px;
+  }
+}
+
+@media screen and (max-width: 479px) {
+  .eventCardWrapper {
+    width: 250px;
+  }
+  
+  .eventsSection {
+    padding: 40px 0 20px;
+  }
+  
+  .eventsContainer h2 {
+    font-size: clamp(22px, 7vw, 30px);
+  }
+}

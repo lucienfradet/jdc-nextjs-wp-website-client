@@ -6,10 +6,11 @@ import DesktopHeader from "@/components/desktop/Header";
 import MobileHeader from "@/components/mobile/Header";
 import DesktopFooter from "@/components/desktop/Footer";
 import MobileFooter from "@/components/mobile/Footer";
+import HomePageSvgTitleSection from "@/components/svg/HomePageSvgTitleSection";
+import EventsSection from "@/components/events/EventsSection";
 import Link from "next/link";
 import styles from '@/styles/HomePage.module.css';
 import { convertLineBreaksToHtml, renderContent } from '@/lib/textUtils';
-import HomePageSvgTitleSection from "./svg/HomePageSvgTitleSection";
 
 export default function HomePage({ pageData, headerData, footerData }) {
   const pageContent = pageData.acfFields;
@@ -197,6 +198,7 @@ export default function HomePage({ pageData, headerData, footerData }) {
             <WPImage className={styles.imgCollabBackground} image={pageContent["img-collaborateurs-background"]} forceFullSize={true} />
           </div>
         </section>
+
         <section className={styles.abonnSection}>
           <div className={styles.abonnContainer}>
             <h2>{pageContent["h2-abonnements"]}</h2>
@@ -216,6 +218,8 @@ export default function HomePage({ pageData, headerData, footerData }) {
             </svg>
           </div>
         </section>
+
+        <EventsSection title={pageContent["h2-events"] || "Événements et actualités"} />
 
         {isMobile ? (
           <MobileFooter pageData={footerData} />
