@@ -47,15 +47,44 @@ export default function HomePage({ pageData, headerData, footerData }) {
       setOpacity(newOpacity);
     };
 
+    const handleMobileCatchPhrase = () => {
+      const isMobileView = window.innerWidth <= 479;
+      const catchPhraseElement = document.querySelector(`.${styles.catchPhrase}`);
+      const introContainer = document.querySelector(`.${styles.introContainer}`);
+
+      if (isMobileView && catchPhraseElement && introContainer) {
+        // Clone the catchPhrase for mobile
+        const mobileCatchPhrase = catchPhraseElement.cloneNode(true);
+        mobileCatchPhrase.classList.remove(styles.catchPhrase);
+        mobileCatchPhrase.classList.add(styles.mobileCatchPhrase);
+
+        // Check if we already added mobile catchPhrase
+        if (!introContainer.querySelector(`.${styles.mobileCatchPhrase}`)) {
+          // Insert at the beginning of the intro container
+          introContainer.insertBefore(mobileCatchPhrase, introContainer.firstChild);
+        }
+      } else {
+        // Remove mobile catchPhrase if screen becomes larger
+        const mobileCatchPhrase = document.querySelector(`.${styles.mobileCatchPhrase}`);
+        if (mobileCatchPhrase) {
+          mobileCatchPhrase.remove();
+        }
+      }
+    };
+
     window.addEventListener("resize", handleResize);
     handleResize(); // Initial check
 
     window.addEventListener("scroll", handleScroll);
     handleScroll(); // Initial check in case the element is already in view
 
+    handleMobileCatchPhrase();
+    window.addEventListener('resize', handleMobileCatchPhrase);
+
     return () => {
       window.removeEventListener("resize", handleResize);
       window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener('resize', handleMobileCatchPhrase);
     };
   }, []);
 
@@ -86,7 +115,11 @@ export default function HomePage({ pageData, headerData, footerData }) {
       <main className={styles.homepageBody}>
         <section className={styles.titleSection}>
           <div className={styles.logoWrapper}>
-            <HomePageSvgTitleSection />
+            {isMobile ? (
+              <HomePageSvgTitleSection mobile={true} />
+            ) : (
+                <HomePageSvgTitleSection mobile={false} />
+              )}
           </div>
           <div className={styles.catchPhrase}>
             <p ref={catchPhraseRef}>
@@ -201,15 +234,21 @@ export default function HomePage({ pageData, headerData, footerData }) {
 
         <section className={styles.abonnSection}>
           <div className={styles.abonnContainer}>
-            <h2>{pageContent["h2-abonnements"]}</h2>
-            {renderContent(pageContent["paragraph-abonnements"])}
-            <Link href="/abonnement">
-              <button className={styles.abonnButton}>{pageContent["btn-abonnements-text"]}</button>
-            </Link>
+            <div className={styles.textContent}>
+              <h2>{pageContent["h2-abonnements"]}</h2>
+              {renderContent(pageContent["paragraph-abonnements"])}
+              <Link href={pageContent["btn-abonnements-url"] || "/abonnement"}>
+                <button className={styles.abonnButton}>{pageContent["btn-abonnements-text"]}</button>
+              </Link>
+            </div>
+
+            <div className={styles.imageGallery}>
+              <WPImage className={styles.imgAbonn1} image={pageContent["img-abonnements-1"]} />
+              <WPImage className={styles.imgAbonn2} image={pageContent["img-abonnements-2"]} />
+            </div>
           </div>
-          <div className={styles.absolutesWrapper}>
-            <WPImage className={styles.imgAbonn1} image={pageContent["img-abonnements-1"]} />
-            <WPImage className={styles.imgAbonn2} image={pageContent["img-abonnements-2"]} />
+
+          <div className={styles.backgroundElements}>
             <svg className={styles.abonnSVG1} width="413" height="415" viewBox="0 0 413 415" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M20.6302 60.2784C22.1162 44.5451 34.2468 31.91 49.9065 29.7844L261.268 1.09497C275.029 -0.77292 288.543 5.91607 295.403 17.9908L407.998 216.175C415.43 229.255 413.381 245.665 402.962 256.517L261.555 403.806C251.136 414.658 234.824 417.373 221.451 410.481L18.8458 306.052C6.50165 299.689 -0.732243 286.459 0.57359 272.633L20.6302 60.2784Z" fill="#D17829"/>
             </svg>

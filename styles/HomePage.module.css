@@ -94,6 +94,10 @@
   max-width: 450px; /* Ensure it's not too large */
 }
 
+.imgCrew img {
+  border-radius: 5px;
+}
+
 /* Label Image */
 .labelImg {
   position: absolute;
@@ -152,6 +156,10 @@
   width: 35vw; /* Adjust size */
   max-width: 400px; /* Ensure it's not too large */
   z-index: 1;
+}
+
+.imageSide img {
+  border-radius: 5px;
 }
 
 /* Background SVG */
@@ -314,7 +322,7 @@
 /* Background image */
 .imgCollabBackground {
   position: absolute;
-  top: -25vw;
+  top: -15vw;
   left: -25vw;
   width: calc(120vw + 30%); /* Dynamically increase the width */
   height: auto;
@@ -329,120 +337,169 @@
 .abonnSection {
   position: relative;
   background-color: var(--beige);
-  color: var(--green);
-  height: 50vw;
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  padding: 0 5vw;
-  z-index: 10;
+  padding: 120px 0;
+  overflow: hidden;
 }
 
+/* Main container with modern grid layout */
 .abonnContainer {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  padding: 0 60px;
+  align-items: center;
   position: relative;
-  width: 100%;
-  margin: 0 0 0 clamp(100px, 14vw, 240px);
+  z-index: 3;
 }
 
-.abonnContainer h2 {
-  font-weight: black;
-  position: relative;
-  font-size: 2.5vw;
-  margin-bottom: 1vw;
-  max-width: 20vw;
-  z-index: 6;
+/* Left column with text content */
+.textContent {
+  max-width: 500px;
 }
 
-.abonnContainer p {
-  position: relative;
-  font-size: 1.2vw;
+.textContent h2 {
+  font-size: 2.8rem;
+  color: var(--green);
+  margin-bottom: 30px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.textContent p {
+  font-size: 1.1rem;
+  color: var(--green);
   line-height: 1.6;
-  font-weight: bold;
-  text-align: justify;
-  max-width: 22vw;
-  z-index: 6;
+  margin-bottom: 15px;
 }
 
-.abonnContainer li {
+.textContent ul {
+  margin: 20px 0;
+  padding-left: 20px;
+}
+
+.textContent li {
+  font-size: 1.1rem;
+  color: var(--green);
+  margin-bottom: 12px;
   position: relative;
-  font-size: 1.4vw;
-  line-height: 1.6;
-  font-weight: bold;
-  max-width: 22vw;
-  z-index: 6;
+  list-style-type: none;
+  padding-left: 15px;
 }
 
+.textContent a {
+  text-decoration: underline;
+}
+
+.textContent li::before {
+  content: "•";
+  color: var(--red);
+  font-weight: bold;
+  position: absolute;
+  left: -10px;
+}
 
 .abonnButton {
-  display: inline-block; /* Makes the button inline but still block-like */
-  margin: 20px auto 0; /* Center the button horizontally and add spacing */
-  padding: 10px 20px; /* Adjust padding for button size */
-  font-size: 1.2rem; /* Adjust font size */
-  font-weight: bold;
-  color: var(--beige); /* Text color */
-  background-color: var(--red); /* Background color */
-  border: 5px solid var(--red); /* Border color */
-  border-radius: 10px; /* Rounded corners */
-  cursor: pointer; /* Change cursor to pointer */
-  text-align: center; /* Center text inside the button */
-  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+  display: inline-block;
+  margin-top: 30px;
+  padding: 14px 32px;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  color: var(--beige);
+  background-color: var(--green);
+  border: 2px solid var(--green);
+  border-radius: 30px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: center;
+  text-decoration: none;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .abonnButton:hover {
-  color: var(--red); /* Flip text color */
-  background-color: var(--beige); /* Flip background color */
+  background-color: transparent;
+  color: var(--green);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
 }
 
-/* Absolute content cluster on the right */
-.absolutesWrapper {
-  position: absolute;
-  top: 50%;
-  right: 25%;
-  transform: translateY(-50%);
-  width: 40%;
+/* Right column with image gallery */
+.imageGallery {
+  position: relative;
+  display: flex;
+  justify-content: flex-end;
   height: 100%;
+}
+
+.imgAbonn1 {
+  width: 80%;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  object-fit: cover;
+  height: 400px;
+  transform: translateY(-40px);
+  left: -140px;
+  transition: transform 0.4s ease;
   z-index: 1;
 }
 
-.abonnSVG1 {
-  height: auto;
-  margin-bottom: -50px;
-  transform: rotate(0deg);
-  z-index: 2;
+.imgAbonn2 {
   position: absolute;
-  top: 14%;
-  right: 40%;
-  width: 25vw;
+  width: 60%;
+  height: 400px;
+  object-fit: cover;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  top: 80px;
+  right: -40px;
+  transition: transform 0.4s ease;
+  z-index: 2;
+}
+
+.imgAbonn1 img,
+.imgAbonn2 img {
+  border-radius: 12px;
+}
+
+.imgAbonn1:hover, .imgAbonn2:hover {
+  transform: scale(1.03) translateY(-40px);
+  z-index: 5;
+}
+
+.imgAbonn2:hover {
+  transform: scale(1.03) translateY(0);
+}
+
+/* Subtle background elements - minimal style */
+.backgroundElements {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  opacity: 0.3;
+  z-index: 1;
+}
+
+.backgroundElements svg {
+  position: absolute;
+}
+
+.abonnSVG1 {
+  top: -10%;
+  right: -10%;
+  width: 35%;
   height: auto;
 }
 
 .abonnSVG2 {
-  position: absolute;
-  bottom: -7%;
-  right: 0;
-  width: 30vw;
+  bottom: -25%;
+  left: -3%;
+  width: 35%;
   height: auto;
-  z-index: 3;
-}
-
-.absolutesWrapper .imgAbonn1 {
-  position: absolute;
-  top: 5%;
-  left: 32%;
-  width: 15vw;
-  z-index: 5;
-  border-radius: 10%;
-  overflow: hidden;
-}
-
-.absolutesWrapper .imgAbonn2 {
-  position: absolute;
-  bottom: 20%;
-  right: -5%;
-  width: 20vw;
-  z-index: 4;
-  border-radius: 10%;
-  overflow: hidden;
 }
 
 /* MEDIA QUERIES */
@@ -609,111 +666,59 @@
     width: clamp(200px, 25vw, 300px);
   }
 
-  /* Abonnements section */
+
+  /* abonnement tablet */
   .abonnSection {
-    height: auto; /* Adjust height dynamically */
-    flex-direction: column; /* Stack content vertically */
-    align-items: center;
-    text-align: center;
-    padding: 10vw 5vw;
+    padding: 80px 0;
   }
-
+  
   .abonnContainer {
+    grid-template-columns: 1fr;
+    gap: 60px;
+    padding: 0 40px;
+  }
+  
+  .textContent {
+    max-width: 70%;
+    text-align: center;
     margin: 0 auto;
-    margin-bottom: 50%;
-    width: 75%;
-    padding: 2vw;
-    z-index: 3;
   }
-
-  .abonnContainer h2 {
-    font-size: 5vw; /* Increase heading size for smaller screens */
-    max-width: 100%;
-    margin-bottom: 4vw;
+  
+  .textContent h2 {
+    font-size: 2.4rem;
   }
-
-  .abonnContainer p {
-    font-size: 3.5vw; /* Adjust text size */
-    max-width: 100%;
-    text-align: left; /* Justify text to the left */
-    position: relative;
-    padding-left: 1.5em; /* Space for the bullet */
-    line-height: 1.2;
+  
+  .textContent li {
+    text-align: left;
   }
-
-  .abonnContainer li {
-    font-size: 2.1vw; /* Adjust text size */
-    max-width: 100%;
-    text-align: left; /* Justify text to the left */
-    position: relative;
-    padding-left: 1.5em; /* Space for the bullet */
-    line-height: 1.5;
-  }
-
-  .abonnButton {
-    margin-left: 35vw;
-    margin-top: 6vw;
-    font-size: 3.2vw;
-    padding: 12px 24px;
-  }
-
-  /* Center SVGs behind text with 75% opacity */
-  .absolutesWrapper {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 100%;
-    height: 100%;
-    display: flex;
+  
+  .imageGallery {
     justify-content: center;
-    align-items: center;
-    z-index: 0;
-  }
-
-  .abonnSVG1, .abonnSVG2 {
-    position: absolute;
-    width: 60vw; /* Adjust width for better visibility */
-    height: auto;
-    opacity: 0.45;
-  }
-
-  .abonnSVG1 {
-    top: 6%;
-    left: 50%;
-    transform: translateX(-72%) rotate(0deg);
-  }
-
-  .abonnSVG2 {
-    top: 20%;
-    left: 50%;
-    z-index: -1;
-    transform: translateX(-30%) translateY(25%) rotate(-11deg);
-  }
-
-  /* Center images underneath button, side by side */
-  .imagesWrapper {
-    display: flex;
-    justify-content: center;
-    gap: 4vw;
-    margin-top: 4vw;
-  }
-
-  .absolutesWrapper .imgAbonn1,
-  .absolutesWrapper .imgAbonn2 {
-    position: static; /* Remove absolute positioning */
-    width: 35vw; /* Adjust width */
-    border-radius: 10%;
-    margin: 2vw;
+    margin: 0 auto;
+    max-width: 500px;
   }
 
   .imgAbonn1 {
-    transform: translateY(20%);
-  }
-  .imgAbonn2 {
-    transform: translateY(60%);
+    height: 350px;
+    width: 100%;
+    top: 0;
+    left: 0;
+    transform: translateY(-20px);
   }
 
+  .imgAbonn2 {
+    display: none;
+  }
+
+  .abonnSVG1 {
+    top: -10%;
+    right: -10%;
+  }
+
+  .abonnSVG2 {
+    bottom: -10%;
+    left: -3%;
+  }
 }
 
 @media screen and (max-width: 866px) {
@@ -740,7 +745,6 @@
   .collabSVG {
     width: 160vw;
   }
-
 }
 
 @media screen and (max-width: 755px) {
@@ -760,7 +764,6 @@
   .collabTextContainer p {
     font-size: clamp(0.1rem, 2.8vw, 1rem);
   }
-
 }
 
 @media screen and (max-width: 580px) {
@@ -787,6 +790,42 @@
     width: 35vw; /* Adjust size */
     max-width: 200px; /* Ensure it's not too large */
   }
+
+  /* Abonnement phone */
+  .abonnSection {
+    padding: 60px 0;
+  }
+  
+  .abonnContainer {
+    padding: 0 20px;
+    gap: 40px;
+  }
+  
+  .textContent h2 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+  }
+  
+  .textContent p, .textContent li {
+    font-size: 1rem;
+  }
+  
+  .abonnButton {
+    width: 100%;
+    padding: 12px 20px;
+  }
+  
+  .imageGallery {
+    height: 200px;
+  }
+  
+  .imgAbonn1, .imgAbonn2 {
+    height: 250px;
+  }
+  
+  .backgroundElements {
+    opacity: 0.2;
+  }
 }
 
 @media screen and (max-width: 479px) {
@@ -797,9 +836,9 @@
   .backgroundSVG {
     position: absolute;
     top: 0; /* Center vertically within the section */
-    left: -25%; /* Center horizontally within the viewport */
-    transform: translate(10vw, -20%); /* Adjust to center the SVG */
-    max-width: 575px; /* Ensure it's not too large */
+    left: -55%; /* Center horizontally within the viewport */
+    transform: translate(-10vw, -5%); /* Adjust to center the SVG */
+    max-width: 1200px; /* Ensure it's not too large */
     opacity: 0.8; /* Make it subtle */
     z-index: 0; /* Place it below all other content */
   }
@@ -842,22 +881,122 @@
     width: 220vw;
   }
 
-  .abonnContainer p {
-    font-size: 3.5vw; /* Adjust text size */
+  /* Title section changes */
+  .titleSection {
+    height: 75vw; /* Increase height */
+  }
+  
+  /* Hide original catchPhrase in title section */
+  .titleSection .catchPhrase {
+    display: none;
+  }
+  
+  /* Create space for catchPhrase in intro section */
+  .introContainer {
+    padding-top: 30px;
+  }
+  
+  /* Mobile catchPhrase styling (add this class in the JS) */
+  .mobileCatchPhrase {
+    display: block;
+    color: var(--green);
+    font-family: 'Maname';
+    font-size: 5vw;
+    line-height: '1.5';
+    text-align: center;
+    margin: 0 auto 30px;
+    max-width: 90%;
+  }
+  
+  .mobileCatchPhrase .secondLine {
+    font-size: 6.3vw;
+    display: block;
+    margin-top: 5px;
+  }
+  
+  /* Center the crew image */
+  .imgCrewContainer {
+    position: relative;
+    top: 0;
+    transform: none;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 30px;
+  }
+  
+  .imgCrew {
+    width: 70vw;
+    max-width: 250px;
+  }
+  
+  /* Adjust the label */
+  .labelImg {
+    position: absolute;
+    left: 2.9rem;
+    top: 0.1rem;
+    margin-top: 10px;
+    font-size: 3.5vw;
+    text-align: center;
+  }
+  
+  /* Center the intro text */
+  .introTextContainer {
+    position: relative;
+    left: 0;
+    width: 90%;
+    margin: 0 auto;
+  }
+  
+  /* Hide side image */
+  .imageSide {
+    display: none;
+  }
+  
+  /* Center produits title */
+  .produitsContainer h2 {
+    position: static;
+    font-size: clamp(22px, 7vw, 40px);
+    max-width: none;
+    text-align: center;
+    margin: 0 auto 20px;
+    left: auto;
+  }
+   
+  /* Abonnement small phone */
+  .abonnSection {
+    padding: 50px 0 0 0;
+  }
+  
+  .textContent h2 {
+    font-size: 1.8rem;
   }
 
-  .abonnContainer li {
-    font-size: 3.5vw; /* Adjust text size */
+  .textContent p {
+    margin-bottom: 0;
   }
 
   .imgAbonn1 {
-    transform: translateY(45%);
+    height: 200px;
+    width: 100%;
+    transform: translateY(-20px);
   }
-  .imgAbonn2 {
-    transform: translateY(90%);
+  
+  .imgAbonn1:hover {
+    transform: scale(1.03) translateY(-15px);
+  }
+
+  .abonnSVG1 {
+    top: -10%;
+    right: -10%;
+  }
+
+  .abonnSVG2 {
+    bottom: -10%;
+    left: -3%;
   }
 }
-
 
 @media screen and (max-width: 421px) {
   .imgCollabBackground {
