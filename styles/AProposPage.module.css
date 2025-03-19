@@ -804,6 +804,7 @@
   .circlesContainer {
     flex-direction: column;
     align-items: center;
+    margin-bottom: 30px;
   }
 
   .circle1 {
@@ -860,17 +861,23 @@
     width: 120px;
   }
 
+  .circlesContainer {
+    margin-bottom: 120px;
+  }
+
   .circleBack p {
     font-size: 1rem;
     padding: 10px;
   }
 
   .catchPhraseBox {
-    padding: 1rem;
+    padding: 0.4rem;
+    top: -4rem;
   }
 
   .catchPhraseBox p {
-    font-size: 1rem;
+    font-size: 1.2rem;
+    text-align: center;
   }
 
   .centerImageContainer {
