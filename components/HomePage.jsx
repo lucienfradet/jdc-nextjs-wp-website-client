@@ -8,6 +8,7 @@ import DesktopFooter from "@/components/desktop/Footer";
 import MobileFooter from "@/components/mobile/Footer";
 import HomePageSvgTitleSection from "@/components/svg/HomePageSvgTitleSection";
 import EventsSection from "@/components/events/EventsSection";
+import ClientLoadingOverlay from "@/components/loading/ClientLoadingOverlay";
 import Link from "next/link";
 import styles from '@/styles/HomePage.module.css';
 import { convertLineBreaksToHtml, renderContent } from '@/lib/textUtils';
@@ -19,9 +20,29 @@ export default function HomePage({ pageData, headerData, footerData }) {
 
   const [isMobile, setIsMobile] = useState(false);
   const [opacity, setOpacity] = useState(1); // Start with full opacity
+  const [loadingComplete, setLoadingComplete] = useState(false);
   const collabTextRef = useRef(null);
+  const catchPhraseRef = useRef(null);
+  const [lines, setLines] = useState([]);
+
+  // Detect <br> and adjust second line
+  useEffect(() => {
+    if (catchPhraseRef.current) {
+      const rawText = pageContent["catch-phrase"] || "";
+      const processedText = convertLineBreaksToHtml(rawText);
+
+      // Split the text by <br> if it exists
+      const linesArray = processedText.split("<br>");
+
+      // If no <br> is found, linesArray will have a single element
+      setLines(linesArray);
+    }
+  }, []);
 
   useEffect(() => {
+    // Add a class to body during loading
+    document.body.classList.add('page-loading');
+
     const handleResize = () => {
       setIsMobile(window.innerWidth <= 991); // Define breakpoint for mobile/tablet
     };
@@ -49,63 +70,72 @@ export default function HomePage({ pageData, headerData, footerData }) {
 
     const handleMobileCatchPhrase = () => {
       const isMobileView = window.innerWidth <= 479;
-      const catchPhraseElement = document.querySelector(`.${styles.catchPhrase}`);
       const introContainer = document.querySelector(`.${styles.introContainer}`);
 
-      if (isMobileView && catchPhraseElement && introContainer) {
-        // Clone the catchPhrase for mobile
-        const mobileCatchPhrase = catchPhraseElement.cloneNode(true);
-        mobileCatchPhrase.classList.remove(styles.catchPhrase);
+      // Remove any existing mobile catchphrase to avoid duplicates
+      const existingMobileCatchPhrase = document.querySelector(`.${styles.mobileCatchPhrase}`);
+      if (existingMobileCatchPhrase) {
+        existingMobileCatchPhrase.remove();
+      }
+
+      // Only proceed if we're in mobile view, have content, and the container exists
+      if (isMobileView && lines.length > 0 && introContainer) {
+        // Create a new div for the mobile catchphrase instead of cloning
+        const mobileCatchPhrase = document.createElement('div');
         mobileCatchPhrase.classList.add(styles.mobileCatchPhrase);
 
-        // Check if we already added mobile catchPhrase
-        if (!introContainer.querySelector(`.${styles.mobileCatchPhrase}`)) {
-          // Insert at the beginning of the intro container
-          introContainer.insertBefore(mobileCatchPhrase, introContainer.firstChild);
+        // Create paragraph with the same content as the original catchphrase
+        const paragraph = document.createElement('p');
+        paragraph.innerHTML = lines[0];
+
+        // Add the second line with the special class if it exists
+        if (lines[1]) {
+          paragraph.innerHTML += `<br/><span class="${styles.secondLine}">${lines[1]}</span>`;
         }
-      } else {
-        // Remove mobile catchPhrase if screen becomes larger
-        const mobileCatchPhrase = document.querySelector(`.${styles.mobileCatchPhrase}`);
-        if (mobileCatchPhrase) {
-          mobileCatchPhrase.remove();
+
+        mobileCatchPhrase.appendChild(paragraph);
+
+        // Insert at the beginning of the intro container
+        if (!introContainer.querySelector(`.${styles.mobileCatchPhrase}`)) {
+          introContainer.insertBefore(mobileCatchPhrase, introContainer.firstChild);
         }
       }
     };
 
+    // Set up all event listeners
     window.addEventListener("resize", handleResize);
-    handleResize(); // Initial check
-
     window.addEventListener("scroll", handleScroll);
-    handleScroll(); // Initial check in case the element is already in view
-
-    handleMobileCatchPhrase();
     window.addEventListener('resize', handleMobileCatchPhrase);
+    
+    // Initial checks
+    handleResize();
+    handleScroll();
+    handleMobileCatchPhrase();
 
     return () => {
       window.removeEventListener("resize", handleResize);
       window.removeEventListener("scroll", handleScroll);
       window.removeEventListener('resize', handleMobileCatchPhrase);
     };
-  }, []);
+  }, [loadingComplete, lines]);
 
-  // Detect <br> and adjust second line
-  const catchPhraseRef = useRef(null);
-  const [lines, setLines] = useState([]);
-  useEffect(() => {
-    if (catchPhraseRef.current) {
-      const rawText = pageContent["catch-phrase"] || "";
-      const processedText = convertLineBreaksToHtml(rawText);
-
-      // Split the text by <br> if it exists
-      const linesArray = processedText.split("<br>");
-
-      // If no <br> is found, linesArray will have a single element
-      setLines(linesArray);
-    }
-  }, []);
+  // Handle loading complete callback
+  const handleLoadingComplete = () => {
+    setLoadingComplete(true);
+    setIsMobile(window.innerWidth <= 991);
+  };
 
   return (
     <>
+      {/* 
+
+
+      Add the loading overlay */}
+      <ClientLoadingOverlay 
+        minLoadTime={500} 
+        onLoadingComplete={handleLoadingComplete} 
+      />
+
       {isMobile ? (
         <MobileHeader pageData={headerData} />
       ) : (

@@ -132,6 +132,72 @@ input.disabled {
   }
 }
 
+/* Ensure body overflow is properly handled */
+body {
+  overflow-x: hidden;
+}
+
+/* Initial state for sections before reveal */
+.titleSection,
+.introSection,
+.produitsSection,
+.collabSection,
+.abonnSection {
+  opacity: 0;
+}
+
+/* Hide content during loading */
+.page-loading {
+  overflow: hidden !important;
+}
+
+.page-loading .homepageBody,
+.page-loading header {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  transition: none !important;
+}
+
+/* Show content after loading */
+.page-loaded .homepageBody,
+.page-loaded header {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.6s ease-in-out 0.5s;
+}
+
+/* Staggered fade-in animations */
+.page-loaded .titleSection {
+  animation: fadeIn 0.8s ease-in-out 0.6s forwards;
+}
+
+.page-loaded .introSection {
+  animation: fadeIn 0.8s ease-in-out 0.9s forwards;
+}
+
+.page-loaded .produitsSection {
+  animation: fadeIn 0.8s ease-in-out 1.2s forwards;
+}
+
+.page-loaded .collabSection {
+  animation: fadeIn 0.8s ease-in-out 1.5s forwards;
+}
+
+.page-loaded .abonnSection {
+  animation: fadeIn 0.8s ease-in-out 1.8s forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* custom scrollbar */
 ::-webkit-scrollbar {
   width: 20px;

@@ -20,24 +20,144 @@
   z-index: 1; /* Keep above other elements */
 }
 
+/* Make the logoWrapper a positioning context for animations */
 .logoWrapper {
-  position: relative; /* Enable positioning for child elements */
+  position: relative; /* Already defined in your CSS */
   display: flex;
-  flex-direction: column; /* Stack the logos vertically */
-  align-items: center; /* Center logos horizontally */
+  flex-direction: column; /* Already defined in your CSS */
+  align-items: center; /* Already defined in your CSS */
+  overflow: visible; /* Allow animations to overflow */
 }
 
+/* Animation for the main logo */
 .h1Logo {
   width: 70vw;
-  position: relative; /* Relative to the wrapper */
-  z-index: 2; /* Ensure it's above the hollow logos */
+  position: relative;
+  z-index: 2;
+  opacity: 0; /* Start invisible */
+  animation: fadeInAnimation 1.5s ease-in-out forwards;
 }
 
+@keyframes fadeInAnimation {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* Animation for the hollow logo */
 .h1LogoHollow {
   width: 70vw;
-  position: relative; /* Relative to the wrapper */
-  z-index: 1; /* Below the main logo */
-  margin-top: -5px; /* Add overlap effect */
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  z-index: 1;
+  opacity: 0;
+}
+
+/* Individual animations for each hollow logo with increasing cascade */
+.h1LogoHollow:nth-child(2), .h1LogoHallow:nth-child(2) {
+  animation: cascadeAnimation1 1.5s ease-in-out 0.2s forwards;
+}
+
+.h1LogoHollow:nth-child(3), .h1LogoHallow:nth-child(3) {
+  animation: cascadeAnimation2 1.5s ease-in-out 0.4s forwards;
+}
+
+.h1LogoHollow:nth-child(4), .h1LogoHallow:nth-child(4) {
+  animation: cascadeAnimation3 1.5s ease-in-out 0.6s forwards;
+}
+
+.h1LogoHollow:nth-child(5), .h1LogoHallow:nth-child(5) {
+  animation: cascadeAnimation4 1.5s ease-in-out 0.8s forwards;
+}
+
+.h1LogoHollow:nth-child(6), .h1LogoHallow:nth-child(6) {
+  animation: cascadeAnimation5 1.5s ease-in-out 1.0s forwards;
+}
+
+.h1LogoHollow:nth-child(7), .h1LogoHallow:nth-child(7) {
+  animation: cascadeAnimation6 1.5s ease-in-out 1.2s forwards;
+}
+
+.h1LogoHollow:nth-child(8), .h1LogoHallow:nth-child(8) {
+  animation: cascadeAnimation7 1.5s ease-in-out 1.4s forwards;
+}
+
+.h1LogoHollow:nth-child(9), .h1LogoHallow:nth-child(9) {
+  animation: cascadeAnimation8 1.5s ease-in-out 1.6s forwards;
+}
+
+:root {
+  --cascade-step: 10vw; /* This is your variable that defines the cascade step */
+}
+
+/* Define increasing cascade distances using the variable */
+@keyframes cascadeAnimation1 {
+  0% { opacity: 0; transform: translateY(0); }
+  30% { opacity: 0.5; }
+  100% { opacity: 1; transform: translateY(calc(var(--cascade-step) * 1)); }
+}
+
+@keyframes cascadeAnimation2 {
+  0% { opacity: 0; transform: translateY(0); }
+  30% { opacity: 0.5; }
+  100% { opacity: 1; transform: translateY(calc(var(--cascade-step) * 2)); }
+}
+
+@keyframes cascadeAnimation3 {
+  0% { opacity: 0; transform: translateY(0); }
+  30% { opacity: 0.5; }
+  100% { opacity: 1; transform: translateY(calc(var(--cascade-step) * 3)); }
+}
+
+@keyframes cascadeAnimation4 {
+  0% { opacity: 0; transform: translateY(0); }
+  30% { opacity: 0.5; }
+  100% { opacity: 1; transform: translateY(calc(var(--cascade-step) * 4)); }
+}
+
+@keyframes cascadeAnimation5 {
+  0% { opacity: 0; transform: translateY(0); }
+  30% { opacity: 0.5; }
+  100% { opacity: 1; transform: translateY(calc(var(--cascade-step) * 5)); }
+}
+
+@keyframes cascadeAnimation6 {
+  0% { opacity: 0; transform: translateY(0); }
+  30% { opacity: 0.5; }
+  100% { opacity: 1; transform: translateY(calc(var(--cascade-step) * 6)); }
+}
+
+@keyframes cascadeAnimation7 {
+  0% { opacity: 0; transform: translateY(0); }
+  30% { opacity: 0.5; }
+  100% { opacity: 1; transform: translateY(calc(var(--cascade-step) * 7)); }
+}
+
+@keyframes cascadeAnimation8 {
+  0% { opacity: 0; transform: translateY(0); }
+  30% { opacity: 0.5; }
+  100% { opacity: 1; transform: translateY(calc(var(--cascade-step) * 8)); }
+}
+
+/* Mobile responsive adjustments */
+@media screen and (max-width: 991px) {
+  .h1Logo {
+    width: 90vw; /* Consistent with your existing mobile styles */
+  }
+  
+  .h1LogoHollow {
+    width: 90vw; /* Match the mobile width of h1Logo */
+  }
+
+  :root {
+    --cascade-step: 12.5vw; /* This is your variable that defines the cascade step */
+  }
 }
 
 .catchPhrase {
@@ -918,6 +1038,7 @@
   /* Create space for catchPhrase in intro section */
   .introContainer {
     padding-top: 30px;
+    padding-bottom: 1rem;
   }
   
   /* Mobile catchPhrase styling (add this class in the JS) */
