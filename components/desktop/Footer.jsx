@@ -1,12 +1,10 @@
 import Link from 'next/link';
 import WPImage from '@/components/WPImage';
-import  styles from '@/styles/desktop/Footer.module.css';
+import styles from '@/styles/desktop/Footer.module.css';
+import NewsletterForm from '@/components/NewsletterForm';
 
 export default function Footer({ pageData }) {
   const pageContent = pageData.acfFields;
-  
-  // debugging
-  // console.log("Footer content:", pageContent);
 
   return (
     <footer className={styles.footer}>
@@ -29,6 +27,7 @@ export default function Footer({ pageData }) {
             <div className={styles.linkColumn}>
               <a href="/abonnement">{pageContent["abonnement"]}</a>
               <a href="/contact">{pageContent["contact"]}</a>
+              <a href="/unsubscribe">Unsubscribe</a>
             </div>
           </div>
 
@@ -51,14 +50,11 @@ export default function Footer({ pageData }) {
         <div className={styles.footerCol}>
           <div className={styles.newsletterWrapper}>
             <h3 className={styles.newsletterTitle}>{pageContent["newsletter-h3"]}</h3>
-            <div className={styles.newsletterForm}>
-              <input
-                type="email"
-                placeholder={pageContent["newsletter-field-text"]}
-                className={`${styles.newsletterInput} disabled`}
-              />
-              <button className={`${styles.newsletterButton} disabled`}>{pageContent["btn-text"]}</button>
-            </div>
+            <NewsletterForm 
+              inputPlaceholder={pageContent["newsletter-field-text"]}
+              buttonText={pageContent["btn-text"]}
+              className={styles.newsletterForm}
+            />
           </div>
         </div>
       </div>

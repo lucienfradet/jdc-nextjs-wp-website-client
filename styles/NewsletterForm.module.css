@@ -1,0 +1,74 @@
+.newsletterForm {
+  width: 100%;
+}
+
+.inputWrapper {
+  display: flex;
+  margin-bottom: 10px;
+}
+
+.emailInput {
+  flex: 1;
+  padding: 5px 10px;
+  background: var(--beige);
+  color: var(--green);
+  border-radius: 4px;
+  font-size: 14px;
+  border: none;
+}
+
+.subscribeButton {
+  margin-left: 0.5rem;
+  padding: 5px 10px;
+  background: var(--beige);
+  color: var(--green);
+  font-weight: bold;
+  border: none;
+  border-radius: 5px;
+  border: 3px solid var(--beige);
+  border-color: var(--beige);
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.subscribeButton:hover {
+  background: var(--green);
+  color: var(--beige);
+  border: 3px solid var(--beige);
+}
+
+.subscribeButton:disabled {
+  background-color: #ccc;
+  color: #666;
+  cursor: not-allowed;
+  border-color: #ccc;
+}
+
+.successMessage {
+  color: var(--orange);
+  font-size: 14px;
+  margin-top: 8px;
+}
+
+.errorMessage {
+  color: var(--red);
+  font-size: 14px;
+  margin-top: 8px;
+}
+
+.privacyNote {
+  font-size: 12px;
+  color: var(--beige);
+  margin-top: 10px;
+}
+
+.privacyNote a {
+  color: var(--beige);
+  text-decoration: underline;
+  transition: all 0.3s ease;
+}
+
+.privacyNote a:hover {
+  font-weight: bold;
+  text-decoration-thickness: 2px;
+}

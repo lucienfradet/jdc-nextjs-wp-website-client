@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import WPImage from "@/components/WPImage";
 import DesktopHeader from "@/components/desktop/Header";
 import MobileHeader from "@/components/mobile/Header";
@@ -19,6 +19,10 @@ export default function AProposPage({
   const [isMobile, setIsMobile] = useState(false);
   const [activeCircle, setActiveCircle] = useState(null);
   const [clickedImages, setClickedImages] = useState({ img1: false, img2: false, img3: false });
+  const [circlesInView, setCirclesInView] = useState({ circle1: false, circle2: false });
+  
+  const circle1Ref = useRef(null);
+  const circle2Ref = useRef(null);
 
   useEffect(() => {
     const handleResize = () => {
@@ -33,8 +37,45 @@ export default function AProposPage({
     };
   }, []);
 
+  // Set up Intersection Observer for circles
+  useEffect(() => {
+    const options = {
+      root: null, // viewport
+      rootMargin: '0px',
+      threshold: 0.5, // 50% of the element is visible
+    };
+
+    const circleObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.target === circle1Ref.current) {
+          setCirclesInView(prev => ({ ...prev, circle1: entry.isIntersecting }));
+        } else if (entry.target === circle2Ref.current) {
+          setCirclesInView(prev => ({ ...prev, circle2: entry.isIntersecting }));
+        }
+      });
+    }, options);
+
+    if (circle1Ref.current) {
+      circleObserver.observe(circle1Ref.current);
+    }
+    if (circle2Ref.current) {
+      circleObserver.observe(circle2Ref.current);
+    }
+
+    return () => {
+      if (circle1Ref.current) {
+        circleObserver.unobserve(circle1Ref.current);
+      }
+      if (circle2Ref.current) {
+        circleObserver.unobserve(circle2Ref.current);
+      }
+    };
+  }, []);
+
   // Helper to handle circle flip
   const handleCircleClick = (circleNum) => {
+    setCirclesInView({circle1: false, circle2: false});
+
     if (activeCircle === circleNum) {
       setActiveCircle(null);
     } else {
@@ -128,7 +169,10 @@ export default function AProposPage({
         <section className={styles.section2}>
           <div className={styles.circlesContainer}>
             <div 
-              className={`${styles.circle} ${styles.circle1} ${activeCircle === 1 ? styles.flipped : ''}`}
+              ref={circle1Ref}
+              className={`${styles.circle} ${styles.circle1} 
+                ${activeCircle === 1 ? styles.flipped : ''} 
+                ${circlesInView.circle1 ? styles.pulseEffect : ''}`}
               onClick={() => handleCircleClick(1)}
             >
               <div className={styles.circleFront}>
@@ -140,9 +184,13 @@ export default function AProposPage({
               <div className={styles.circleBack}>
                 <p>{pageContent["section-2"]["rond-1-texte"]}</p>
               </div>
+              {circlesInView.circle1 && <div className={styles.clickIndicator}></div>}
             </div>
             <div 
-              className={`${styles.circle} ${styles.circle2} ${activeCircle === 2 ? styles.flipped : ''}`}
+              ref={circle2Ref}
+              className={`${styles.circle} ${styles.circle2} 
+                ${activeCircle === 2 ? styles.flipped : ''} 
+                ${circlesInView.circle2 ? styles.pulseEffect : ''}`}
               onClick={() => handleCircleClick(2)}
             >
               <div className={styles.circleFront}>
@@ -154,6 +202,7 @@ export default function AProposPage({
               <div className={styles.circleBack}>
                 <p>{pageContent["section-2"]["rond-2-texte"]}</p>
               </div>
+              {circlesInView.circle2 && <div className={styles.clickIndicator}></div>}
             </div>
           </div>
           

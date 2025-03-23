@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import WPImage from '@/components/WPImage';
 import  styles from '@/styles/mobile/Footer.module.css';
+import NewsletterForm from '../NewsletterForm';
 
 export default function Footer({ pageData }) {
   const pageContent = pageData.acfFields;
@@ -36,14 +37,11 @@ export default function Footer({ pageData }) {
         <div className={styles.footerCol}>
           <div className={styles.newsletterWrapper}>
             <h3 className={styles.newsletterTitle}>{pageContent["newsletter-h3"]}</h3>
-            <div className={styles.newsletterForm}>
-              <input
-                type="email"
-                placeholder={pageContent["newsletter-field-text"]}
-                className={`${styles.newsletterInput} disabled`}
-              />
-              <button className={`${styles.newsletterButton} disabled`}>{pageContent["btn-text"]}</button>
-            </div>
+            <NewsletterForm 
+              inputPlaceholder={pageContent["newsletter-field-text"]}
+              buttonText={pageContent["btn-text"]}
+              className={styles.newsletterForm}
+            />
           </div>
         </div>
       </div>
