@@ -762,7 +762,7 @@
   .imgCollabBackground {
     top: -20vw;
     left: -140vw;
-    width: calc(220vw + 80%);
+    width: calc(230vw + 80%);
   }
 
   .collabTextContainer {
@@ -876,11 +876,16 @@
 }
 
 @media screen and (max-width: 479px) {
+  .titleSection {
+    overflow: visible;
+  }
+
   .imageSide {
     width: 45vw; /* Adjust size */
   }
 
   .backgroundSVG {
+    display: none;
     position: absolute;
     top: 0; /* Center vertically within the section */
     left: -55%; /* Center horizontally within the viewport */
@@ -897,7 +902,7 @@
 
   /* Title section changes */
   .titleSection {
-    height: 48vw; /* Increase height */
+    height: 65vw; /* Increase height */
   }
   
   /* Hide original catchPhrase in title section */
@@ -905,6 +910,11 @@
     display: none;
   }
   
+  .introSection {
+    background: var(--green);
+    color: var(--beige);
+  }
+
   /* Create space for catchPhrase in intro section */
   .introContainer {
     padding-top: 30px;
@@ -913,13 +923,14 @@
   /* Mobile catchPhrase styling (add this class in the JS) */
   .mobileCatchPhrase {
     display: block;
-    color: var(--green);
+    color: var(--beige);
     font-family: 'Maname';
     font-size: 5vw;
     line-height: '1.5';
     text-align: center;
     margin: 0 auto 30px;
     max-width: 90%;
+    padding-bottom: 2rem;
   }
   
   .mobileCatchPhrase .secondLine {
@@ -937,7 +948,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-bottom: 30px;
+    margin-bottom: 0px;
   }
   
   .imgCrew {
@@ -958,9 +969,16 @@
   /* Center the intro text */
   .introTextContainer {
     position: relative;
+    background: none;
     left: 0;
     width: 90%;
     margin: 0 auto;
+  }
+
+  .introTextContainer img {
+    background: var(--beige);
+    padding: 0.3rem;
+    border-radius: 5px;
   }
   
   /* Abonnement small phone */
@@ -1001,6 +1019,6 @@
   .imgCollabBackground {
     top: -20vw;
     left: -170vw;
-    width: calc(220vw + 120%);
+    width: calc(240vw + 120%);
   }
 }
