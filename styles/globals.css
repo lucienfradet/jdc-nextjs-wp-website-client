@@ -163,7 +163,6 @@ body {
 .page-loaded header {
   opacity: 1;
   visibility: visible;
-  transition: opacity 0.6s ease-in-out 0.5s;
 }
 
 /* Staggered fade-in animations */
