@@ -1,0 +1,183 @@
+/* Container for the calendar */
+.calendarWrapper {
+  margin-bottom: 1.5rem;
+}
+
+/* Custom styling for the react-calendar component */
+.calendar {
+  width: 100%;
+  max-width: 100%;
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  font-family: 'Roboto', sans-serif;
+  line-height: 1.5;
+  padding: 0.5rem;
+}
+
+/* Tile (day) styles */
+.calendar :global(.react-calendar__tile) {
+  padding: 0.8em 0.5em;
+  text-align: center;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  border-radius: 4px;
+}
+
+/* Disabled dates */
+.calendar :global(.react-calendar__tile:disabled) {
+  background-color: #f9f9f9;
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.calendar :global(.react-calendar__month-view__days__day--weekend) {
+  color: var(--red);
+}
+
+/* Custom dot for available dates */
+.availableDate {
+  width: 8px;
+  height: 8px;
+  background-color: var(--green);
+  border-radius: 50%;
+  position: absolute;
+  bottom: 5px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* Custom styles for available dates */
+.available {
+  background-color: rgba(36, 49, 27, 0.05);
+  cursor: pointer;
+  font-weight: bold;
+  color: var(--green);
+}
+
+.available:hover {
+  background-color: rgba(36, 49, 27, 0.1);
+}
+
+/* Selected date styling */
+.selected {
+  background-color: var(--green) !important;
+  color: white !important;
+}
+
+.selected:hover {
+  background-color: var(--green) !important;
+}
+
+/* Unavailable dates */
+.unavailable {
+  background-color: #f9f9f9;
+  color: #ccc;
+  cursor: not-allowed;
+}
+
+/* Calendar navigation */
+.calendar :global(.react-calendar__navigation) {
+  margin-bottom: 1rem;
+}
+
+.calendar :global(.react-calendar__navigation button) {
+  min-width: 44px;
+  height: 44px;
+  background: none;
+  font-size: 1.2rem;
+  border-radius: 4px;
+}
+
+.calendar :global(.react-calendar__navigation button:enabled:hover) {
+  background-color: rgba(36, 49, 27, 0.05);
+}
+
+.calendar :global(.react-calendar__navigation button:enabled:focus) {
+  background-color: rgba(36, 49, 27, 0.1);
+}
+
+/* Month headers */
+.calendar :global(.react-calendar__month-view__weekdays) {
+  text-align: center;
+  font-weight: bold;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+
+.calendar :global(.react-calendar__month-view__weekdays__weekday) {
+  padding: 0.5rem;
+}
+
+.calendar :global(.react-calendar__month-view__weekdays__weekday abbr) {
+  text-decoration: none;
+}
+
+/* Legend below calendar */
+.legend {
+  display: flex;
+  gap: 15px;
+  margin-top: 1rem;
+  font-size: 0.9rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.legendColor {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+}
+
+.legendColor.available {
+  background-color: rgba(36, 49, 27, 0.05);
+  border: 1px solid rgba(36, 49, 27, 0.1);
+}
+
+.legendColor.selected {
+  background-color: var(--green);
+}
+
+.legendColor.unavailable {
+  background-color: #f9f9f9;
+  border: 1px solid #eee;
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+  .calendar :global(.react-calendar__tile) {
+    padding: 0.6em 0.3em;
+    height: 38px;
+    font-size: 0.9rem;
+  }
+  
+  .calendar :global(.react-calendar__navigation button) {
+    min-width: 38px;
+    height: 38px;
+    font-size: 1rem;
+  }
+  
+  .availableDate {
+    width: 6px;
+    height: 6px;
+  }
+  
+  .legend {
+    font-size: 0.8rem;
+  }
+  
+  .legendColor {
+    width: 12px;
+    height: 12px;
+  }
+}

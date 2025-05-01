@@ -1,0 +1,122 @@
+.bookingCard {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--beige);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  height: 100%;
+}
+
+.bookingCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.imageContainer {
+  height: 200px;
+  overflow: hidden;
+  position: relative;
+}
+
+.productImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.bookingCard:hover .productImage {
+  transform: scale(1.05);
+}
+
+.placeholderImage {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #e0e0e0;
+  color: #666;
+  font-style: italic;
+}
+
+.contentContainer {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  flex-grow: 1;
+  color: var(--green);
+}
+
+.productTitle {
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+  color: var(--green);
+  font-weight: 700;
+}
+
+.productPrice {
+  display: flex;
+  align-items: baseline;
+  margin-bottom: 15px;
+}
+
+.price {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--orange);
+  margin-right: 5px;
+}
+
+.perPerson {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.productDescription {
+  font-size: 1rem;
+  line-height: 1.5;
+  margin-bottom: 20px;
+  flex-grow: 1;
+  color: #444;
+}
+
+.bookButton {
+  display: inline-block;
+  background-color: var(--green);
+  color: var(--beige);
+  padding: 12px 24px;
+  text-align: center;
+  border-radius: 6px;
+  font-weight: bold;
+  text-decoration: none;
+  transition: background-color 0.2s ease;
+  align-self: flex-start;
+  border: 2px solid var(--green);
+}
+
+.bookButton:hover {
+  background-color: var(--beige);
+  color: var(--green);
+}
+
+@media (max-width: 768px) {
+  .productTitle {
+    font-size: 1.3rem;
+  }
+  
+  .price {
+    font-size: 1.2rem;
+  }
+  
+  .productDescription {
+    font-size: 0.95rem;
+  }
+  
+  .bookButton {
+    padding: 10px 20px;
+    font-size: 0.95rem;
+  }
+}

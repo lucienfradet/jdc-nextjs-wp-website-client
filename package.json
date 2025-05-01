@@ -27,6 +27,7 @@
     "node-html-parser": "^6.1.13",
     "prisma": "^6.4.1",
     "react": "^19.0.0",
+    "react-calendar": "^5.1.0",
     "react-dom": "^19.0.0",
     "stripe": "^17.7.0",
     "styled-components": "^6.1.15"

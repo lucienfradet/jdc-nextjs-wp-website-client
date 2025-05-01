@@ -65,7 +65,7 @@ export default function Header({ pageData }) {
         </a>
         <a 
           href="/agrotourisme" 
-          className={`${styles.disabled} ${pathname === '/agrotourisme' ? styles.active : ''}`}
+          className={pathname === '/agrotourisme' ? styles.active : ''}
         >
           {pageContent["agrotourisme"]}
         </a>

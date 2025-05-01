@@ -27,7 +27,7 @@ export default function Footer({ pageData }) {
             <div className={styles.linkColumn}>
               <a href="/abonnement">{pageContent["abonnement"]}</a>
               <a href="/contact">{pageContent["contact"]}</a>
-              <a href="/unsubscribe">Unsubscribe</a>
+              {/*<a href="/unsubscribe">Se désabonner</a>*/}
             </div>
           </div>
 

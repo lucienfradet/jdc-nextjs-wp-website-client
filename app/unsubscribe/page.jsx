@@ -75,7 +75,7 @@ export default function UnsubscribePage() {
 
   return (
     <div className={styles.unsubscribeContainer}>
-      <h1 className={styles.title}>Désabonnement à la newsletter</h1>
+      <h1 className={styles.title}>Se désabonner de l'infolettre</h1>
 
       {status === 'success' ? (
         <div className={styles.successMessage}>
@@ -100,7 +100,7 @@ export default function UnsubscribePage() {
             {showForm && (
               <>
                 <p className={styles.description}>
-                  Veuillez saisir votre adresse email pour vous désabonner de notre newsletter.
+                  Veuillez saisir votre adresse email pour vous désabonner de notre infolettre.
                 </p>
 
                 <form onSubmit={handleSubmit} className={styles.form}>

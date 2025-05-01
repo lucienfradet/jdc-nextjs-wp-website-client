@@ -1,0 +1,230 @@
+.agrotourismeBody {
+  padding-top: var(--header-height);
+  background: var(--beige);
+  color: var(--green);
+  font-family: 'Maname';
+  overflow-x: hidden;
+}
+
+/* Hero Section */
+.heroSection {
+  position: relative;
+  background-color: var(--green);
+  color: var(--beige);
+  padding: 80px 40px;
+  text-align: center;
+}
+
+.heroContent {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.heroSection h1 {
+  font-size: 3rem;
+  margin-bottom: 1.5rem;
+}
+
+.heroDescription {
+  font-size: 1.2rem;
+  line-height: 1.6;
+  margin: 0 auto;
+  max-width: 800px;
+}
+
+/* Info Section with 2 images */
+.infoSection {
+  padding: 80px 40px;
+  background-color: var(--beige);
+  color: var(--green);
+}
+
+.infoContainer {
+  display: flex;
+  max-width: 1200px;
+  margin: 0 auto;
+  gap: 30px;
+  align-items: center;
+}
+
+.imageColumn {
+  flex: 1;
+  max-width: 350px;
+}
+
+.imageWrapper {
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.infoImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.textColumn {
+  flex: 1.5;
+  padding: 20px;
+}
+
+.textColumn h2 {
+  font-size: 2.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.infoText {
+  font-size: 1.1rem;
+  line-height: 1.6;
+}
+
+/* Booking Section */
+.bookingSection {
+  padding: 80px 40px;
+  background-color: var(--green);
+  color: var(--beige);
+}
+
+.bookingContainer {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.bookingSection h2 {
+  font-size: 2.5rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.bookingDescription {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  text-align: center;
+  margin-bottom: 3rem;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* FAQ Section */
+.faqSection {
+  padding: 80px 40px;
+  background-color: var(--beige);
+  color: var(--green);
+}
+
+.faqContainer {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.faqSection h2 {
+  font-size: 2.5rem;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.faqGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+  gap: 30px;
+}
+
+.faqItem {
+  background-color: rgba(36, 49, 27, 0.05);
+  padding: 25px;
+  border-radius: 10px;
+}
+
+.faqItem h3 {
+  font-size: 1.3rem;
+  margin-bottom: 1rem;
+  color: var(--green);
+}
+
+.faqItem p {
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+/* Responsive styles */
+@media (max-width: 991px) {
+  .agrotourismeBody {
+    padding-top: var(--header-height-mobile);
+  }
+
+  .heroSection {
+    padding: 60px 30px;
+  }
+
+  .heroSection h1 {
+    font-size: 2.5rem;
+  }
+
+  .infoSection, 
+  .bookingSection,
+  .faqSection {
+    padding: 60px 30px;
+  }
+
+  .infoContainer {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .textColumn {
+    order: 1;
+    width: 100%;
+    max-width: 600px;
+  }
+
+  .imageColumn:first-child {
+    order: 2;
+  }
+
+  .imageColumn:last-child {
+    order: 3;
+  }
+
+  .imageColumn {
+    margin: 20px 0;
+    max-width: 100%;
+    width: 100%;
+  }
+
+  .faqGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .heroSection h1 {
+    font-size: 2rem;
+  }
+
+  .heroDescription,
+  .infoText,
+  .bookingDescription {
+    font-size: 1rem;
+  }
+
+  .textColumn h2,
+  .bookingSection h2,
+  .faqSection h2 {
+    font-size: 2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .heroSection, 
+  .infoSection, 
+  .bookingSection,
+  .faqSection {
+    padding: 40px 20px;
+  }
+
+  .textColumn {
+    padding: 0;
+  }
+}
