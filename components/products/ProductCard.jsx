@@ -5,6 +5,7 @@ import Link from 'next/link';
 import WPImage from "@/components/WPImage";
 import styles from "@/styles/products/ProductCard.module.css";
 import { useCart } from '@/context/CartContext';
+import BookingCartItem from '@/components/booking/BookingCartItem';
 
 export default function ProductCard({
   product,
@@ -54,9 +55,12 @@ export default function ProductCard({
     removeFromCart(product.id);
   };
 
+  // Check if this is a booking product
+  const isBookingProduct = product.type === 'mwb_booking';
+
   return (
     <article className={`${styles.card} ${className || ""} ${isAddingToCart ? styles.addingToCart : ''}`}>
-      <Link className={styles.cardLink} href={`/products/${product.id}`}>
+      <Link className={styles.cardLink} href={isBookingProduct ? `/agrotourisme/${product.id}` : `/products/${product.id}`}>
         <div className={styles.imageContainer}>
           {product.images?.[0] && (
             <WPImage image={product.images[0]} className={styles.image} />
@@ -80,6 +84,11 @@ export default function ProductCard({
 
         </div>
       </Link>
+
+      {/* Show booking details if this is a booking product in the cart */}
+      {showRemove && isBookingProduct && product.booking_details && (
+        <BookingCartItem item={product} />
+      )}
 
       <div className={styles.interactiveSection}>
         <div className={styles.topSection}>
