@@ -92,7 +92,7 @@ export default function ProductCard({
 
       <div className={styles.interactiveSection}>
         <div className={styles.topSection}>
-          {showQuantity && (
+          {showQuantity || !isBookingProduct && (
             <>
               <div className={styles.quantitySelector}>
                 <label htmlFor={`quantity-${product.id}`}>Quantité:</label>
