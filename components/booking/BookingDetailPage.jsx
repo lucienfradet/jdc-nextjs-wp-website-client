@@ -32,6 +32,11 @@ export default function BookingDetailPage({ headerData, footerData, product }) {
   const [availabilityData, setAvailabilityData] = useState(null);
   const [availableTimeSlots, setAvailableTimeSlots] = useState([]);
   const [selectedSlotAvailability, setSelectedSlotAvailability] = useState(null);
+  
+  // New state for preloading all availability data
+  const [isLoadingAllAvailability, setIsLoadingAllAvailability] = useState(true);
+  const [allAvailabilityData, setAllAvailabilityData] = useState({});
+  const [unavailableDates, setUnavailableDates] = useState([]);
 
   // Parse available dates and time slots from product metadata
   const availableDates = parseAvailableDates(product);
@@ -76,38 +81,90 @@ export default function BookingDetailPage({ headerData, footerData, product }) {
     fetchMaxBooking();
   }, [product.id, defaultMaxPeople]);
 
-  // Function to fetch availability data when a date is selected
-  const fetchAvailability = async (date) => {
-    if (!date) return;
-    
-    setIsLoadingAvailability(true);
-    
-    try {
-      const formattedDate = formatDate(date);
-      
-      const response = await fetch('/api/booking/availability', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          productId: product.id,
-          date: formattedDate
-        }),
-      });
-      
-      if (!response.ok) {
-        throw new Error('Failed to fetch availability');
+  // Fetch availability for all dates upfront
+  useEffect(() => {
+    const fetchAllAvailability = async () => {
+      if (!availableDates || availableDates.length === 0 || isOutOfStock) {
+        setIsLoadingAllAvailability(false);
+        return;
       }
       
-      const data = await response.json();
-      setAvailabilityData(data);
+      setIsLoadingAllAvailability(true);
+      
+      try {
+        // Create an array of promises to fetch availability for each date
+        const availabilityPromises = availableDates.map(async (date) => {
+          const formattedDate = formatDate(date);
+          return fetch('/api/booking/availability', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              productId: product.id,
+              date: formattedDate
+            }),
+          }).then(res => res.json());
+        });
+        
+        // Wait for all promises to resolve
+        const results = await Promise.all(availabilityPromises);
+        
+        // Process the results
+        const availabilityMap = {};
+        const unavailableDatesArray = [];
+        
+        results.forEach((result, index) => {
+          const date = formatDate(availableDates[index]);
+          availabilityMap[date] = result;
+
+          // Check if all product timeSlots are represented in the availability data
+          // If not, then there might be available slots not recorded in the database yet
+          const allTimeSlotsAccounted = timeSlots.every(slot => {
+            const slotKey = `${slot.from} - ${slot.to}`;
+            return result.availability && 
+              result.availability.some(a => a.timeSlot === slotKey);
+          });
+
+          // Only mark as unavailable if there's actual availability data AND all defined slots exist AND all slots are full
+          const isDateUnavailable = result.availability && 
+            result.availability.length > 0 && 
+            allTimeSlotsAccounted &&
+            result.availability.every(slot => slot.available === 0);
+
+          if (isDateUnavailable) {
+            unavailableDatesArray.push(availableDates[index]);
+          }
+        });
+        
+        setAllAvailabilityData(availabilityMap);
+        setUnavailableDates(unavailableDatesArray);
+      } catch (error) {
+        console.error('Error fetching all availability data:', error);
+      } finally {
+        setIsLoadingAllAvailability(false);
+      }
+    };
+    
+    fetchAllAvailability();
+  }, []);
+
+  // Function to handle date selection
+  const handleDateSelect = (date) => {
+    setSelectedDate(date);
+    
+    if (!date) return;
+    
+    const formattedDate = formatDate(date);
+    const cachedAvailabilityData = allAvailabilityData[formattedDate];
+    
+    if (cachedAvailabilityData) {
+      // Use the cached data
+      setAvailabilityData(cachedAvailabilityData);
       
       // Filter available time slots
       const allTimeSlots = timeSlots || [];
       const availableSlots = allTimeSlots.filter(slot => {
         const slotKey = `${slot.from} - ${slot.to}`;
-        const slotAvailability = data.availability.find(a => a.timeSlot === slotKey);
+        const slotAvailability = cachedAvailabilityData.availability.find(a => a.timeSlot === slotKey);
         
         // If no availability data for this slot, assume it's fully available
         if (!slotAvailability) {
@@ -120,20 +177,19 @@ export default function BookingDetailPage({ headerData, footerData, product }) {
       
       setAvailableTimeSlots(availableSlots);
       setSelectedTimeSlot(null); // Reset selected time slot when date changes
+    } else {
+      // Fallback to traditional method if cache fails
+      setIsLoadingAvailability(true);
       
-    } catch (error) {
-      console.error('Error fetching availability:', error);
-      // Fallback to showing all time slots
-      setAvailableTimeSlots(timeSlots || []);
-    } finally {
-      setIsLoadingAvailability(false);
+      try {
+        // Filter available time slots
+        const allTimeSlots = timeSlots || [];
+        setAvailableTimeSlots(allTimeSlots);
+        setSelectedTimeSlot(null);
+      } finally {
+        setIsLoadingAvailability(false);
+      }
     }
-  };
-
-  // Function to handle date selection
-  const handleDateSelect = (date) => {
-    setSelectedDate(date);
-    fetchAvailability(date);
   };
 
   // Function to handle time slot selection
@@ -311,11 +367,19 @@ export default function BookingDetailPage({ headerData, footerData, product }) {
               <>
                 <div className={styles.calendarContainer}>
                   <h3>Sélectionnez une date</h3>
-                  <BookingCalendar 
-                    availableDates={availableDates}
-                    selectedDate={selectedDate}
-                    onDateSelect={handleDateSelect}
-                  />
+                  {isLoadingAllAvailability ? (
+                    <div className={styles.loadingMessage}>
+                      Chargement des disponibilités...
+                    </div>
+                  ) : (
+                    <BookingCalendar 
+                      availableDates={availableDates}
+                      unavailableDates={unavailableDates}
+                      selectedDate={selectedDate}
+                      onDateSelect={handleDateSelect}
+                      isLoading={isLoadingAllAvailability}
+                    />
+                  )}
                 </div>
 
                 {selectedDate && (

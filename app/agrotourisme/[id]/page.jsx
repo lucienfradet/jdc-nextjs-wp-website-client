@@ -4,14 +4,17 @@ import { notFound } from 'next/navigation';
 import { stripHtml } from '@/lib/textUtils';
 import { cache } from 'react';
 
-export const revalidate = 3600;
+// export const revalidate = 3600;
+// 0 for testing
+export const revalidate = 0;
 
 
 // Cached product fetching function
 const getProduct = cache(async (id) => {
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_SITE_URL}/api/products/by-id/${id}`,
-    { next: { revalidate: 3600 } }
+    // { next: { revalidate: 3600 } }
+    { next: { revalidate: 0 } }
   );
   
   if (!res.ok) {

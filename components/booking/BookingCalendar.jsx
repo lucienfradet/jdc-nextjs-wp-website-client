@@ -5,7 +5,13 @@ import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import styles from '@/styles/booking/BookingCalendar.module.css';
 
-export default function BookingCalendar({ availableDates, selectedDate, onDateSelect }) {
+export default function BookingCalendar({ 
+  availableDates, 
+  unavailableDates = [], 
+  selectedDate, 
+  onDateSelect,
+  isLoading = false 
+}) {
   const [calendarDate, setCalendarDate] = useState(new Date());
   const [bookableDates, setBookableDates] = useState([]);
 
@@ -36,6 +42,15 @@ export default function BookingCalendar({ availableDates, selectedDate, onDateSe
     );
   };
 
+  // Function to check if a date is unavailable (no available spots)
+  const isDateUnavailable = (date) => {
+    return unavailableDates.some(unavailableDate => 
+      unavailableDate.getDate() === date.getDate() &&
+      unavailableDate.getMonth() === date.getMonth() &&
+      unavailableDate.getFullYear() === date.getFullYear()
+    );
+  };
+
   // Custom tile content to highlight available dates
   const tileContent = ({ date, view }) => {
     if (view === 'month' && isDateEnabled(date)) {
@@ -49,9 +64,15 @@ export default function BookingCalendar({ availableDates, selectedDate, onDateSe
     if (view === 'month') {
       let classNames = [];
       
-      // Add 'available' class for bookable dates
+      // First check if the date is enabled/bookable
       if (isDateEnabled(date)) {
+        // Add 'available' class for bookable dates
         classNames.push(styles.available);
+        
+        // Then check if it's unavailable (no available spots)
+        if (isDateUnavailable(date)) {
+          classNames.push(styles.unavailableSpots);
+        }
       }
       
       // Add 'selected' class for the selected date
@@ -69,10 +90,20 @@ export default function BookingCalendar({ availableDates, selectedDate, onDateSe
 
   // Handle date change
   const handleDateChange = (date) => {
-    if (isDateEnabled(date)) {
+    // Only allow selection of available dates with available spots
+    if (isDateEnabled(date) && !isDateUnavailable(date)) {
       onDateSelect(date);
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className={styles.calendarLoading}>
+        <div className={styles.loadingSpinner}></div>
+        <p>Chargement des disponibilités...</p>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.calendarWrapper}>
@@ -81,7 +112,7 @@ export default function BookingCalendar({ availableDates, selectedDate, onDateSe
         value={selectedDate || calendarDate}
         tileContent={tileContent}
         tileClassName={tileClassName}
-        tileDisabled={({ date }) => !isDateEnabled(date)}
+        tileDisabled={({ date }) => !isDateEnabled(date) || isDateUnavailable(date)}
         locale="fr-FR"
         calendarType='gregory'
         minDate={new Date()}
@@ -105,6 +136,10 @@ export default function BookingCalendar({ availableDates, selectedDate, onDateSe
         <div className={styles.legendItem}>
           <div className={`${styles.legendColor} ${styles.available}`}></div>
           <span>Date disponible</span>
+        </div>
+        <div className={styles.legendItem}>
+          <div className={`${styles.legendColor} ${styles.unavailableSpots}`}></div>
+          <span>Complet</span>
         </div>
         <div className={styles.legendItem}>
           <div className={`${styles.legendColor} ${styles.selected}`}></div>
