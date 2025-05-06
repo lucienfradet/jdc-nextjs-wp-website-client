@@ -105,6 +105,10 @@ export async function POST(request) {
       const itemTaxInfo = taxes?.items?.find(tax => tax.id === item.id);
       const itemTaxes = itemTaxInfo?.taxes || {};
       const itemTaxAmount = Object.values(itemTaxes).reduce((sum, val) => sum + parseFloat(val || 0), 0);
+
+      // Check if this is a booking product and extract booking details
+      const isBooking = item.type === 'mwb_booking';
+      const bookingDetails = item.booking_details || null;
       
       await prisma.orderItem.create({
         data: {
@@ -117,7 +121,13 @@ export async function POST(request) {
           tax: itemTaxAmount,
           total: parseFloat(item.price) * item.quantity + itemTaxAmount,
           shippingClass: item.shipping_class || 'standard',
-          isPickupOnly: item.shipping_class === 'only_pickup'
+          isPickupOnly: item.shipping_class === 'only_pickup',
+          
+          // Add booking details if applicable
+          isBooking: isBooking,
+          bookingDate: bookingDetails?.date || null,
+          bookingTimeSlot: bookingDetails?.time_slot || null,
+          bookingPeople: bookingDetails?.people || null,
         }
       });
     }

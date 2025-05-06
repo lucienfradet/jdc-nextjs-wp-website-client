@@ -93,6 +93,12 @@ When changing schema, data migration is not auto-managed if fields are __deleted
 Proper data management should be created manually in ```/prisma/migrations/[timestamp]_NAME_OF_THE_CHANGE/migration.sql```
 
 ```bash
+# In dev mode "npx prisma" should be replaced by
+npm run prisma:dev -- [REST OF COMMAND]
+# as I defined it in node settings
+```
+
+```bash
 # Update schema and migrate changes (If changes made to prisma/shema.prisma)
 npx prisma migrate dev --name NAME_OF_THE_CHANGES --create-only
 

@@ -98,6 +98,12 @@ model OrderItem {
   total          Decimal  @db.Decimal(10, 2)
   shippingClass  String?  // Track if it was shipping or pickup-only
   isPickupOnly   Boolean  @default(false)
+
+  isBooking       Boolean  @default(false)
+  bookingDate     String?  // Format: DD-MM-YYYY
+  bookingTimeSlot String?  // Format: "HH:MM - HH:MM"
+  bookingPeople   Int?     // Number of people for this booking
+
   createdAt      DateTime @default(now())
 }
 
