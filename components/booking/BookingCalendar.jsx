@@ -92,6 +92,13 @@ export default function BookingCalendar({ availableDates, selectedDate, onDateSe
         formatShortWeekday={(locale, date) => 
           date.toLocaleDateString(locale, { weekday: 'narrow' })
         }
+        view="month"                // Force month view
+        onDrillDown={null}          // Disable drilling down
+        onDrillUp={null}            // Disable drilling up
+        navigationLabel={null}      // Remove the navigation label (which is clickable)
+        showNavigation={true}       // Keep month navigation arrows
+        maxDetail="month"           // Set maximum detail level to month
+        minDetail="month"           // Set minimum detail level to month
       />
       
       <div className={styles.legend}>

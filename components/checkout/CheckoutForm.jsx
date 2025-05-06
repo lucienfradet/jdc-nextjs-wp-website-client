@@ -99,7 +99,7 @@ const CheckoutForm = forwardRef(({
         }
 
         // Validate pickup location if we have pickup-only items or if delivery method is pickup
-        if ((hasPickupOnlyItems || formData.deliveryMethod === 'pickup') && !formData.selectedPickupLocation) {
+        if ((hasPickupOnlyItems || formData.deliveryMethod === 'pickup' && !hasOnlyBookingProducts) && !formData.selectedPickupLocation) {
           errors.selectedPickupLocation = 'Veuillez sélectionner un point de chute';
         }
 

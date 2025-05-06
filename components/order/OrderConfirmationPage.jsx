@@ -90,7 +90,7 @@ export default function OrderConfirmationPage({ headerData, footerData }) {
           <h1>Merci pour votre commande!</h1>
           
           <p className={styles.orderNumber}>
-            Numéro de commande: <strong>{orderData.orderNumber}</strong>
+            Numéro de confirmation: <strong>{orderData.orderNumber}</strong>
           </p>
           
           <p className={styles.confirmationMessage}>

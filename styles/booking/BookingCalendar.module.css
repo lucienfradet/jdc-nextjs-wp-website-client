@@ -62,6 +62,39 @@
   background-color: rgba(36, 49, 27, 0.1);
 }
 
+/* Available months in year view */
+.availableMonth {
+  background-color: rgba(36, 49, 27, 0.05);
+  cursor: pointer;
+  font-weight: bold;
+  color: var(--green);
+  position: relative;
+}
+
+.availableMonth:hover {
+  background-color: rgba(36, 49, 27, 0.1) !important;
+}
+
+.calendar :global(.react-calendar__year-view__months__month.availableMonth:hover) {
+  background-color: rgba(36, 49, 27, 0.1) !important;
+}
+
+.calendar :global(.react-calendar__tile--active:enabled:hover) {
+  background-color: rgba(36, 49, 27, 0.1) !important;
+}
+
+.availableMonth::after {
+  content: "";
+  width: 8px;
+  height: 8px;
+  background-color: var(--green);
+  border-radius: 50%;
+  position: absolute;
+  bottom: 5px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
 /* Selected date styling */
 .selected {
   background-color: var(--green) !important;
