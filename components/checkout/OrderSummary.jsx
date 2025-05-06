@@ -23,6 +23,7 @@ export default function OrderSummary({
   const [shipping, setShipping] = useState(0);
   const [total, setTotal] = useState(0);
   const [hasShippableItems, setHasShippableItems] = useState(false);
+  const [hasOnlyBookingProducts, setHasOnlyBookingProducts] = useState(false);
   
   // Update values whenever cart, taxes, or deliveryMethod changes
   useEffect(() => {
@@ -34,6 +35,11 @@ export default function OrderSummary({
     // In a real implementation, this would be calculated based on shipping address and items
     const shippableItems = cart.some(item => item.shipping_class !== 'only_pickup');
     setHasShippableItems(shippableItems);
+    
+    // Check if cart has only booking products
+    const onlyBookingProducts = cart.length > 0 && 
+      cart.every(item => item.type === 'mwb_booking');
+    setHasOnlyBookingProducts(onlyBookingProducts);
     
     setShipping(getShippingCost());
     
@@ -89,7 +95,8 @@ export default function OrderSummary({
           <span>{formatCurrency(subtotal)}</span>
         </div>
         
-        {hasShippableItems && (
+        {/* Only show shipping if there are shippable items and not only booking products */}
+        {hasShippableItems && !hasOnlyBookingProducts && (
           <div className={styles.totalRow}>
             <span>Livraison{deliveryMethod === 'pickup' ? ' (Cueillette)' : ''}</span>
             <span>{shipping > 0 ? formatCurrency(shipping) : 'Gratuit'}</span>

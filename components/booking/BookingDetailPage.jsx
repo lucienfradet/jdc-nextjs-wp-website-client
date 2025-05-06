@@ -10,6 +10,7 @@ import DesktopFooter from '@/components/desktop/Footer';
 import MobileFooter from '@/components/mobile/Footer';
 import BookingCalendar from '@/components/booking/BookingCalendar';
 import { parseAvailableDates, parseTimeSlots, getMaxPeople, formatDate } from '@/lib/bookingApi';
+import { renderContent } from '@/lib/textUtils';
 import { useCart } from '@/context/CartContext';
 import styles from '@/styles/booking/BookingDetailPage.module.css';
 
@@ -57,8 +58,11 @@ export default function BookingDetailPage({ headerData, footerData, product }) {
 
   // Function to handle changing number of people
   const handlePeopleChange = (e) => {
-    const value = parseInt(e.target.value);
-    setPeople(Math.min(Math.max(1, value), maxPeople));
+    const value = parseInt(e.target.value, 10);
+    if (!isNaN(value)) {
+      setPeople(Math.min(Math.max(1, value), maxPeople));
+    }
+    // If input is empty or not a number, don't update state
   };
 
   // Function to handle booking
@@ -92,12 +96,6 @@ export default function BookingDetailPage({ headerData, footerData, product }) {
       setBookingError('Une erreur est survenue lors de l\'ajout au panier');
       setIsBooking(false);
     }
-  };
-
-  // Strip HTML from description
-  const stripHtml = (html) => {
-    if (!html) return '';
-    return html.replace(/<\/?[^>]+(>|$)/g, "");
   };
 
   // Function to render the booking summary
@@ -141,7 +139,7 @@ export default function BookingDetailPage({ headerData, footerData, product }) {
         <div className={styles.summaryItem}>
           <span className={styles.summaryLabel}>Prix total :</span>
           <span className={styles.summaryTotal}>
-            {(parseFloat(product.price) * people).toFixed(2)} €
+            {(parseFloat(product.price) * people).toFixed(2)} $
           </span>
         </div>
       </div>
@@ -179,7 +177,7 @@ export default function BookingDetailPage({ headerData, footerData, product }) {
             </div>
 
             <div className={styles.productPrice}>
-              <span className={styles.price}>{product.price} €</span> par personne
+              <span className={styles.price}>{renderContent(product.price_html)}</span> par personne
             </div>
             
             <div 
@@ -233,8 +231,8 @@ export default function BookingDetailPage({ headerData, footerData, product }) {
                     <input
                       type="number"
                       min="1"
-                      max={maxPeople}
-                      value={people}
+                      max={maxPeople || 1}
+                      value={isNaN(people) ? 1 : people}
                       onChange={handlePeopleChange}
                       className={styles.peopleInput}
                     />

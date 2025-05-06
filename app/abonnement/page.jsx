@@ -31,22 +31,23 @@ export async function generateMetadata() {
 }
 
 export default async function Page() {
+  const filterType = "panier-de-legumes"
   // Fetch data on the server
   const [pageData, headerData, footerData, productsRes, pointsRes] = await Promise.all([
     getPageFieldsByName("abonnement"),
     getPageFieldsByName("header"),
     getPageFieldsByName("footer"),
-    fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/products`, { cache: "no-store" }),
+    fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/products/by-filter/${filterType}`, { cache: "no-store" }),
     fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/point_de_chute`, { cache: "no-store" })
   ]);
 
   if (!pageData || !headerData || !footerData) {
-    console.error("Data not found. Returning 404.");
+    console.error("Required CMS data not found");
     notFound();
   }
 
   if (!productsRes.ok || !pointsRes.ok) {
-    console.error("Error fetching products");
+    console.error("Error fetching products or points de chutes");
   }
 
   const products = await productsRes.json();

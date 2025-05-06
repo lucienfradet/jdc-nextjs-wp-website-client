@@ -12,10 +12,10 @@ export default function Page() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const [headerData, footerData, abonnementPageData, pointsRes] = await Promise.all([
+        const [headerData, footerData, checkoutPageContent, pointsRes] = await Promise.all([
           getPageFieldsByName("header"),
           getPageFieldsByName("footer"),
-          getPageFieldsByName("abonnement"),
+          getPageFieldsByName("checkout"),
           fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/point_de_chute`, { cache: "no-store" })
         ]);
 
@@ -33,7 +33,7 @@ export default function Page() {
         setPageData({
           headerData,
           footerData,
-          abonnementPageData,
+          checkoutPageContent,
           pointDeChute
         });
       } catch (error) {
@@ -68,7 +68,7 @@ export default function Page() {
     <CheckoutPage
       headerData={pageData.headerData}
       footerData={pageData.footerData}
-      abonnementPageData={pageData.abonnementPageData}
+      checkoutPageContent={pageData.checkoutPageContent}
       pointDeChute={pageData.pointDeChute}
       savedFormData={savedFormData}
     />

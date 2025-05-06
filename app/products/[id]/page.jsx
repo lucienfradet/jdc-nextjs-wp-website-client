@@ -12,7 +12,7 @@ export const revalidate = 3600; // Revalidate every hour
 // Cached product fetching function
 const getProduct = cache(async (id) => {
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_SITE_URL}/api/products/${id}`,
+    `${process.env.NEXT_PUBLIC_SITE_URL}/api/products/by-id/${id}`,
     { next: { revalidate: 3600 } }
   );
   
@@ -30,7 +30,7 @@ export async function generateMetadata({ params }) {
     // Fetch product data (cached)
     const product = await getProduct(id);
     
-    if (!product) {
+    if (!product || !Array.isArray(product)) {
       return {
         title: 'Produit non trouvé',
         description: 'Le produit que vous cherchez n\'existe pas.'

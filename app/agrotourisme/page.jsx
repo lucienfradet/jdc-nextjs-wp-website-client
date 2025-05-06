@@ -1,5 +1,4 @@
 import { getPageFieldsByName } from '@/lib/cachedApi';
-import { fetchBookingProducts } from '@/lib/wooCommerce';
 import AgrotourismePage from '@/components/AgrotourismePage';
 import { notFound } from 'next/navigation';
 
@@ -32,12 +31,13 @@ export async function generateMetadata() {
 }
 
 export default async function Page() {
+  const filterType = "booking"
   // Fetch data on the server
-  const [pageData, headerData, footerData, bookingProducts] = await Promise.all([
+  const [pageData, headerData, footerData, productsRes] = await Promise.all([
     getPageFieldsByName("agrotourisme"),
     getPageFieldsByName("header"),
     getPageFieldsByName("footer"),
-    fetchBookingProducts()
+    fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/products/by-filter/${filterType}`, { cache: "no-store" }),
   ]);
 
   if (!pageData || !headerData || !footerData) {
@@ -45,12 +45,19 @@ export default async function Page() {
     notFound();
   }
 
+
+  if (!productsRes.ok) {
+    console.error("Error fetching products");
+  }
+
+  const products = await productsRes.json();
+
   return (
     <AgrotourismePage
       pageData={pageData}
       headerData={headerData}
       footerData={footerData}
-      bookingProducts={bookingProducts}
+      bookingProducts={products}
     />
   );
 }

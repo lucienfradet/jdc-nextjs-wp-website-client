@@ -190,7 +190,10 @@ export function CartProvider({ children }) {
   const getShippingCost = () => {
     // If shipping calculator isn't loaded yet, use a default value
     if (!shippingLoaded) {
-      const shippableItems = cart.some(item => item.shipping_class !== 'only_pickup');
+      // Check if there are any non-booking shippable items
+      const shippableItems = cart.some(item => 
+        item.shipping_class !== 'only_pickup' && item.type !== 'mwb_booking'
+      );
       return shippableItems && deliveryMethod === 'shipping' ? 15 : 0;
     }
     

@@ -3,7 +3,7 @@
 import styles from '@/styles/checkout/PaymentGateway.module.css';
 import { renderContent } from '@/lib/textUtils';
 
-export default function PaymentSelector({ paymentMethod, onPaymentMethodChange, abonnementPageContent }) {
+export default function PaymentSelector({ paymentMethod, onPaymentMethodChange, checkoutPageContent }) {
   // Handle payment method change
   const handlePaymentMethodChange = (method) => (event) => {
     // Prevent any default form submission
@@ -45,7 +45,7 @@ export default function PaymentSelector({ paymentMethod, onPaymentMethodChange, 
       
       {paymentMethod === 'bank-transfer' && (
         <div className={styles.bankTransferInfo}>
-          {renderContent(abonnementPageContent["paiments-virement-p"])}
+          {renderContent(checkoutPageContent["paiment-interac-explication"])}
         </div>
       )}
     </div>

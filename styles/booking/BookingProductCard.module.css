@@ -1,5 +1,6 @@
 .bookingCard {
   display: flex;
+  font-family: 'Roboto';
   flex-direction: column;
   background-color: var(--beige);
   border-radius: 12px;

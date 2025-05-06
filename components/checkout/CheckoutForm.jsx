@@ -54,6 +54,8 @@ const CheckoutForm = forwardRef(({
 
     const [localErrors, setLocalErrors] = useState({});
 
+    // Check if cart has only booking products
+    const hasOnlyBookingProducts = cart.length > 0 && cart.every(item => item.type === 'mwb_booking');
     // Check if cart has pickup-only items
     const hasPickupOnlyItems = cart.some(item => item.shipping_class === 'only_pickup');
     // Check if ALL items are pickup-only
@@ -181,7 +183,7 @@ const CheckoutForm = forwardRef(({
 
     const renderDeliveryOptions = () => {
       // If there are no shippable items or all items are pickup-only, don't show options
-      if (!hasShippableItems || isPickupOnlyOrder) return null;
+      if (!hasShippableItems || hasOnlyBookingProducts || isPickupOnlyOrder) return null;
 
       return (
         <div className={styles.deliveryOptions}>
@@ -218,7 +220,11 @@ const CheckoutForm = forwardRef(({
 
     const renderPickupLocationSelector = () => {
       // Only show pickup selector if there are pickup-only items OR if pickup is selected as delivery method
-      if ((!hasPickupOnlyItems && formData.deliveryMethod !== 'pickup') || !pointDeChute || pointDeChute.length === 0) {
+      // AND we don't have only booking products
+      if ((!hasPickupOnlyItems && formData.deliveryMethod !== 'pickup') || 
+          !pointDeChute || 
+          pointDeChute.length === 0 || 
+          hasOnlyBookingProducts) {
         return null;
       }
 
@@ -357,7 +363,7 @@ const CheckoutForm = forwardRef(({
           </section>
 
           {/* Only show address fields if this is not a pickup-only order */}
-          {!isPickupOnlyOrder && formData.deliveryMethod !== 'pickup' && (
+          {!isPickupOnlyOrder && !hasOnlyBookingProducts && formData.deliveryMethod !== 'pickup' && (
             <section className={styles.formSection}>
               <h3>Informations de facturation</h3>
 
@@ -469,7 +475,7 @@ const CheckoutForm = forwardRef(({
           )}
 
           {/* Shipping Information (only if deliveryMethod is 'shipping' and NOT a pickup-only order) */}
-          {hasShippableItems && formData.deliveryMethod === 'shipping' && !isPickupOnlyOrder && (
+          {hasShippableItems && formData.deliveryMethod === 'shipping' && !isPickupOnlyOrder && !hasOnlyBookingProducts && (
             <section className={styles.formSection}>
               <h3>Informations de livraison</h3>
 

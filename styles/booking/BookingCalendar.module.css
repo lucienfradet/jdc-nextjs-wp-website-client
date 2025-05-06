@@ -1,6 +1,7 @@
 /* Container for the calendar */
 .calendarWrapper {
   margin-bottom: 1.5rem;
+  color: var(--green);
 }
 
 /* Custom styling for the react-calendar component */
@@ -31,7 +32,6 @@
 .calendar :global(.react-calendar__tile:disabled) {
   background-color: #f9f9f9;
   opacity: 0.6;
-  cursor: not-allowed;
 }
 
 .calendar :global(.react-calendar__month-view__days__day--weekend) {
@@ -76,12 +76,15 @@
 .unavailable {
   background-color: #f9f9f9;
   color: #ccc;
-  cursor: not-allowed;
 }
 
 /* Calendar navigation */
 .calendar :global(.react-calendar__navigation) {
   margin-bottom: 1rem;
+}
+
+.calendar :global(.react-calendar__navigation__label) {
+  color: var(--green);
 }
 
 .calendar :global(.react-calendar__navigation button) {
@@ -90,6 +93,14 @@
   background: none;
   font-size: 1.2rem;
   border-radius: 4px;
+}
+
+.calendar :global(.react-calendar__navigation__next-button) {
+  color: var(--green);
+}
+
+.calendar :global(.react-calendar__navigation__prev-button) {
+  color: var(--green);
 }
 
 .calendar :global(.react-calendar__navigation button:enabled:hover) {

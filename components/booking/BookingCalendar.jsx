@@ -83,6 +83,7 @@ export default function BookingCalendar({ availableDates, selectedDate, onDateSe
         tileClassName={tileClassName}
         tileDisabled={({ date }) => !isDateEnabled(date)}
         locale="fr-FR"
+        calendarType='gregory'
         minDate={new Date()}
         className={styles.calendar}
         next2Label={null}

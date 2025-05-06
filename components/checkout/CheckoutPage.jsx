@@ -17,7 +17,7 @@ export default function CheckoutPage({
   headerData,
   footerData,
   siteIconUrl,
-  abonnementPageData,
+  checkoutPageContent,
   pointDeChute
 }) {
   const router = useRouter();
@@ -60,8 +60,10 @@ export default function CheckoutPage({
       router.push('/');
     }
     
-    // Check if we have shippable items
-    const hasShippable = cart.some(item => item.shipping_class !== 'only_pickup');
+    // Check if we have any non-booking shippable items
+    const hasShippable = cart.some(item => 
+      item.shipping_class !== 'only_pickup' && item.type !== 'mwb_booking'
+    );
     setHasShippableItems(hasShippable);
     
   }, [cart, router, getCartTotal]);
@@ -230,7 +232,7 @@ export default function CheckoutPage({
               <PaymentSelector 
                 paymentMethod={paymentMethod}
                 onPaymentMethodChange={handlePaymentMethodChange}
-                abonnementPageContent={abonnementPageData.acfFields}
+                checkoutPageContent={checkoutPageContent.acfFields}
               />
 
               {isFormDataLoaded && (

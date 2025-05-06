@@ -1,16 +1,31 @@
 import { getPageFieldsByName } from '@/lib/cachedApi';
-import { fetchBookingProductById } from '@/lib/wooCommerce';
 import BookingDetailPage from '@/components/booking/BookingDetailPage';
 import { notFound } from 'next/navigation';
 import { stripHtml } from '@/lib/textUtils';
+import { cache } from 'react';
 
 export const revalidate = 3600;
+
+
+// Cached product fetching function
+const getProduct = cache(async (id) => {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_SITE_URL}/api/products/by-id/${id}`,
+    { next: { revalidate: 3600 } }
+  );
+  
+  if (!res.ok) {
+    return null;
+  }
+  
+  return res.json();
+});
 
 // Generate metadata based on product data
 export async function generateMetadata({ params }) {
   const { id } = await params;
-  const product = await fetchBookingProductById(id);
-  
+  const product = getProduct(id);
+
   if (!product) {
     return {
       title: 'Réservation non trouvée',
@@ -38,16 +53,16 @@ export async function generateMetadata({ params }) {
 }
 
 export default async function Page({ params }) {
-  const { id } = params;
+  const { id } = await params;
   
   // Fetch data on the server
   const [headerData, footerData, product] = await Promise.all([
     getPageFieldsByName("header"),
     getPageFieldsByName("footer"),
-    fetchBookingProductById(id)
+    getProduct(id)
   ]);
 
-  if (!headerData || !footerData || !product) {
+  if (!headerData || !footerData || !product || Array.isArray(product)) {
     console.error("Data not found. Returning 404.");
     notFound();
   }

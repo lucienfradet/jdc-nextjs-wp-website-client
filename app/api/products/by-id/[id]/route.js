@@ -3,13 +3,14 @@ import { fetchWooProductById } from "@/lib/wooCommerce";
 export async function GET(request, { params }) {
   try {
     const { id } = await params;
-    const product = await fetchWooProductById(id);
+    const response = await fetchWooProductById(id);
     
-    if (!product) {
-      return Response.json({ error: "Product not found" }, { status: 404 });
+    if (!response.success) {
+      // Convert utility error to HTTP response
+      return Response.json({ error: response.error }, { status: 404 });
     }
 
-    return Response.json(product);
+    return Response.json(response.data);
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
   }
