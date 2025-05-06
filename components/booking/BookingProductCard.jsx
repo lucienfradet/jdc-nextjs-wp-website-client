@@ -13,6 +13,9 @@ export default function BookingProductCard({ product, buttonText, buttonLink }) 
   const shortDescription = product.short_description 
     ? stripHtml(product.short_description) 
     : stripHtml(product.description).substring(0, 150) + '...';
+    
+  // Check if product is out of stock
+  const isOutOfStock = product.stock_status === "outofstock";
 
   return (
     <div className={styles.bookingCard}>
@@ -39,12 +42,22 @@ export default function BookingProductCard({ product, buttonText, buttonLink }) 
           <span className={styles.perPerson}>par personne</span>
         </div>
         
+        {isOutOfStock && (
+          <div className={styles.outOfStockBadge}>
+            Actuellement non disponible
+          </div>
+        )}
+        
         <div className={styles.productDescription}>
           {shortDescription}
         </div>
         
-        <Link href={buttonLink} className={styles.bookButton}>
-          {buttonText || "Réserver"}
+        <Link 
+          href={buttonLink} 
+          className={`${styles.bookButton} ${isOutOfStock ? styles.disabledButton : ''}`}
+          aria-disabled={isOutOfStock}
+        >
+          {isOutOfStock ? "Non disponible" : (buttonText || "Réserver")}
         </Link>
       </div>
     </div>
