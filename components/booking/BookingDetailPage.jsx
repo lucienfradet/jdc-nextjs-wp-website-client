@@ -39,7 +39,7 @@ export default function BookingDetailPage({ headerData, footerData, product }) {
   const defaultMaxPeople = product.stock_quantity || 1;
   
   // Check if product is out of stock
-  const isOutOfStock = product.stock_status === "outofstock";
+  const isOutOfStock = product.stock_status === "outofstock" || (product.manage_stock && product.stock_quantity <= 0);
 
   // Mobile detection
   useEffect(() => {
