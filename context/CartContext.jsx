@@ -27,6 +27,10 @@ export function CartProvider({ children }) {
     return 'shipping';
   });
   const [shippingLoaded, setShippingLoaded] = useState(false);
+  
+  // New state for booking confirmation
+  const [showBookingConfirmation, setShowBookingConfirmation] = useState(false);
+  const [pendingBooking, setPendingBooking] = useState(null);
 
   // Load cart from localStorage on component mount
   useEffect(() => {
@@ -130,12 +134,96 @@ export function CartProvider({ children }) {
     }
   }, [cart, province, isLoading, deliveryMethod, shippingLoaded]);
 
-  const addToCart = (product, quantity = 1) => {
+  // Helper function to check if there's a booking in the cart
+  const hasBookingInCart = () => {
+    return cart.some(item => 
+      item.type === 'mwb_booking' || 
+      (item.booking_details && Object.keys(item.booking_details).length > 0)
+    );
+  };
+
+  // Find the existing booking in the cart
+  const findExistingBooking = () => {
+    return cart.find(item => 
+      item.type === 'mwb_booking' || 
+      (item.booking_details && Object.keys(item.booking_details).length > 0)
+    );
+  };
+
+  // Handle booking confirmation
+  const confirmBookingReplacement = () => {
+    if (!pendingBooking) return;
+    
+    const { product, quantity, callback } = pendingBooking;
+    
+    // Remove any existing bookings first
+    const newCart = cart.filter(item => 
+      item.type !== 'mwb_booking' && 
+      !(item.booking_details && Object.keys(item.booking_details).length > 0)
+    );
+    
+    // Add the new booking
+    newCart.push({ ...product, quantity });
+    setCart(newCart);
+    
+    // Show feedback message
+    setShowFeedback(true);
+    
+    // Reset booking confirmation state
+    setShowBookingConfirmation(false);
+    setPendingBooking(null);
+    
+    // Call the callback if provided
+    if (callback && typeof callback === 'function') {
+      callback();
+    }
+  };
+
+  // Cancel booking replacement
+  const cancelBookingReplacement = () => {
+    setShowBookingConfirmation(false);
+    setPendingBooking(null);
+    
+    // If there's a callback with cancel parameter, call it
+    if (pendingBooking && pendingBooking.onCancel && typeof pendingBooking.onCancel === 'function') {
+      pendingBooking.onCancel();
+    }
+  };
+
+  const addToCart = (product, quantity = 1, options = {}) => {
     // Make sure quantity is a number
     const numericQuantity = parseInt(quantity, 10) || 1;
     
+    // Check if this is a booking product
+    const isBookingProduct = product.type === 'mwb_booking' || 
+      (product.booking_details && Object.keys(product.booking_details).length > 0);
+    
+    // Special handling for booking products
+    if (isBookingProduct && hasBookingInCart()) {
+      // Store the pending booking and show confirmation
+      setPendingBooking({ 
+        product, 
+        quantity: numericQuantity, 
+        callback: options.onSuccess,
+        onCancel: options.onCancel
+      });
+      setShowBookingConfirmation(true);
+      return false; // Return false to indicate we need confirmation
+    }
+    
+    // Regular flow for non-booking products or when no booking exists
     setCart(prevCart => {
-      // Check if product already in cart
+      // For booking products, always add as new (don't update existing)
+      if (isBookingProduct) {
+        // Remove any existing bookings first (safety check)
+        const filteredCart = prevCart.filter(item => 
+          item.type !== 'mwb_booking' && 
+          !(item.booking_details && Object.keys(item.booking_details).length > 0)
+        );
+        return [...filteredCart, { ...product, quantity: numericQuantity }];
+      }
+      
+      // Regular products - check if product already in cart
       const existingItemIndex = prevCart.findIndex(item => item.id === product.id);
 
       if (existingItemIndex >= 0) {
@@ -154,6 +242,13 @@ export function CartProvider({ children }) {
     
     // Show feedback message
     setShowFeedback(true);
+    
+    // Call success callback if provided
+    if (options.onSuccess && typeof options.onSuccess === 'function') {
+      options.onSuccess();
+    }
+    
+    return true; // Return true to indicate success
   };
 
   const removeFromCart = (productId) => {
@@ -241,6 +336,12 @@ export function CartProvider({ children }) {
     return !taxError && cart.length > 0;
   };
 
+  // Get existing booking details for display
+  const getExistingBookingDetails = () => {
+    const existingBooking = findExistingBooking();
+    return existingBooking;
+  };
+
   return (
     <CartContext.Provider value={{
       cart,
@@ -261,10 +362,17 @@ export function CartProvider({ children }) {
       setShowFeedback,
       deliveryMethod,
       updateDeliveryMethod,
-      canCheckout
+      canCheckout,
+      // New booking confirmation related values
+      showBookingConfirmation,
+      confirmBookingReplacement,
+      cancelBookingReplacement,
+      getExistingBookingDetails,
+      hasBookingInCart
     }}>
       {children}
 
+      {/* Existing Cart Drawer */}
       <DrawerCart
         trigger={{
           content: (
@@ -278,6 +386,23 @@ export function CartProvider({ children }) {
           ),
         }}
       />
+      
+      {/* Booking Confirmation Dialog */}
+      {showBookingConfirmation && (
+        <div className="booking-confirmation-overlay">
+          <div className="booking-confirmation-dialog">
+            <h3>Remplacer la réservation existante?</h3>
+            <p>
+              Vous avez déjà une réservation dans votre panier. 
+              Ajouter cette nouvelle réservation remplacera la réservation existante.
+            </p>
+            <div className="confirmation-buttons">
+              <button onClick={cancelBookingReplacement}>Annuler</button>
+              <button onClick={confirmBookingReplacement}>Confirmer</button>
+            </div>
+          </div>
+        </div>
+      )}
     </CartContext.Provider>
   );
 }

@@ -6,6 +6,7 @@ import WPImage from '@/components/WPImage';
 import DrawerCart from "@/components/DrawerCart";
 import { formatTaxRate } from '@/lib/taxUtils';
 import { useCart } from '@/context/CartContext';
+import BookingCartItem from '../booking/BookingCartItem';
 
 export default function OrderSummary({ 
   hideModifyCart = false
@@ -85,6 +86,9 @@ export default function OrderSummary({
                 </div>
               )}
             </div>
+            {item.type === "mwb_booking" && (
+              <BookingCartItem item={item} />
+            )}
           </div>
         ))}
       </div>

@@ -17,11 +17,9 @@
 .itemList {
   margin-bottom: 1.5rem;
   max-height: 400px;
-  overflow-y: auto;
 }
 
 .item {
-  display: flex;
   margin-bottom: 1rem;
   padding-bottom: 1rem;
   border-bottom: 1px solid rgba(36, 49, 27, 0.1);
@@ -76,6 +74,19 @@
 .pickupOnly {
   display: inline-block;
   margin-top: 0.5rem;
+  margin-right: 0.5rem;
+  background-color: rgba(209, 120, 41, 0.1);
+  color: var(--orange);
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+.taxExempt {
+  display: inline-block;
+  margin-top: 0.5rem;
+  margin-right: 0.5rem;
   background-color: rgba(209, 120, 41, 0.1);
   color: var(--orange);
   font-size: 0.75rem;

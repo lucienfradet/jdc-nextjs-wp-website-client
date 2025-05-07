@@ -217,3 +217,96 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background-color: var(--beige);
 }
+
+/* Style to handle booking cart warning */
+.booking-confirmation-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.booking-confirmation-dialog {
+  background-color: white;
+  border-radius: 8px;
+  padding: 24px;
+  max-width: 500px;
+  width: 90%;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.booking-confirmation-dialog h3 {
+  margin-top: 0;
+  color: #333;
+  font-size: 1.5rem;
+  margin-bottom: 16px;
+}
+
+.booking-confirmation-dialog p {
+  margin-bottom: 24px;
+  line-height: 1.5;
+  color: #555;
+}
+
+.confirmation-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.confirmation-buttons button {
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.confirmation-buttons button:first-child {
+  background-color: #f5f5f5;
+  color: #333;
+  border: 1px solid #ddd;
+}
+
+.confirmation-buttons button:first-child:hover {
+  background-color: #eaeaea;
+}
+
+.confirmation-buttons button:last-child {
+  background-color: var(--green);
+  color: white;
+  border: 1px solid var(--green);
+}
+
+.confirmation-buttons button:last-child:hover {
+  background-color: var(--red);
+  border: 1px solid var(--red);
+}
+
+/* Mobile responsive styles */
+@media (max-width: 576px) {
+  .booking-confirmation-dialog {
+    padding: 20px;
+    max-width: 90%;
+  }
+  
+  .booking-confirmation-dialog h3 {
+    font-size: 1.25rem;
+  }
+  
+  .confirmation-buttons {
+    flex-direction: column;
+  }
+  
+  .confirmation-buttons button {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 8px;
+  }
+}

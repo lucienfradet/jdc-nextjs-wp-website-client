@@ -16,7 +16,7 @@ import styles from '@/styles/booking/BookingDetailPage.module.css';
 
 export default function BookingDetailPage({ headerData, footerData, product }) {
   const router = useRouter();
-  const { addToCart } = useCart();
+  const { addToCart, hasBookingInCart, showBookingConfirmation } = useCart();
   const [isMobile, setIsMobile] = useState(false);
   
   // Booking state
@@ -228,7 +228,7 @@ export default function BookingDetailPage({ headerData, footerData, product }) {
     setPeople(Math.min(Math.max(1, value), maxAllowed));
   };
 
-  // Function to handle booking
+  // Modified function to handle booking with confirmation flow
   const handleBooking = () => {
     if (!selectedDate || !selectedTimeSlot) {
       setBookingError('Veuillez sélectionner une date et un créneau horaire');
@@ -242,6 +242,7 @@ export default function BookingDetailPage({ headerData, footerData, product }) {
       // Create a modified product with the booking details
       const bookingProduct = {
         ...product,
+        type: 'mwb_booking', // Ensure we mark this as a booking product
         booking_details: {
           date: formatDate(selectedDate),
           time_slot: `${selectedTimeSlot.from} - ${selectedTimeSlot.to}`,
@@ -249,11 +250,36 @@ export default function BookingDetailPage({ headerData, footerData, product }) {
         }
       };
 
-      // Add to cart with the selected quantity (number of people)
-      addToCart(bookingProduct, people);
+      // Add to cart with the selected quantity and callbacks for success/cancel
+      const success = addToCart(bookingProduct, people, {
+        onSuccess: () => {
+          // Only redirect if add was successful and no confirmation needed
+          router.push('/checkout');
+        },
+        onCancel: () => {
+          // If user cancels the booking replacement, reset the booking state
+          setIsBooking(false);
+        }
+      });
       
-      // Redirect to checkout
-      router.push('/checkout');
+      // If adding to cart doesn't need confirmation (no existing booking),
+      // then success will be true and we'll redirect in the onSuccess callback
+      
+      // If confirmation dialog is shown, we'll wait for user action
+      // The confirmation component will handle the rest through callbacks
+      
+      // If there's already a booking and the confirmation dialog will be shown,
+      // we'll keep the isBooking state as is until the user confirms or cancels
+      if (!hasBookingInCart()) {
+        // If there's no existing booking, we've already redirected
+        // so we don't need to do anything here
+      } else if (!showBookingConfirmation) {
+        // If for some reason we had a booking but no confirmation is shown,
+        // reset the booking state
+        setIsBooking(false);
+      }
+      // Otherwise, keep isBooking true until confirmation dialog is closed
+      
     } catch (error) {
       console.error('Error adding booking to cart:', error);
       setBookingError('Une erreur est survenue lors de l\'ajout au panier');
