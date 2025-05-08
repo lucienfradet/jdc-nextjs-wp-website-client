@@ -24,6 +24,14 @@ export function StripeProvider({ children }) {
       setPaymentStatus('processing');
       setPaymentError(null);
       
+      // Prepare the full order data for validation
+      const fullOrderData = {
+        ...orderData,
+        taxes,
+        shippingCost,
+        total: amount
+      };
+
       const response = await fetch('/api/stripe/create-payment-intent', {
         method: 'POST',
         headers: {
@@ -34,15 +42,32 @@ export function StripeProvider({ children }) {
           currency: 'cad',
           paymentMethodType: 'card',
           metadata,
-          idempotencyKey: metadata.order_number
+          idempotencyKey: metadata.order_number,
+          orderData: fullOrderData // Send the full order data for validation
         }),
       });
 
       const data = await response.json();
       
+      // Handle validation errors
+      if (data.validationFailed) {
+        setPaymentStatus('error');
+        setPaymentError({
+          type: 'validation',
+          message: data.error || 'Validation failed',
+          discrepancies: data.discrepancies || [],
+          details: data.details || 'The prices may have changed since you added items to your cart.'
+        });
+        return false;
+      }
+      
+      // Handle other errors
       if (data.error) {
         setPaymentStatus('error');
-        setPaymentError(data.error);
+        setPaymentError({
+          type: 'general',
+          message: data.error
+        });
         return false;
       }
       
@@ -58,18 +83,34 @@ export function StripeProvider({ children }) {
       setClientSecret(data.clientSecret);
       setPaymentId(paymentIntentId);
       setOrderNumber(newOrderNumber);
-      // Store order data for later use when payment is initiated
-      setOrderData({
-        ...orderData,
-        taxes: taxes,
-        shippingCost
-      });
+      
+      // If we received validated data from the server, use that instead
+      if (data.validatedData) {
+        // Store order data with validated amounts for later use
+        setOrderData({
+          ...orderData,
+          taxes: data.validatedData.taxDetails || taxes,
+          shippingCost: data.validatedData.shipping,
+          subtotal: data.validatedData.subtotal,
+          total: data.validatedData.total
+        });
+      } else {
+        // Store original order data
+        setOrderData({
+          ...orderData,
+          taxes: taxes,
+          shippingCost
+        });
+      }
 
       return true;
     } catch (error) {
       console.error('Error in payment flow:', error);
       setPaymentStatus('error');
-      setPaymentError(error.message);
+      setPaymentError({
+        type: 'system',
+        message: error.message
+      });
       return false;
     }
   };

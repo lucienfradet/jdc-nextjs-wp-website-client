@@ -1,4 +1,5 @@
 import Stripe from "stripe";
+import { validateOrderData } from "@/lib/wooCommerce";
 
 // Generate a unique order number (format: JDC-YYYYMMDD-XXXX)
 const generateOrderNumber = () => {
@@ -19,30 +20,70 @@ export async function POST(request) {
 
     // Get request body
     const body = await request.json();
-    const { amount, paymentMethodType, currency, metadata, idempotencyKey } = body;
+    const { amount, paymentMethodType, currency, metadata, idempotencyKey, orderData } = body;
+
+    // Validate the entire order against WooCommerce data
+    if (!orderData) {
+      return Response.json({ 
+        error: 'Order data is required for validation',
+        validationFailed: true
+      }, { status: 400 });
+    }
+
+    // Perform validation
+    const validationResult = await validateOrderData(orderData);
+
+    // If validation failed, return the discrepancies to the client
+    if (!validationResult.success) {
+      return Response.json({ 
+        error: 'Order validation failed',
+        validationFailed: true,
+        discrepancies: validationResult.discrepancies || [],
+        details: validationResult.error || 'Prices or amounts do not match current values in the system',
+      }, { status: 400 });
+    }
+
+    // Use the validated amount from the server calculation
+    const validatedAmount = validationResult.validatedData.total;
+
+    // If there's more than 1% difference between client amount and validated amount, reject
+    const percentDifference = Math.abs((amount - validatedAmount) / validatedAmount);
+    if (percentDifference > 0.01) {
+      return Response.json({ 
+        error: 'Amount validation failed',
+        validationFailed: true,
+        clientAmount: amount,
+        validatedAmount: validatedAmount,
+      }, { status: 400 });
+    }
+
+    // Generate a unique order number
+    const orderNumber = generateOrderNumber();
 
     const updatedMetadata = {
-      orderNumber: generateOrderNumber(),
+      orderNumber: orderNumber,
+      validatedAmount: validatedAmount.toString(),
       ...metadata
     }
 
-    // Create the payment intent
+    // Create the payment intent with validated amount
     const paymentIntent = await stripe.paymentIntents.create({
-      amount: Math.round(amount * 100), // Stripe expects amount in cents
+      amount: Math.round(validatedAmount * 100), // Stripe expects amount in cents
       currency: currency || 'cad',
       payment_method_types: [paymentMethodType || 'card'],
       metadata: updatedMetadata || {}
     }, {
-        idempotencyKey
-      });
+      idempotencyKey
+    });
 
-    console.log("new payment intent created: ", paymentIntent.metadata);
+    console.log("New payment intent created with validated amount:", validatedAmount);
 
-    // Return the client secret to the client
+    // Return the client secret to the client, along with validation information
     return Response.json({
       clientSecret: paymentIntent.client_secret,
       orderNumber: paymentIntent.metadata.orderNumber,
-      paymentIntentId: paymentIntent.id
+      paymentIntentId: paymentIntent.id,
+      validatedData: validationResult.validatedData
     });
   } catch (error) {
     console.error('Error creating payment intent:', error);

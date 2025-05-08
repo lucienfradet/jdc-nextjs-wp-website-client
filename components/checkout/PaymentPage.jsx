@@ -12,6 +12,7 @@ import DesktopHeader from "@/components/desktop/Header";
 import MobileHeader from "@/components/mobile/Header";
 import DesktopFooter from "@/components/desktop/Footer";
 import MobileFooter from "@/components/mobile/Footer";
+import ValidationErrorDisplay from '@/components/checkout/ValidationErrorDisplay';
 
 const PaymentPageContent = ({ 
   headerData,
@@ -266,25 +267,27 @@ const PaymentPageContent = ({
             
             <div className={styles.stripeContainer}>
               <h2>Paiement sécurisé</h2>
-              
-              {clientSecret ? (
-                <StripePaymentForm
-                  onPaymentComplete={handlePaymentComplete}
-                  onError={handlePaymentError}
-                  isSubmitting={isSubmitting}
-                />
-              ) : (
-                <div className={styles.loadingMessage}>
-                  Préparation du formulaire de paiement...
-                </div>
-              )}
-              
-              {paymentError && (
-                <div className={styles.errorMessage}>
-                  {paymentError}
-                </div>
-              )}
-              
+
+              {/* Show validation errors if present */}
+              {paymentError && paymentError.type === 'validation' ? (
+                <ValidationErrorDisplay error={paymentError} />
+              ) : clientSecret ? (
+                  <StripePaymentForm
+                    onPaymentComplete={handlePaymentComplete}
+                    onError={handlePaymentError}
+                    isSubmitting={isSubmitting}
+                  />
+                ) : (
+                    <div className={styles.loadingMessage}>
+                      Préparation du formulaire de paiement...
+                      {paymentError && paymentError.type !== 'validation' && (
+                        <div className={styles.errorMessage}>
+                          {paymentError.message}
+                        </div>
+                      )}
+                    </div>
+                  )}
+
               <div className={styles.securePaymentInfo}>
                 <div className={styles.secureIcon}>
                   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

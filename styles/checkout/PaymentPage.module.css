@@ -181,6 +181,47 @@
   border-radius: 4px;
 }
 
+.validationError {
+  background-color: #fff8f8;
+  border: 1px solid #f5c2c2;
+  border-radius: 4px;
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+.validationError h3 {
+  color: #c62828;
+  margin-top: 0;
+}
+
+.discrepanciesList {
+  margin-top: 12px;
+}
+
+.discrepanciesList ul {
+  margin: 8px 0;
+  padding-left: 20px;
+}
+
+.discrepanciesList li {
+  margin-bottom: 8px;
+}
+
+.refreshButton {
+  background-color: #24311B;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  margin-top: 12px;
+}
+
+.refreshButton:hover {
+  background-color: #324829;
+}
+
 /* Media queries */
 @media (max-width: 991px) {
   .paymentPageContainer {
