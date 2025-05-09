@@ -145,7 +145,7 @@ export default function ValidationErrorDisplay({ error }) {
       
       <div className={styles.refreshInstructions}>
         <button className={styles.refreshButton} onClick={() => window.location.href = '/checkout'}>
-          Retourner au panier
+          Retourner au formulaire précédent
         </button>
       </div>
     </div>

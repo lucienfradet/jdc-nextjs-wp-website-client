@@ -49,14 +49,15 @@ export async function POST(request) {
       // Optional: Check payment intent is not too old (e.g., 1 hour max)
       const createdDate = new Date(paymentIntent.created * 1000);
       const now = new Date();
+      // const hoursDiff = (now - createdDate) / (1000 * 60 * 60);
       const hoursDiff = (now - createdDate) / (1000 * 60 * 60);
       
       if (hoursDiff > 1) {
-        throw new Error('Payment intent expired');
+        throw new Error("Le formulaire de paiement a expiré. Veuillez actualiser la page et recommencer.");
       }
     } catch (error) {
       return NextResponse.json(
-        { error: 'Invalid payment intent. error: ' + error },
+        { error: 'Intention de paiement non valide: ' + error },
         { status: 400 }
       );
     }
