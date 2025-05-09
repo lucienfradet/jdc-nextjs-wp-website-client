@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
+import Stripe from 'stripe';
 
 export async function POST(request) {
   try {
@@ -16,10 +17,10 @@ export async function POST(request) {
     
     console.log('Creating pending order:', orderNumber, paymentIntentId);
 
-    // Check for duplicate - don't create the same order twice
-    const existingOrder = await prisma.order.findUnique({
+    // 1. IDEMPOTENCY CHECK - Don't create the same order twice
+    const existingOrder = await prisma.order.findFirst({
       where: { 
-        orderNumber: orderNumber 
+        paymentIntentId: paymentIntentId 
       }
     });
     
@@ -27,12 +28,40 @@ export async function POST(request) {
       return NextResponse.json({
         success: true,
         message: 'Order already exists',
-        orderNumber,
+        orderNumber: existingOrder.orderNumber,
         status: existingOrder.status,
         paymentIntentId
       });
     }
+
+    // 2. VERIFY PAYMENT INTENT EXISTS AND IS VALID
+    // This is a lightweight check to ensure the payment intent was created by your system
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+    let paymentIntent;
     
+    try {
+      paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+      
+      if (!paymentIntent || paymentIntent.metadata.orderNumber !== orderNumber) {
+        throw new Error('Invalid payment intent');
+      }
+      
+      // Optional: Check payment intent is not too old (e.g., 1 hour max)
+      const createdDate = new Date(paymentIntent.created * 1000);
+      const now = new Date();
+      const hoursDiff = (now - createdDate) / (1000 * 60 * 60);
+      
+      if (hoursDiff > 1) {
+        throw new Error('Payment intent expired');
+      }
+    } catch (error) {
+      return NextResponse.json(
+        { error: 'Invalid payment intent. error: ' + error },
+        { status: 400 }
+      );
+    }
+    
+    // 3. PROCEED WITH ORDER CREATION
     // Extract relevant data from orderData
     const { items, taxes, customer, shippingCost } = orderData;
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import shippingCalculator from '@/lib/shipping/ShippingCalculator';
 import DrawerCart from '@/components/DrawerCart';
 import { isSessionStorageAvailable } from '@/lib/client-storage';
@@ -26,9 +26,11 @@ export function CartProvider({ children }) {
     }
     return 'shipping';
   });
-  const [shippingLoaded, setShippingLoaded] = useState(false);
+
+  const [shippingInitializing, setShippingInitializing] = useState(false);
+  const [shippingInitialized, setShippingInitialized] = useState(false);
+  const [shippingCost, setShippingCost] = useState(0);
   
-  // New state for booking confirmation
   const [showBookingConfirmation, setShowBookingConfirmation] = useState(false);
   const [pendingBooking, setPendingBooking] = useState(null);
 
@@ -48,19 +50,32 @@ export function CartProvider({ children }) {
     };
 
     loadCart();
+  }, []);
 
-    // Initialize shipping calculator
+  // Initialize shipping calculator lazily
+  useEffect(() => {
     const initShipping = async () => {
-      await shippingCalculator.initialize();
-      setShippingLoaded(true);
+      if (shippingInitializing || shippingInitialized) {
+        return; // Already initializing or initialized
+      }
+      
+      setShippingInitializing(true);
+      
+      try {
+        // Initialize the shipping calculator
+        await shippingCalculator.initialize();
+        setShippingInitialized(true);
+        
+        // Calculate initial shipping cost
+        await updateShippingCost();
+      } catch (error) {
+        console.error('Error initializing shipping calculator:', error);
+      } finally {
+        setShippingInitializing(false);
+      }
     };
     
-    if (initShipping) {
-      console.log("initShipping is not coded yet, see CartContext:50");
-    }
-    
-    //THIS IS NOT READY
-    // initShipping();
+    initShipping();
   }, []);
 
   // Save cart to localStorage whenever it changes
@@ -80,11 +95,16 @@ export function CartProvider({ children }) {
     }
   }, [showFeedback]);
 
+  // Update shipping cost whenever cart, province, or delivery method changes
+  useEffect(() => {
+    if (!isLoading) {
+      updateShippingCost();
+    }
+  }, [cart, province, deliveryMethod, isLoading]);
+
   // Calculate taxes whenever cart or province changes
   useEffect(() => {
     const calculateTaxes = async () => {
-      const shippingCost = getShippingCost();
-
       if (cart.length === 0) {
         setTaxes({
           items: [],
@@ -132,7 +152,28 @@ export function CartProvider({ children }) {
     if (!isLoading && cart.length > 0) {
       calculateTaxes();
     }
-  }, [cart, province, isLoading, deliveryMethod, shippingLoaded]);
+  }, [cart, province, isLoading, deliveryMethod, shippingCost]);
+
+  // Helper function to update shipping cost
+  const updateShippingCost = useCallback(async () => {
+    try {
+      // Calculate shipping cost using the async calculator
+      const cost = await shippingCalculator.calculateShipping(cart, deliveryMethod, province);
+      setShippingCost(cost);
+    } catch (error) {
+      console.error('Error calculating shipping cost:', error);
+      
+      // Fallback: use default calculated costs
+      // Check if there are any non-booking shippable items
+      const shippableItems = cart.some(item => 
+        item.shipping_class !== 'only_pickup' && 
+        item.shipping_class !== 'service_item' && 
+        item.type !== 'mwb_booking'
+      );
+      
+      setShippingCost(shippableItems && deliveryMethod === 'shipping' ? 15 : 0);
+    }
+  }, [cart, deliveryMethod, province]);
 
   // Helper function to check if there's a booking in the cart
   const hasBookingInCart = () => {
@@ -283,29 +324,19 @@ export function CartProvider({ children }) {
   };
 
   const getShippingCost = () => {
-    // If shipping calculator isn't loaded yet, use a default value
-    if (!shippingLoaded) {
-      // Check if there are any non-booking shippable items
-      const shippableItems = cart.some(item => 
-        item.shipping_class !== 'only_pickup' && item.type !== 'mwb_booking'
-      );
-      return shippableItems && deliveryMethod === 'shipping' ? 15 : 0;
-    }
-    
-    // Otherwise, use the shipping calculator
-    return shippingCalculator.calculateShipping(cart, deliveryMethod);
+    // Return the pre-calculated shipping cost
+    return shippingCost;
   };
 
   const getCartTotal = () => {
     const subtotal = getCartSubtotal();
-    const shipping = getShippingCost();
     
     // Return null if there's a tax error, indicating the total can't be calculated
     if (taxError) {
       return null;
     }
     
-    return subtotal + taxes.totalTax + shipping;
+    return subtotal + taxes.totalTax + shippingCost;
   };
 
   const getTotalItems = () => {
@@ -363,6 +394,9 @@ export function CartProvider({ children }) {
       deliveryMethod,
       updateDeliveryMethod,
       canCheckout,
+      // shipping states
+      shippingInitialized,
+      shippingInitializing,
       // New booking confirmation related values
       showBookingConfirmation,
       confirmBookingReplacement,

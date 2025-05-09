@@ -50,7 +50,7 @@ export default function ValidationErrorDisplay({ error }) {
                 {discrepancy.type === 'tax_status' && (
                   <>
                     <strong>{discrepancy.productName}</strong>: 
-                    Le statut de taxe a changé de "{getTaxStatusLabel(discrepancy.clientValue)}" à "{getTaxStatusLabel(discrepancy.actualValue)}"
+                    Le statut de taxe a changé de &quot;{getTaxStatusLabel(discrepancy.clientValue)}&quot; à &quot;{getTaxStatusLabel(discrepancy.actualValue)}&quot;
                   </>
                 )}
                 
@@ -58,7 +58,7 @@ export default function ValidationErrorDisplay({ error }) {
                 {discrepancy.type === 'shipping_class' && (
                   <>
                     <strong>{discrepancy.productName}</strong>: 
-                    La classe d'expédition a changé de "{discrepancy.clientValue || 'standard'}" à "{discrepancy.actualValue || 'standard'}"
+                    La classe d&apos;expédition a changé de &quot;{discrepancy.clientValue || 'standard'}&quot; à &quot;{discrepancy.actualValue || 'standard'}&quot;
                   </>
                 )}
                 
@@ -66,8 +66,8 @@ export default function ValidationErrorDisplay({ error }) {
                 {discrepancy.type === 'shipping_taxable' && (
                   <>
                     <strong>{discrepancy.productName}</strong>: 
-                    Le statut de taxe d'expédition a changé de "{discrepancy.clientValue ? 'Taxable' : 'Non taxable'}" 
-                    à "{discrepancy.actualValue ? 'Taxable' : 'Non taxable'}"
+                    Le statut de taxe d&apos;expédition a changé de &quot;{discrepancy.clientValue ? 'Taxable' : 'Non taxable'}&quot; 
+                    à &quot;{discrepancy.actualValue ? 'Taxable' : 'Non taxable'}&quot;
                   </>
                 )}
                 
@@ -75,8 +75,8 @@ export default function ValidationErrorDisplay({ error }) {
                 {discrepancy.type === 'stock_status' && (
                   <>
                     <strong>{discrepancy.productName}</strong>: 
-                    Le statut de stock a changé de "{getStockStatusLabel(discrepancy.clientValue)}" 
-                    à "{getStockStatusLabel(discrepancy.actualValue)}"
+                    Le statut de stock a changé de &quot;{getStockStatusLabel(discrepancy.clientValue)}&quot; 
+                    à &quot;{getStockStatusLabel(discrepancy.actualValue)}&quot;
                   </>
                 )}
                 
@@ -100,7 +100,7 @@ export default function ValidationErrorDisplay({ error }) {
                 {discrepancy.type === 'product_type' && (
                   <>
                     <strong>{discrepancy.productName}</strong>: 
-                    Le type de produit a changé de "{discrepancy.clientValue}" à "{discrepancy.actualValue}"
+                    Le type de produit a changé de &quot;{discrepancy.clientValue}&quot; à &quot;{discrepancy.actualValue}&quot;
                   </>
                 )}
                 

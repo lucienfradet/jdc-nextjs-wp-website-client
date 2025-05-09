@@ -33,7 +33,8 @@ const PaymentPageContent = ({
     createPaymentIntent, 
     paymentStatus,
     orderNumber,
-    paymentError
+    paymentError,
+    setPaymentError
   } = useStripeContext();
 
   // Load saved form data from session storage
@@ -147,7 +148,9 @@ const PaymentPageContent = ({
         }, 2000);
     } catch (error) {
       console.error('Error completing order:', error);
-      setPaymentError(error.message || 'Une erreur est survenue lors du traitement de votre commande');
+      if (setPaymentError) {
+        setPaymentError(error.message || 'Une erreur est survenue lors du traitement de votre commande');
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -163,7 +166,10 @@ const PaymentPageContent = ({
   // Handle payment error
   const handlePaymentError = (error) => {
     console.error('Payment error:', error);
-    setPaymentError(error.message || 'Une erreur est survenue lors du paiement');
+    // Only call this if setPaymentError is available from context
+    if (setPaymentError) {
+      setPaymentError(error);
+    }
     setIsSubmitting(false);
   };
 
