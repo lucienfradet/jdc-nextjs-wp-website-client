@@ -1,6 +1,7 @@
 import { fetchWooProductById } from "@/lib/wooCommerce";
+import { withRateLimit } from "@/lib/rateLimiter";
 
-export async function GET(request, { params }) {
+async function handleGetRequest(request, { params }) {
   try {
     const { id } = await params;
     const response = await fetchWooProductById(id);
@@ -15,3 +16,5 @@ export async function GET(request, { params }) {
     return Response.json({ error: error.message }, { status: 500 });
   }
 }
+
+export const GET = withRateLimit(handleGetRequest, 'products');

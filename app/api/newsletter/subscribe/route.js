@@ -1,4 +1,6 @@
-export async function POST(request) {
+import { withRateLimit } from '@/lib/rateLimiter';
+
+async function handlePostRequest(request) {
   try {
     const { email, firstName, lastName, listIds } = await request.json();
     
@@ -96,3 +98,5 @@ export async function POST(request) {
     }, { status: 500 });
   }
 }
+
+export const POST = withRateLimit(handlePostRequest, 'newsletter');

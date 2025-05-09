@@ -1,7 +1,8 @@
 import { fetchTaxRates } from '@/lib/wooCommerce';
 import { getTaxLabels } from '@/lib/taxUtils';
+import { withRateLimit } from '@/lib/rateLimiter';
 
-export async function POST(request) {
+async function handlePostRequest(request) {
   try {
     // Get request body (cart items and province)
     const { items, province, shipping } = await request.json();
@@ -103,3 +104,5 @@ export async function POST(request) {
     }, { status: 500 });
   }
 }
+
+export const POST = withRateLimit(handlePostRequest, 'products');

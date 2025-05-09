@@ -1,5 +1,6 @@
 import prisma from '@/lib/prisma';
 import { fetchMaxBookingPerSlot } from '@/lib/wooCommerce';
+import { withRateLimit } from '@/lib/rateLimiter';
 
 // Simple in-memory cache
 // Set to 0 because causes problems if users try to order within 5 minute of each other
@@ -10,44 +11,8 @@ const availabilityCache = {
   cacheDuration: 0
 };
 
-// Rate limiting variables
-const rateLimits = {
-  windowMs: 60 * 1000, // 1 minute window
-  maxRequests: 25,     // 10 requests per window
-  clients: {}
-};
-
-// Function to check rate limit
-function checkRateLimit(ip) {
-  const now = Date.now();
-  
-  // Initialize or clean up old entries
-  if (!rateLimits.clients[ip] || rateLimits.clients[ip].resetAt < now) {
-    rateLimits.clients[ip] = {
-      count: 0,
-      resetAt: now + rateLimits.windowMs
-    };
-  }
-  
-  // Increment count
-  rateLimits.clients[ip].count += 1;
-  
-  // Check if limit exceeded
-  return rateLimits.clients[ip].count <= rateLimits.maxRequests;
-}
-
-export async function POST(request) {
+async function handlePostRequest(request) {
   try {
-    // Basic rate limiting - get IP from request headers
-    const ip = request.headers.get('x-forwarded-for') || 'unknown';
-    
-    if (!checkRateLimit(ip)) {
-      return Response.json(
-        { error: 'Too many requests, please try again later' },
-        { status: 429 }
-      );
-    }
-    
     const { productId, date } = await request.json();
     
     if (!productId || !date) {
@@ -152,3 +117,7 @@ export async function POST(request) {
     }, { status: 500 });
   }
 }
+
+// Apply the rate limiter to the POST handler function
+// Use 'booking' as the key to apply the appropriate rate limit for booking endpoints
+export const POST = withRateLimit(handlePostRequest, 'booking');

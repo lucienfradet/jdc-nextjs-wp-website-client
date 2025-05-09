@@ -1,4 +1,5 @@
 import { axiosInstance } from '@/lib/sslConfig';
+import { withRateLimit } from '@/lib/rateLimiter';
 
 const API_URL = `${process.env.NEXT_PUBLIC_WORDPRESS_BASE_URL}wp-json/wc/v3`;
 const WOOCOMMERCE_CONSUMER_KEY = process.env.WOOCOMMERCE_CONSUMER_KEY;
@@ -18,7 +19,7 @@ const shippingCache = {
   }
 };
 
-export async function POST(request) {
+async function handlePostRequest(request) {
   try {
     // Get the cart items, delivery method, and province from the request
     const { cart, deliveryMethod = 'shipping', province = 'QC' } = await request.json();
@@ -253,3 +254,5 @@ function calculateShipping(cart, province = 'QC') {
   
   return highestRate;
 }
+
+export const POST = withRateLimit(handlePostRequest, 'products');

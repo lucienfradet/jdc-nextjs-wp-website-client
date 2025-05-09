@@ -190,3 +190,10 @@ chmod 600 .env*
 The /lib/shipping/ShippingCalculator has a basic implementation.
 Right now, it checks for the province flat rate and use that. If no flat rate found, it uses the default 15$
 For real implementation, would need much more, but should discuss the need with JDC.
+
+### nextjs cron
+There is a route in ```./app/api/cron/cleanup-expired-intents/route.js``` that
+is used to cleanup ValidatedPaymentIntent that have expired
+
+It is being called using `CRON_SECRET_KEY` in the header by the cron container.
+

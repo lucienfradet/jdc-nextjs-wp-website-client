@@ -1,8 +1,9 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import Stripe from 'stripe';
+import { withRateLimit } from '@/lib/rateLimiter';
 
-export async function POST(request) {
+async function handlePostRequest(request) {
   try {
     const body = await request.json();
     const { orderNumber, orderData, paymentIntentId } = body;
@@ -198,3 +199,6 @@ export async function POST(request) {
     );
   }
 }
+
+// Apply the rate limiter with the 'payment' key for payment-specific rate limits
+export const POST = withRateLimit(handlePostRequest, 'payment');

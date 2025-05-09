@@ -1,6 +1,7 @@
 import Stripe from "stripe";
 import prisma from '@/lib/prisma';
 import { validateOrderData } from "@/lib/wooCommerce";
+import { withRateLimit } from '@/lib/rateLimiter';
 
 // Generate a unique order number (format: JDC-YYYYMMDD-XXXX)
 const generateOrderNumber = () => {
@@ -14,7 +15,7 @@ const generateOrderNumber = () => {
   return `${prefix}-${dateStr}-${randomNum}`;
 };
 
-export async function POST(request) {
+async function handlePostRequest(request) {
   try {
     // Initialize Stripe with secret key
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
@@ -105,3 +106,6 @@ export async function POST(request) {
     }, { status: 500 });
   }
 }
+
+// Apply the rate limiter with the 'payment' key for payment-specific rate limits
+export const POST = withRateLimit(handlePostRequest, 'payment');

@@ -38,6 +38,9 @@ export default function BookingDetailPage({ headerData, footerData, product }) {
   const [allAvailabilityData, setAllAvailabilityData] = useState({});
   const [unavailableDates, setUnavailableDates] = useState([]);
 
+  // Add rate limit state
+  const [isRateLimited, setIsRateLimited] = useState(false);
+
   // Parse available dates and time slots from product metadata
   const availableDates = parseAvailableDates(product);
   const timeSlots = parseTimeSlots(product);
@@ -90,20 +93,40 @@ export default function BookingDetailPage({ headerData, footerData, product }) {
       }
       
       setIsLoadingAllAvailability(true);
+      setIsRateLimited(false); // Reset rate limit state when starting a new fetch
       
       try {
         // Create an array of promises to fetch availability for each date
         const availabilityPromises = availableDates.map(async (date) => {
           const formattedDate = formatDate(date);
-          return fetch('/api/booking/availability', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              productId: product.id,
-              date: formattedDate
-            }),
-          }).then(res => res.json());
+          try {
+            const response = await fetch('/api/booking/availability', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                productId: product.id,
+                date: formattedDate
+              }),
+            });
+            
+            // Check if we hit rate limit
+            if (response.status === 429) {
+              setIsRateLimited(true);
+              throw new Error('Rate limited');
+            }
+            
+            return await response.json();
+          } catch (error) {
+            console.error(`Error fetching availability for date ${formattedDate}:`, error);
+            // Return empty availability for this date
+            return { availability: [] };
+          }
         });
+        
+        // If already rate limited, don't try to resolve all promises
+        if (isRateLimited) {
+          return;
+        }
         
         // Wait for all promises to resolve
         const results = await Promise.all(availabilityPromises);
@@ -139,6 +162,9 @@ export default function BookingDetailPage({ headerData, footerData, product }) {
         setUnavailableDates(unavailableDatesArray);
       } catch (error) {
         console.error('Error fetching all availability data:', error);
+        if (error.message === 'Rate limited') {
+          setIsRateLimited(true);
+        }
       } finally {
         setIsLoadingAllAvailability(false);
       }
@@ -146,6 +172,11 @@ export default function BookingDetailPage({ headerData, footerData, product }) {
     
     fetchAllAvailability();
   }, []);
+
+  // Function to retry after rate limit
+  const handleRetry = () => {
+    window.location.reload();
+  };
 
   // Function to handle date selection
   const handleDateSelect = (date) => {
@@ -251,7 +282,7 @@ export default function BookingDetailPage({ headerData, footerData, product }) {
       };
 
       // Add to cart with the selected quantity and callbacks for success/cancel
-      const success = addToCart(bookingProduct, people, {
+      addToCart(bookingProduct, people, {
         onSuccess: () => {
           // Only redirect if add was successful and no confirmation needed
           router.push('/checkout');
@@ -386,7 +417,7 @@ export default function BookingDetailPage({ headerData, footerData, product }) {
             
             {isOutOfStock ? (
               <div className={styles.bookingNotAvailable}>
-                <p>Désolé, cette visite n'est pas disponible pour le moment.</p>
+                <p>Désolé, cette visite n&aapos;est pas disponible pour le moment.</p>
                 <p>Veuillez consulter nos autres visites ou revenir ultérieurement.</p>
               </div>
             ) : (
@@ -397,7 +428,17 @@ export default function BookingDetailPage({ headerData, footerData, product }) {
                     <div className={styles.loadingMessage}>
                       Chargement des disponibilités...
                     </div>
-                  ) : (
+                    ) : isRateLimited ? (
+                        <div className={styles.errorMessage}>
+                          Trop de requêtes. Veuillez attendre 1 minute avant de réessayer.
+                          <button 
+                            className={styles.retryButton}
+                            onClick={handleRetry}
+                          >
+                            Réessayer
+                          </button>
+                        </div>
+                      ) : (
                     <BookingCalendar 
                       availableDates={availableDates}
                       unavailableDates={unavailableDates}
