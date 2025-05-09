@@ -26,14 +26,14 @@ const PaymentPageContent = ({
   const [deliveryMethod, setDeliveryMethod] = useState('shipping');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [orderComplete, setOrderComplete] = useState(false);
-  const [paymentError, setPaymentError] = useState(null);
 
   // Get stripe context
   const { 
     clientSecret, 
     createPaymentIntent, 
     paymentStatus,
-    orderNumber
+    orderNumber,
+    paymentError
   } = useStripeContext();
 
   // Load saved form data from session storage

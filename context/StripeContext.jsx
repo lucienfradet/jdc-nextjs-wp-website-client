@@ -32,6 +32,8 @@ export function StripeProvider({ children }) {
         total: amount
       };
 
+      console.log(taxes)
+
       const response = await fetch('/api/stripe/create-payment-intent', {
         method: 'POST',
         headers: {
@@ -43,25 +45,38 @@ export function StripeProvider({ children }) {
           paymentMethodType: 'card',
           metadata,
           idempotencyKey: metadata.order_number,
-          orderData: fullOrderData // Send the full order data for validation
+          orderData: fullOrderData
         }),
       });
 
+      // First parse the response JSON regardless of status code
       const data = await response.json();
       
-      // Handle validation errors
-      if (data.validationFailed) {
+      // Check if the request was not successful (non-200 status)
+      if (!response.ok) {
+        // Handle validation errors - these come with a 400 status code
+        if (data.validationFailed) {
+          console.log('Validation error detected:', data);
+          setPaymentStatus('error');
+          setPaymentError({
+            type: 'validation',
+            message: data.error || 'Validation failed',
+            discrepancies: data.discrepancies || [],
+            details: data.details || 'The prices may have changed since you added items to your cart.'
+          });
+          return false;
+        }
+        
+        // Handle other API errors
         setPaymentStatus('error');
         setPaymentError({
-          type: 'validation',
-          message: data.error || 'Validation failed',
-          discrepancies: data.discrepancies || [],
-          details: data.details || 'The prices may have changed since you added items to your cart.'
+          type: 'general',
+          message: data.error || `Request failed with status ${response.status}`
         });
         return false;
       }
       
-      // Handle other errors
+      // Handle any errors in the response body (even if status was 200)
       if (data.error) {
         setPaymentStatus('error');
         setPaymentError({
