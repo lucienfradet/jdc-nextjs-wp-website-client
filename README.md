@@ -185,3 +185,12 @@ chmod 600 .env*
 ### Server security
 - ufw
 - fail2ban
+
+### Shipping and shop future implementations
+The /lib/shipping/ShippingCalculator is just a place holder for now.
+I would need to discuss how they want to do their shipping, fix rates, rates per item and shippable zones etc.
+Right now, I have place holder cost of 15$ in different locations:
+- ./context/CartContext.jsx
+- ./lib/wooCommerce.js (ValidateOrderData 6.)
+
+For now, no items will have shipping options...
