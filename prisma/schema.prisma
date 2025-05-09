@@ -122,3 +122,15 @@ model PickupLocation {
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt
 }
+
+model ValidatedPaymentIntent {
+  id                String    @id @default(uuid())
+  paymentIntentId   String    @unique
+  orderNumber       String    
+  validatedData     String    @db.Text  // JSON with validated order data
+  expiresAt         DateTime
+  createdAt         DateTime  @default(now())
+
+  @@index([paymentIntentId])
+  @@index([expiresAt]) // For cleanup queries
+}

@@ -49,8 +49,8 @@ export async function POST(request) {
       // Optional: Check payment intent is not too old (e.g., 1 hour max)
       const createdDate = new Date(paymentIntent.created * 1000);
       const now = new Date();
-      // const hoursDiff = (now - createdDate) / (1000 * 60 * 60);
-      const hoursDiff = (now - createdDate) / (1000 * 60 * 60);
+      // const hoursDiff = (now - createdDate) / (1000 * 60 * 59);
+      const hoursDiff = (now - createdDate) / (1000 * 60 * 59);
       
       if (hoursDiff > 1) {
         throw new Error("Le formulaire de paiement a expiré. Veuillez actualiser la page et recommencer.");
@@ -61,10 +61,28 @@ export async function POST(request) {
         { status: 400 }
       );
     }
+
+    // 3. Fetch validated orderData
+    const validatedIntent = await prisma.validatedPaymentIntent.findUnique({
+      where: { paymentIntentId: paymentIntentId }
+    });
+
+    if (!validatedIntent) {
+      console.warn(`No validated data found for payment intent: ${paymentIntentId}`);
+      return NextResponse.json(
+        { error: 'La validation de commande a échoué. Veuillez réessayer.' },
+        { status: 400 }
+      );
+    }
+
+    // Use the validated data instead of client-provided data
+    const validatedOrderData = JSON.parse(validatedIntent.validatedData);
+
+    const { items, taxes, shippingCost } = validatedOrderData;
     
-    // 3. PROCEED WITH ORDER CREATION
+    // 4. PROCEED WITH ORDER CREATION
     // Extract relevant data from orderData
-    const { items, taxes, customer, shippingCost } = orderData;
+    const customer = orderData.customer; // Still use customer info from orderData
 
     // Always create a new customer record for each order
     const dbCustomer = await prisma.customer.create({

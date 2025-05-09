@@ -1,4 +1,5 @@
 import Stripe from "stripe";
+import prisma from '@/lib/prisma';
 import { validateOrderData } from "@/lib/wooCommerce";
 
 // Generate a unique order number (format: JDC-YYYYMMDD-XXXX)
@@ -77,6 +78,18 @@ export async function POST(request) {
     });
 
     console.log("New payment intent created with validated amount:", validatedAmount);
+
+    // Store the validated data in our database for future reference
+    await prisma.validatedPaymentIntent.create({
+      data: {
+        paymentIntentId: paymentIntent.id,
+        orderNumber: orderNumber,
+        validatedData: JSON.stringify(validationResult.validatedData),
+        expiresAt: new Date(Date.now() + 60 * 60 * 1000) // 1 hour from now
+      }
+    });
+
+    console.log(`Stored validated data for payment intent: ${paymentIntent.id}`);
 
     // Return the client secret to the client, along with validation information
     return Response.json({
