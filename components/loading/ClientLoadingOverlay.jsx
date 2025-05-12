@@ -5,7 +5,7 @@ const ClientLoadingOverlay = ({ minLoadTime = 500, onLoadingComplete }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    console.log(`Loading with minLoadTime: ${minLoadTime}ms`);
+    // console.log(`Loading with minLoadTime: ${minLoadTime}ms`);
     
     // Clear any existing classes first to avoid conflicts
     document.body.classList.remove('page-loaded');
@@ -14,7 +14,7 @@ const ClientLoadingOverlay = ({ minLoadTime = 500, onLoadingComplete }) => {
     
     // Don't remove overlay until animations have completed
     const revealTimer = setTimeout(() => {
-      console.log("Starting reveal animation");
+      // console.log("Starting reveal animation");
       
       // Add loaded class and remove loading class
       document.body.classList.add('page-loaded');
@@ -22,7 +22,7 @@ const ClientLoadingOverlay = ({ minLoadTime = 500, onLoadingComplete }) => {
       
       // Wait for all animations to complete before removing overlay
       const completeTimer = setTimeout(() => {
-        console.log("Animation complete, removing overlay");
+        // console.log("Animation complete, removing overlay");
         setLoading(false);
         
         // Notify parent component that loading is truly complete
