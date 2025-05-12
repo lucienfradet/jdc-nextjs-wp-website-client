@@ -1,4 +1,5 @@
 import { withRateLimit } from '@/lib/rateLimiter';
+import { withCsrfProtection } from '@/lib/csrf-server';
 
 async function handlePostRequest(request) {
   try {
@@ -44,4 +45,4 @@ async function handlePostRequest(request) {
   }
 }
 
-export const POST = withRateLimit(handlePostRequest, 'newsletter');
+export const POST = withRateLimit(withCsrfProtection(handlePostRequest), 'newsletter');

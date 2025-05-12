@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import styles from '@/styles/checkout/PaymentPage.module.css';
 import { useCart } from '@/context/CartContext';
+import { useCsrf } from '@/context/CsrfContext';
 import { StripeProvider, useStripe as useStripeContext } from '@/context/StripeContext';
 import StripePaymentForm from '@/components/checkout/StripePaymentForm';
 import OrderSummary from '@/components/checkout/OrderSummary';
@@ -13,6 +14,7 @@ import MobileHeader from "@/components/mobile/Header";
 import DesktopFooter from "@/components/desktop/Footer";
 import MobileFooter from "@/components/mobile/Footer";
 import ValidationErrorDisplay from '@/components/checkout/ValidationErrorDisplay';
+import CsrfTokenField from '@/components/form/CsrfTokenField';
 
 const PaymentPageContent = ({ 
   headerData,
@@ -22,10 +24,12 @@ const PaymentPageContent = ({
   const router = useRouter();
   const [isMobile, setIsMobile] = useState(false);
   const { cart, taxes, getShippingCost, getCartTotal, updateProvince, updateDeliveryMethod } = useCart();
+  const { csrfToken, isLoading: csrfLoading } = useCsrf();
   const [customerData, setCustomerData] = useState(null);
   const [deliveryMethod, setDeliveryMethod] = useState('shipping');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [orderComplete, setOrderComplete] = useState(false);
+  const [csrfError, setCsrfError] = useState(false);
 
   // Get stripe context
   const { 
@@ -44,6 +48,13 @@ const PaymentPageContent = ({
         const formData = sessionStorage.getItem('checkoutFormData');
         const paymentMethod = sessionStorage.getItem('checkoutPaymentMethod');
         const savedDeliveryMethod = sessionStorage.getItem('deliveryMethod');
+        const savedCsrfToken = sessionStorage.getItem('csrfToken');
+
+        // Verify CSRF token presence
+        if (!csrfToken && !savedCsrfToken) {
+          setCsrfError(true);
+          return;
+        }
 
         if (!formData || paymentMethod !== 'stripe') {
           // If no form data or if payment method isn't stripe, redirect back to checkout
@@ -71,7 +82,7 @@ const PaymentPageContent = ({
     }
 
     fetchData();
-  }, [router, updateProvince, updateDeliveryMethod]);
+  }, [router, updateProvince, updateDeliveryMethod, csrfToken]);
 
   // Mobile detection
   useEffect(() => {
@@ -91,7 +102,7 @@ const PaymentPageContent = ({
   useEffect(() => {
     const initializeStripePayment = async () => {
       // Only proceed if we haven't already created a payment intent
-      if (cart.length > 0 && !clientSecret && customerData && !orderNumber) {
+      if (cart.length > 0 && !clientSecret && customerData && !orderNumber && csrfToken) {
         // check if pointDeChute needs to be sent
         let selectedPoint = undefined;
         if (pointDeChute && deliveryMethod !== 'shipping') {
@@ -128,7 +139,7 @@ const PaymentPageContent = ({
     };
     
     initializeStripePayment();
-  }, [customerData, clientSecret, cart, taxes, getShippingCost]);
+  }, [customerData, clientSecret, cart, taxes, getShippingCost, csrfToken]);
 
   // Handle successful payment
   const handlePaymentComplete = async () => {
@@ -139,6 +150,7 @@ const PaymentPageContent = ({
         sessionStorage.removeItem('checkoutFormData');
         sessionStorage.removeItem('checkoutPaymentMethod');
         sessionStorage.removeItem('deliveryMethod');
+        sessionStorage.removeItem('csrfToken');
 
         setOrderComplete(true);
         
@@ -173,6 +185,18 @@ const PaymentPageContent = ({
     setIsSubmitting(false);
   };
 
+  if (csrfError) {
+    return (
+      <div className={styles.csrfError}>
+        <h2>Erreur de sécurité</h2>
+        <p>Votre session a expiré ou n'est pas valide. Veuillez retourner à la page de paiement et réessayer.</p>
+        <Link href="/checkout" className={styles.backLink}>
+          Retour au formulaire de paiement
+        </Link>
+      </div>
+    );
+  }
+
   if (cart.length === 0 && !orderComplete) {
     return <div className={styles.emptyCart}>Votre panier est vide</div>;
   }
@@ -186,7 +210,7 @@ const PaymentPageContent = ({
     );
   }
 
-  if (!customerData || isSubmitting) {
+  if (!customerData || isSubmitting || csrfLoading) {
     // Return null instead of a loading indicator, 
     // the LoadingWrapper will handle the loading UI
     return null;
@@ -274,25 +298,30 @@ const PaymentPageContent = ({
             <div className={styles.stripeContainer}>
               <h2>Paiement sécurisé</h2>
 
-              {/* Show validation errors if present */}
-              {paymentError && paymentError.type === 'validation' ? (
-                <ValidationErrorDisplay error={paymentError} />
-              ) : clientSecret ? (
-                  <StripePaymentForm
-                    onPaymentComplete={handlePaymentComplete}
-                    onError={handlePaymentError}
-                    isSubmitting={isSubmitting}
-                  />
-                ) : (
-                    <div className={styles.loadingMessage}>
-                      Préparation du formulaire de paiement...
-                      {paymentError && paymentError.type !== 'validation' && (
-                        <div className={styles.errorMessage}>
-                          {paymentError.message}
-                        </div>
-                      )}
-                    </div>
-                  )}
+              <form id="payment-form">
+                {/* Add hidden CSRF token field */}
+                <CsrfTokenField />
+
+                {/* Show validation errors if present */}
+                {paymentError && paymentError.type === 'validation' ? (
+                  <ValidationErrorDisplay error={paymentError} />
+                ) : clientSecret ? (
+                    <StripePaymentForm
+                      onPaymentComplete={handlePaymentComplete}
+                      onError={handlePaymentError}
+                      isSubmitting={isSubmitting}
+                    />
+                  ) : (
+                      <div className={styles.loadingMessage}>
+                        Préparation du formulaire de paiement...
+                        {paymentError && paymentError.type !== 'validation' && (
+                          <div className={styles.errorMessage}>
+                            {paymentError.message}
+                          </div>
+                        )}
+                      </div>
+                    )}
+              </form>
 
               <div className={styles.securePaymentInfo}>
                 <div className={styles.secureIcon}>

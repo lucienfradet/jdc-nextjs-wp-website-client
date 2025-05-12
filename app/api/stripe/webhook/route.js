@@ -1,6 +1,9 @@
 import Stripe from 'stripe';
 import { headers } from 'next/headers';
 
+// Note: We don't apply CSRF protection to webhooks, as they are authenticated
+// via the Stripe signature header and don't originate from the browser
+
 export async function POST(request) {
   try {
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
@@ -66,10 +69,16 @@ async function handlePaymentSucceeded(paymentIntent) {
   
   try {
     // Call the API to update the order status
+    // Note: We skip CSRF protection here because this is a server-to-server request
+    // and Stripe webhooks are authenticated via the signature header
     const response = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/orders/update-succeeded`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        // Add a special header to indicate this is a webhook request
+        'X-Webhook-Source': 'stripe',
+        // Add an API key as an additional security measure
+        'X-API-Key': process.env.WEBHOOK_API_KEY || ''
       },
       body: JSON.stringify({
         orderNumber,
@@ -108,10 +117,16 @@ async function handlePaymentFailed(paymentIntent) {
   
   try {
     // Call the API to update the order status
+    // Note: We skip CSRF protection here because this is a server-to-server request
+    // and Stripe webhooks are authenticated via the signature header
     const response = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/orders/update-failed`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        // Add a special header to indicate this is a webhook request
+        'X-Webhook-Source': 'stripe',
+        // Add an API key as an additional security measure
+        'X-API-Key': process.env.WEBHOOK_API_KEY || ''
       },
       body: JSON.stringify({
         orderNumber,

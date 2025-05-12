@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import Stripe from 'stripe';
 import { withRateLimit } from '@/lib/rateLimiter';
+import { withCsrfProtection } from '@/lib/csrf-server';
 
 async function handlePostRequest(request) {
   try {
@@ -201,4 +202,4 @@ async function handlePostRequest(request) {
 }
 
 // Apply the rate limiter with the 'payment' key for payment-specific rate limits
-export const POST = withRateLimit(handlePostRequest, 'payment');
+export const POST = withRateLimit(withCsrfProtection(handlePostRequest), 'payment');

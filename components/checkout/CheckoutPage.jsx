@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import styles from '@/styles/checkout/CheckoutPage.module.css';
 import { useCart } from '@/context/CartContext';
+import { useCsrf } from '@/context/CsrfContext';
 import CheckoutForm from '@/components/checkout/CheckoutForm';
 import OrderSummary from '@/components/checkout/OrderSummary';
 import PaymentSelector from '@/components/checkout/PaymentSelector';
@@ -30,6 +31,7 @@ export default function CheckoutPage({
     updateProvince, 
     updateDeliveryMethod 
   } = useCart();
+  const { csrfToken, isLoading: csrfLoading } = useCsrf();
   const [hasShippableItems, setHasShippableItems] = useState(false);
   const [formData, setFormData] = useState({});
   const [formErrors, setFormErrors] = useState({});
@@ -147,6 +149,14 @@ export default function CheckoutPage({
   const handleSubmit = async (e) => {
     e.preventDefault();
     
+    // Check if CSRF token is ready
+    if (csrfLoading || !csrfToken) {
+      setFormErrors({
+        submission: 'Veuillez patienter pendant que nous sécurisons votre session.'
+      });
+      return;
+    }
+    
     // Check if checkout is allowed (no tax errors)
     if (!canCheckout()) {
       setFormErrors({
@@ -183,6 +193,7 @@ export default function CheckoutPage({
       sessionStorage.setItem('checkoutFormData', JSON.stringify(formData));
       sessionStorage.setItem('checkoutPaymentMethod', paymentMethod);
       sessionStorage.setItem('deliveryMethod', deliveryMethod);
+      sessionStorage.setItem('csrfToken', csrfToken); // Store CSRF token
       
       // Redirect to the payment page
       router.push('/payment');
@@ -226,6 +237,9 @@ export default function CheckoutPage({
         )}
 
         <form onSubmit={handleSubmit} className={styles.checkoutForm}>
+          {/* Add hidden CSRF token input */}
+          <input type="hidden" name="csrf_token" value={csrfToken || ''} />
+          
           <div className={styles.checkoutColumns}>
             <div className={styles.formColumn}>
               {/* Payment Method Selection - Moved to the top */}
@@ -261,9 +275,9 @@ export default function CheckoutPage({
                   <button 
                     type="submit" 
                     className={styles.submitButton}
-                    disabled={isSubmitting || !canCheckout()}
+                    disabled={isSubmitting || !canCheckout() || csrfLoading}
                   >
-                    {isSubmitting ? 'Traitement en cours...' : 'Confirmer la commande'}
+                    {isSubmitting ? 'Traitement en cours...' : (csrfLoading ? 'Sécurisation...' : 'Confirmer la commande')}
                   </button>
                 )}
 

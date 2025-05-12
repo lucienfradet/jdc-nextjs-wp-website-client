@@ -1,4 +1,5 @@
 import { withRateLimit } from '@/lib/rateLimiter';
+import { withCsrfProtection } from '@/lib/csrf-server';
 
 async function handlePostRequest(request) {
   try {
@@ -82,7 +83,7 @@ async function handlePostRequest(request) {
       console.error('Newsletter subscription error:', data);
       return Response.json({ 
         success: false, 
-        message: data.message || 'Échec de l\'abonnement à la newsletter' 
+        message: data.message || "Échec de l'abonnement à la newsletter"
       }, { status: response.status });
     }
     
@@ -99,4 +100,4 @@ async function handlePostRequest(request) {
   }
 }
 
-export const POST = withRateLimit(handlePostRequest, 'newsletter');
+export const POST = withRateLimit(withCsrfProtection(handlePostRequest), 'newsletter');

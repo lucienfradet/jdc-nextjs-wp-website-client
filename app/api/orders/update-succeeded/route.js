@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { createWooCommerceOrder } from '@/lib/wooCommerce';
-
+import { withCsrfProtection } from '@/lib/csrf-server';
+import { withWebhookOrCsrfProtection } from '@/lib/webhookAuth';
 
 // Here a strategy put in place in order to make sure the db had time to create the
 // pending order before the webhook returns
@@ -15,7 +16,7 @@ const INITIAL_DELAY = 500;
 // Maximum delay in milliseconds (8 seconds)
 const MAX_DELAY = 8000;
 
-export async function POST(request) {
+async function handlePostRequest(request) {
   try {
     const body = await request.json();
     const { orderNumber, paymentIntentId, paymentData } = body;
@@ -131,3 +132,6 @@ export async function POST(request) {
     );
   }
 }
+
+// Apply CSRF protection or accept webhook requests without CSRF
+export const POST = withWebhookOrCsrfProtection(handlePostRequest, withCsrfProtection);

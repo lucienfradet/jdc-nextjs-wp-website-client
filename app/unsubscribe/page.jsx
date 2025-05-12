@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
+import { useCsrf } from '@/context/CsrfContext';
 import styles from '@/styles/Unsubscribe.module.css';
 
 export default function UnsubscribePage() {
@@ -10,34 +11,42 @@ export default function UnsubscribePage() {
   const [message, setMessage] = useState('');
   const [showForm, setShowForm] = useState(true);
   const searchParams = useSearchParams();
+  const { csrfToken, isLoading: csrfLoading } = useCsrf();
 
   useEffect(() => {
-    // Vérifier si l'email est fourni dans l'URL
+    // Check if email is provided in the URL
     const emailParam = searchParams.get('email');
 
     if (emailParam) {
       setEmail(emailParam);
 
-      // Si l'email est fourni et valide, traitement automatique
-      if (/^\S+@\S+\.\S+$/.test(emailParam)) {
+      // If email is provided and valid, process automatically
+      if (!csrfLoading && csrfToken && /^\S+@\S+\.\S+$/.test(emailParam)) {
         handleUnsubscribe(emailParam);
-        setShowForm(false); // Masquer le formulaire pendant le traitement automatique
+        setShowForm(false); // Hide the form during automatic processing
       }
     }
-  }, [searchParams]);
+  }, [searchParams, csrfToken, csrfLoading]);
 
   const handleUnsubscribe = async (emailToUse, token = null) => {
-    // Utiliser l'email passé ou l'email d'état
+    // Use passed email or state email
     const emailValue = emailToUse || email;
 
-    // Valider l'email
+    // Validate email
     if (!emailValue || !/^\S+@\S+\.\S+$/.test(emailValue)) {
       setStatus('error');
       setMessage('Veuillez entrer une adresse email valide');
       return;
     }
 
-    // Définir l'état de chargement
+    // Don't submit if CSRF token is not yet loaded
+    if (csrfLoading || !csrfToken) {
+      setStatus('error');
+      setMessage('Veuillez patienter, sécurisation de la connexion en cours...');
+      return;
+    }
+
+    // Set loading state
     setStatus('loading');
     setMessage('');
 
@@ -46,24 +55,26 @@ export default function UnsubscribePage() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'X-CSRF-Token': csrfToken
         },
         body: JSON.stringify({ 
           email: emailValue,
-          token 
+          token, 
+          csrf_token: csrfToken // Include in body as well for compatibility
         }),
       });
 
       const data = await response.json();
 
-      // Toujours afficher un message de succès pour des raisons de confidentialité,
-      // même si l'email n'existe pas
+      // Always show success message for privacy reasons,
+      // even if the email doesn't exist
       setStatus('success');
       setMessage(data.message || 'Vous avez été désabonné avec succès');
     } catch (error) {
       setStatus('error');
       setMessage('Une erreur est survenue. Veuillez réessayer.');
       console.log(error);
-      // Afficher à nouveau le formulaire en cas d'erreur
+      // Show the form again in case of error
       setShowForm(true);
     }
   };
@@ -75,7 +86,7 @@ export default function UnsubscribePage() {
 
   return (
     <div className={styles.unsubscribeContainer}>
-      <h1 className={styles.title}>Se désabonner de l'infolettre</h1>
+      <h1 className={styles.title}>Se désabonner de l&apos;infolettre</h1>
 
       {status === 'success' ? (
         <div className={styles.successMessage}>
@@ -124,7 +135,7 @@ export default function UnsubscribePage() {
                   <button 
                     type="submit" 
                     className={styles.button}
-                    disabled={status === 'loading'}
+                    disabled={status === 'loading' || csrfLoading}
                   >
                     {status === 'loading' ? 'Traitement...' : 'Se désabonner'}
                   </button>

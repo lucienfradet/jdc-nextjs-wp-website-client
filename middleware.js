@@ -60,6 +60,23 @@ export function middleware(request) {
     response.headers.set(key, value);
   });
 
+  // Enable CORS headers for CSRF token usage
+  response.headers.append('Access-Control-Allow-Credentials', 'true');
+  response.headers.append('Access-Control-Allow-Origin', process.env.NEXT_PUBLIC_SITE_URL || '*');
+  response.headers.append('Access-Control-Allow-Methods', 'GET,DELETE,PATCH,POST,PUT');
+  response.headers.append(
+    'Access-Control-Allow-Headers',
+    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
+  );
+
+  // Handle OPTIONS request for CORS preflight
+  if (request.method === 'OPTIONS') {
+    return new Response(null, {
+      status: 200,
+      headers: response.headers,
+    });
+  }
+
   return response;
 }
 

@@ -1,5 +1,6 @@
 import '@/styles/globals.css';
 import { CartProvider } from '@/context/CartContext';
+import { CsrfProvider } from '@/context/CsrfContext';
 import { Suspense } from 'react';
 import Loading from '@/components/loading/Loading';
 import { fetchSiteIcon } from '@/lib/api';
@@ -46,9 +47,11 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body>
         <Suspense fallback={<Loading />}>
-          <CartProvider>
-            {children}
-          </CartProvider>
+          <CsrfProvider>
+            <CartProvider>
+              {children}
+            </CartProvider>
+          </CsrfProvider>
         </Suspense>
       </body>
     </html>

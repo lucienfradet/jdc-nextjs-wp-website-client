@@ -3,6 +3,7 @@
 import { createContext, useContext, useState } from 'react';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
+import { useCsrf } from '@/context/CsrfContext';
 
 // Initialize Stripe
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
@@ -17,6 +18,9 @@ export function StripeProvider({ children }) {
   const [paymentError, setPaymentError] = useState(null);
   const [orderData, setOrderData] = useState(null);
   const [paymentIntentId, setPaymentId] = useState(null);
+  
+  // Get CSRF token from context
+  const { csrfToken } = useCsrf();
   
   // Create a function to initialize a payment intent
   const createPaymentIntent = async (amount, orderData, taxes, shippingCost, metadata = {}) => {
@@ -36,6 +40,7 @@ export function StripeProvider({ children }) {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'X-CSRF-Token': csrfToken || '' // Include CSRF token in header
         },
         body: JSON.stringify({
           amount,
@@ -43,7 +48,8 @@ export function StripeProvider({ children }) {
           paymentMethodType: 'card',
           metadata,
           idempotencyKey: metadata.order_number,
-          orderData: fullOrderData
+          orderData: fullOrderData,
+          csrf_token: csrfToken // Also include in body for compatibility
         }),
       });
 
@@ -140,12 +146,14 @@ export function StripeProvider({ children }) {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'X-CSRF-Token': csrfToken || '' // Include CSRF token in header
         },
         body: JSON.stringify({
           orderNumber: orderNumber,
           orderData,
           paymentIntentId,
-          status: 'pending'
+          status: 'pending',
+          csrf_token: csrfToken // Also include in body for compatibility
         }),
       });
 
@@ -212,6 +220,7 @@ export function StripeProvider({ children }) {
       resetPayment,
       paymentStatus,
       paymentError,
+      setPaymentError,
       clientSecret,
       orderNumber
     }}>

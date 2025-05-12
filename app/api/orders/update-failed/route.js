@@ -1,7 +1,9 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
+import { withCsrfProtection } from '@/lib/csrf-server';
+import { withWebhookOrCsrfProtection } from '@/lib/webhookAuth';
 
-export async function POST(request) {
+async function handlePostRequest(request) {
   try {
     const body = await request.json();
     const { orderNumber, paymentIntentId, failureReason } = body;
@@ -72,3 +74,6 @@ export async function POST(request) {
     );
   }
 }
+
+// Apply CSRF protection or accept webhook requests without CSRF
+export const POST = withWebhookOrCsrfProtection(handlePostRequest, withCsrfProtection);
