@@ -8,82 +8,102 @@ const CSRF_TOKEN = "jardindeschefs_csrf_token_local_storage";
 // Create context
 const CsrfContext = createContext(null);
 
-/**
- * Provider component for CSRF tokens
- * Makes CSRF tokens available to all child components
- */
 export function CsrfProvider({ children }) {
   const [csrfToken, setCsrfToken] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [cookiesEnabled, setCookiesEnabled] = useState(true);
-
+  
   // Check if cookies are enabled
   useEffect(() => {
     setCookiesEnabled(checkCookiesEnabled());
   }, []);
 
-  // Fetch a CSRF token when the component mounts
-  useEffect(() => {
-    // Don't fetch token if cookies are disabled
-    if (!cookiesEnabled) {
-      setIsLoading(false);
-      return;
-    }
-    
-    const getToken = async () => {
-      try {
-        setIsLoading(true);
-        setError(null);
-        
-        // Try to get token from sessionStorage first (for SPA navigation)
-        const storedToken = sessionStorage.getItem(CSRF_TOKEN);
-        if (storedToken) {
-          setCsrfToken(storedToken);
-          setIsLoading(false);
-          return;
-        }
-        
-        // Fetch a new token if not found in sessionStorage
-        const token = await fetchCsrfToken();
-        
-        // Store token in state and sessionStorage
-        setCsrfToken(token);
-        sessionStorage.setItem(CSRF_TOKEN, token);
-      } catch (err) {
-        console.error('Failed to fetch CSRF token:', err);
-        setError(err.message || 'Failed to fetch CSRF token');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    getToken();
-  }, [cookiesEnabled]);
-
-  // Refresh the token when needed (e.g., after a certain time)
-  const refreshToken = async () => {
-    if (!cookiesEnabled) {
-      return;
-    }
-    
+  // Function to verify token validity
+  const verifyTokenValidity = async (token) => {
     try {
-      setIsLoading(true);
-      setError(null);
+      // Make a lightweight request to verify token is still valid
+      const response = await fetch('/api/csrf/verify', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': token
+        },
+        body: JSON.stringify({ csrf_token: token })
+      });
       
-      // Fetch a new token
+      return response.ok;
+    } catch (error) {
+      console.error('Error verifying token:', error);
+      return false;
+    }
+  };
+
+  // Get a fresh token
+  const fetchFreshToken = async () => {
+    setIsLoading(true);
+    try {
       const token = await fetchCsrfToken();
-      
-      // Update state and sessionStorage
       setCsrfToken(token);
       sessionStorage.setItem(CSRF_TOKEN, token);
+      setError(null);
+      return token;
     } catch (err) {
-      console.error('Failed to refresh CSRF token:', err);
-      setError(err.message || 'Failed to refresh CSRF token');
+      console.error('Failed to fetch CSRF token:', err);
+      setError(err.message || 'Failed to fetch CSRF token');
+      return null;
     } finally {
       setIsLoading(false);
     }
   };
+
+  // Initialize or refresh token
+  const getToken = async () => {
+    // Don't fetch if cookies are disabled
+    if (!cookiesEnabled) {
+      setIsLoading(false);
+      return null;
+    }
+    
+    try {
+      // Try to get token from sessionStorage first
+      const storedToken = sessionStorage.getItem(CSRF_TOKEN);
+      
+      // If we have a stored token, verify it's still valid
+      if (storedToken) {
+        const isValid = await verifyTokenValidity(storedToken);
+        
+        if (isValid) {
+          setCsrfToken(storedToken);
+          setIsLoading(false);
+          return storedToken;
+        }
+        
+        // If token is invalid, clear it from storage
+        sessionStorage.removeItem(CSRF_TOKEN);
+      }
+      
+      // Fetch a new token
+      return await fetchFreshToken();
+    } catch (err) {
+      console.error('Error in token initialization:', err);
+      setError(err.message || 'Failed to initialize CSRF protection');
+      setIsLoading(false);
+      return null;
+    }
+  };
+
+  // Initial token setup
+  useEffect(() => {
+    getToken();
+    
+    // Set up token refresh interval (e.g., every 50 minutes if token expires at 60)
+    const refreshInterval = setInterval(() => {
+      fetchFreshToken();
+    }, 50 * 60 * 1000);
+    
+    return () => clearInterval(refreshInterval);
+  }, [cookiesEnabled]);
 
   return (
     <CsrfContext.Provider 
@@ -91,13 +111,13 @@ export function CsrfProvider({ children }) {
         csrfToken, 
         isLoading, 
         error, 
-        refreshToken,
+        refreshToken: fetchFreshToken,
         cookiesEnabled
       }}
     >
       {children}
       
-      {/* Show warning if cookies are disabled */}
+      {/* Warning for disabled cookies */}
       {!cookiesEnabled && (
         <div style={{
           position: 'fixed',
@@ -118,10 +138,6 @@ export function CsrfProvider({ children }) {
   );
 }
 
-/**
- * Hook to use CSRF context in components
- * @returns {Object} CSRF context value
- */
 export function useCsrf() {
   const context = useContext(CsrfContext);
   if (!context) {
