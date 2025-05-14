@@ -29,7 +29,11 @@ export default [
     },
     rules: {
       "react/prop-types": "off", // This will now properly override the rule
-      "react/react-in-jsx-scope": "off" // Turn off the requirement to import React
+      "react/react-in-jsx-scope": "off", // Turn off the requirement to import React
+      "no-unused-vars": ["error", { 
+        "argsIgnorePattern": "^_",  // Ignore parameters starting with underscore
+        "varsIgnorePattern": "^_"   // Also ignore variables starting with underscore
+      }]
     }
   }
 ];

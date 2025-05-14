@@ -4,6 +4,8 @@ import { createContext, useContext, useState, useEffect } from 'react';
 import { fetchCsrfToken, checkCookiesEnabled } from '@/lib/csrf-client';
 
 const CSRF_TOKEN = "jardindeschefs_csrf_token_local_storage";
+const CSRF_TOKEN_TIMESTAMP = "jardindeschefs_csrf_token_timestamp";
+const TOKEN_REFRESH_INTERVAL = 50 * 60 * 1000;
 
 // Create context
 const CsrfContext = createContext(null);
@@ -46,6 +48,7 @@ export function CsrfProvider({ children }) {
       const token = await fetchCsrfToken();
       setCsrfToken(token);
       sessionStorage.setItem(CSRF_TOKEN, token);
+      sessionStorage.setItem(CSRF_TOKEN_TIMESTAMP, Date.now().toString());
       setError(null);
       return token;
     } catch (err) {
@@ -55,6 +58,28 @@ export function CsrfProvider({ children }) {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const fetchWithRetry = async (attempts = 3) => {
+    for (let i = 0; i < attempts; i++) {
+      try {
+        return await fetchFreshToken();
+      } catch (err) {
+        if (i === attempts - 1) throw err;
+        await new Promise(r => setTimeout(r, 1000 * (i + 1)));
+      }
+    }
+  };
+
+  const ensureFreshToken = async () => {
+    // If token is within 5 minutes of expiry, refresh it
+    const tokenTimestamp = parseInt(sessionStorage.getItem(CSRF_TOKEN_TIMESTAMP) || '0');
+    const tokenAgeMinutes = (Date.now() - tokenTimestamp) / (60 * 1000);
+
+    if (tokenAgeMinutes > 55) { // Token is older than 55 minutes (about to expire)
+      return await fetchWithRetry();
+    }
+    return csrfToken;
   };
 
   // Initialize or refresh token
@@ -84,7 +109,7 @@ export function CsrfProvider({ children }) {
       }
       
       // Fetch a new token
-      return await fetchFreshToken();
+      return await fetchWithRetry();
     } catch (err) {
       console.error('Error in token initialization:', err);
       setError(err.message || 'Failed to initialize CSRF protection');
@@ -99,11 +124,24 @@ export function CsrfProvider({ children }) {
     
     // Set up token refresh interval (e.g., every 50 minutes if token expires at 60)
     const refreshInterval = setInterval(() => {
-      fetchFreshToken();
-    }, 50 * 60 * 1000);
+      fetchWithRetry();
+    }, TOKEN_REFRESH_INTERVAL);
     
     return () => clearInterval(refreshInterval);
   }, [cookiesEnabled]);
+
+  // Add event listeners for page visibility
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        // Check token validity when tab becomes visible again
+        getToken();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, []);
 
   return (
     <CsrfContext.Provider 
@@ -111,7 +149,8 @@ export function CsrfProvider({ children }) {
         csrfToken, 
         isLoading, 
         error, 
-        refreshToken: fetchFreshToken,
+        refreshToken: fetchWithRetry,
+        ensureFreshToken,
         cookiesEnabled
       }}
     >
