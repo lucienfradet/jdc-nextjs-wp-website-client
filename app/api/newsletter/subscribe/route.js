@@ -1,17 +1,25 @@
 import { withRateLimit } from '@/lib/rateLimiter';
 import { withCsrfProtection } from '@/lib/csrf-server';
+import { withSanitization } from '@/lib/apiMiddleware';
+import { sanitizeString } from '@/lib/serverSanitizers';
+import { isValidEmail } from '@/lib/serverSanitizers';
 
 async function handlePostRequest(request) {
   try {
     const { email, firstName, lastName, listIds } = await request.json();
     
-    // Validate email
-    if (!email || !/^\S+@\S+\.\S+$/.test(email)) {
+    // Validate email with sanitization
+    const sanitizedEmail = sanitizeString(email);
+    if (!sanitizedEmail || !isValidEmail(sanitizedEmail)) {
       return Response.json({ 
         success: false, 
         message: 'Adresse email invalide' 
       }, { status: 400 });
     }
+    
+    // Sanitize other fields
+    const sanitizedFirstName = sanitizeString(firstName || '');
+    const sanitizedLastName = sanitizeString(lastName || '');
     
     // First, let's get all available lists to find a valid one
     const wordpressApiUrl = process.env.NEXT_PUBLIC_WORDPRESS_BASE_URL;
@@ -48,11 +56,23 @@ async function handlePostRequest(request) {
       // Continue anyway, maybe the provided listIds will work
     }
     
+    // Validate and sanitize listIds
+    let sanitizedListIds;
+    if (Array.isArray(listIds)) {
+      sanitizedListIds = listIds
+        .map(id => parseInt(id, 10))
+        .filter(id => !isNaN(id));
+    } else {
+      sanitizedListIds = [];
+    }
+    
     // Determine which list ID to use:
-    // 1. Use the provided listIds from the request if available
+    // 1. Use the sanitized listIds from the request if available
     // 2. Otherwise use the defaultListId we found
     // 3. If no valid list was found, use a hardcoded fallback (you should replace this with your actual list ID)
-    const finalListIds = listIds || (defaultListId ? [defaultListId] : [3]); // Using 2 as a fallback, update this!
+    const finalListIds = sanitizedListIds.length > 0 ? 
+      sanitizedListIds : 
+      (defaultListId ? [defaultListId] : [3]); // Using 3 as a fallback, update this!
     
     // Log what we're trying to use
     console.log('Using list IDs for subscription:', finalListIds);
@@ -69,9 +89,9 @@ async function handlePostRequest(request) {
         'X-MailPoet-API-Key': process.env.MAILPOET_API_KEY
       },
       body: JSON.stringify({
-        email,
-        first_name: firstName || '',
-        last_name: lastName || '',
+        email: sanitizedEmail,
+        first_name: sanitizedFirstName,
+        last_name: sanitizedLastName,
         list_ids: finalListIds
       })
     });
@@ -100,4 +120,5 @@ async function handlePostRequest(request) {
   }
 }
 
-export const POST = withRateLimit(withCsrfProtection(handlePostRequest), 'newsletter');
+// Apply rate limiting, CSRF protection, and sanitization middleware
+export const POST = withRateLimit(withCsrfProtection(withSanitization(handlePostRequest)), 'newsletter');

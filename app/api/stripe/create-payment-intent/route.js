@@ -3,6 +3,8 @@ import prisma from '@/lib/prisma';
 import { validateOrderData } from "@/lib/wooCommerce";
 import { withRateLimit } from '@/lib/rateLimiter';
 import { withCsrfProtection } from '@/lib/csrf-server';
+import { withSanitization } from '@/lib/apiMiddleware';
+import { sanitizeObject, sanitizeString } from '@/lib/serverSanitizers';
 
 // Generate a unique order number (format: JDC-YYYYMMDD-XXXX)
 const generateOrderNumber = () => {
@@ -21,9 +23,9 @@ async function handlePostRequest(request) {
     // Initialize Stripe with secret key
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
-    // Get request body
+    // Get and sanitize request body
     const body = await request.json();
-    const { amount, paymentMethodType, currency, metadata, idempotencyKey, orderData } = body;
+    const { amount, paymentMethodType, currency, metadata, idempotencyKey, orderData } = sanitizeObject(body);
 
     // Validate the entire order against WooCommerce data
     if (!orderData) {
@@ -63,20 +65,23 @@ async function handlePostRequest(request) {
     // Generate a unique order number
     const orderNumber = generateOrderNumber();
 
+    // Sanitize metadata
+    const sanitizedMetadata = metadata ? sanitizeObject(metadata) : {};
+    
     const updatedMetadata = {
       orderNumber: orderNumber,
       validatedAmount: validatedAmount.toString(),
-      ...metadata
-    }
+      ...sanitizedMetadata
+    };
 
     // Create the payment intent with validated amount
     const paymentIntent = await stripe.paymentIntents.create({
       amount: Math.round(validatedAmount * 100), // Stripe expects amount in cents
-      currency: currency || 'cad',
-      payment_method_types: [paymentMethodType || 'card'],
-      metadata: updatedMetadata || {}
+      currency: sanitizeString(currency || 'cad'),
+      payment_method_types: [sanitizeString(paymentMethodType || 'card')],
+      metadata: updatedMetadata
     }, {
-      idempotencyKey
+      idempotencyKey: sanitizeString(idempotencyKey || '')
     });
 
     console.log("New payment intent created with validated amount:", validatedAmount);
@@ -109,4 +114,4 @@ async function handlePostRequest(request) {
 }
 
 // Apply the rate limiter with the 'payment' key for payment-specific rate limits
-export const POST = withRateLimit(withCsrfProtection(handlePostRequest), 'payment');
+export const POST = withRateLimit(withCsrfProtection(withSanitization(handlePostRequest)), 'payment');

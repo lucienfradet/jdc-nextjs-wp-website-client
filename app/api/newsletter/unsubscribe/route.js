@@ -1,17 +1,24 @@
 import { withRateLimit } from '@/lib/rateLimiter';
 import { withCsrfProtection } from '@/lib/csrf-server';
+import { withSanitization } from '@/lib/apiMiddleware';
+import { sanitizeString } from '@/lib/serverSanitizers';
+import { isValidEmail } from '@/lib/serverSanitizers';
 
 async function handlePostRequest(request) {
   try {
     const { email, token } = await request.json();
     
-    // Validate email
-    if (!email || !/^\S+@\S+\.\S+$/.test(email)) {
+    // Validate and sanitize email
+    const sanitizedEmail = sanitizeString(email);
+    if (!sanitizedEmail || !isValidEmail(sanitizedEmail)) {
       return Response.json({ 
         success: false, 
         message: 'Adresse email invalide' 
       }, { status: 400 });
     }
+    
+    // Sanitize token if provided
+    const sanitizedToken = token ? sanitizeString(token) : '';
     
     // Prepare the request to the WordPress REST API
     // API key is required for all endpoints
@@ -22,8 +29,8 @@ async function handlePostRequest(request) {
         'X-MailPoet-API-Key': process.env.MAILPOET_API_KEY
       },
       body: JSON.stringify({
-        email,
-        token // Include token if provided for verification
+        email: sanitizedEmail,
+        token: sanitizedToken // Include token if provided for verification
       })
     });
     
@@ -45,4 +52,4 @@ async function handlePostRequest(request) {
   }
 }
 
-export const POST = withRateLimit(withCsrfProtection(handlePostRequest), 'newsletter');
+export const POST = withRateLimit(withCsrfProtection(withSanitization(handlePostRequest)), 'newsletter');

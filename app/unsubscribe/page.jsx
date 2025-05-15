@@ -1,44 +1,44 @@
 "use client";
 
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { unsubscribeSchema } from '@/lib/validationSchemas';
+import { sanitizeString } from '@/lib/validation';
 import { useCsrf } from '@/context/CsrfContext';
 import styles from '@/styles/Unsubscribe.module.css';
 
 export default function UnsubscribePage() {
-  const [email, setEmail] = useState('');
   const [status, setStatus] = useState('idle'); // 'idle', 'loading', 'success', 'error'
   const [message, setMessage] = useState('');
   const [showForm, setShowForm] = useState(true);
   const searchParams = useSearchParams();
   const { csrfToken, isLoading: csrfLoading } = useCsrf();
 
+  const { register, handleSubmit, setValue, formState: { errors } } = useForm({
+    resolver: yupResolver(unsubscribeSchema),
+    mode: 'onBlur'
+  });
+
   useEffect(() => {
     // Check if email is provided in the URL
     const emailParam = searchParams.get('email');
 
     if (emailParam) {
-      setEmail(emailParam);
+      // Set the value in the form
+      setValue('email', emailParam);
 
       // If email is provided and valid, process automatically
-      if (!csrfLoading && csrfToken && /^\S+@\S+\.\S+$/.test(emailParam)) {
-        handleUnsubscribe(emailParam);
+      if (!csrfLoading && csrfToken && unsubscribeSchema.fields.email.isValidSync(emailParam)) {
+        handleUnsubscribe({ email: emailParam });
         setShowForm(false); // Hide the form during automatic processing
       }
     }
-  }, [searchParams, csrfToken, csrfLoading]);
+  }, [searchParams, csrfToken, csrfLoading, setValue]);
 
-  const handleUnsubscribe = async (emailToUse, token = null) => {
-    // Use passed email or state email
-    const emailValue = emailToUse || email;
-
-    // Validate email
-    if (!emailValue || !/^\S+@\S+\.\S+$/.test(emailValue)) {
-      setStatus('error');
-      setMessage('Veuillez entrer une adresse email valide');
-      return;
-    }
-
+  const handleUnsubscribe = async (data) => {
     // Don't submit if CSRF token is not yet loaded
     if (csrfLoading || !csrfToken) {
       setStatus('error');
@@ -51,6 +51,9 @@ export default function UnsubscribePage() {
     setMessage('');
 
     try {
+      // Sanitize email
+      const sanitizedEmail = sanitizeString(data.email);
+      
       const response = await fetch('/api/newsletter/unsubscribe', {
         method: 'POST',
         headers: {
@@ -58,18 +61,17 @@ export default function UnsubscribePage() {
           'X-CSRF-Token': csrfToken
         },
         body: JSON.stringify({ 
-          email: emailValue,
-          token, 
+          email: sanitizedEmail,
           csrf_token: csrfToken // Include in body as well for compatibility
         }),
       });
 
-      const data = await response.json();
+      const responseData = await response.json();
 
       // Always show success message for privacy reasons,
       // even if the email doesn't exist
       setStatus('success');
-      setMessage(data.message || 'Vous avez été désabonné avec succès');
+      setMessage(responseData.message || 'Vous avez été désabonné avec succès');
     } catch (error) {
       setStatus('error');
       setMessage('Une erreur est survenue. Veuillez réessayer.');
@@ -79,76 +81,75 @@ export default function UnsubscribePage() {
     }
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    handleUnsubscribe();
-  };
-
   return (
     <div className={styles.unsubscribeContainer}>
       <h1 className={styles.title}>Se désabonner de l&apos;infolettre</h1>
 
       {status === 'success' ? (
-        <div className={styles.successMessage}>
-          <p>{message}</p>
-          <br />
-          <p>Nous sommes désolés de vous voir partir. Si vous souhaitez vous réabonner, vous pouvez le faire depuis notre page d&apos;accueil.</p>
-        </div>
+        <>
+          <div className={styles.successMessage}>
+            <p>{message}</p>
+            <br />
+            <p>Nous sommes désolés de vous voir partir. Si vous souhaitez vous réabonner, vous pouvez le faire depuis notre page d&apos;accueil.</p>
+          </div>
+          <div className={styles.successMessage}>
+            <Link href="/" className={styles.button}>
+              Page d&apos;accueil
+            </Link>
+          </div>
+        </>
       ) : (
-          <>
-            {status === 'loading' && (
-              <div>
-                Traitement de votre demande...
-              </div>
-            )}
+        <>
+          {status === 'loading' && (
+            <div>
+              Traitement de votre demande...
+            </div>
+          )}
 
-            {status === 'error' && (
-              <div>
-                {message}
-              </div>
-            )}
+          {status === 'error' && (
+            <div>
+              {message}
+            </div>
+          )}
 
-            {showForm && (
-              <>
-                <p className={styles.description}>
-                  Veuillez saisir votre adresse email pour vous désabonner de notre infolettre.
-                </p>
+          {showForm && (
+            <>
+              <p className={styles.description}>
+                Veuillez saisir votre adresse email pour vous désabonner de notre infolettre.
+              </p>
 
-                <form onSubmit={handleSubmit} className={styles.form}>
-                  <div className={styles.inputGroup}>
-                    <label htmlFor="email" className={styles.label}>Adresse email</label>
-                    <input
-                      id="email"
-                      type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="Votre adresse email"
-                      className={styles.input}
-                      required
-                    />
-                  </div>
-
-                  {status === 'error' && (
-                    <div className={styles.errorMessage}>{message}</div>
+              <form onSubmit={handleSubmit(handleUnsubscribe)} className={styles.form}>
+                <div className={styles.inputGroup}>
+                  <label htmlFor="email" className={styles.label}>Adresse email</label>
+                  <input
+                    id="email"
+                    type="email"
+                    {...register('email')}
+                    placeholder="Votre adresse email"
+                    className={`${styles.input} ${errors.email ? styles.inputError : ''}`}
+                  />
+                  {errors.email && (
+                    <div className={styles.errorMessage}>{errors.email.message}</div>
                   )}
+                </div>
 
-                  <button 
-                    type="submit" 
-                    className={styles.button}
-                    disabled={status === 'loading' || csrfLoading}
-                  >
-                    {status === 'loading' ? 'Traitement...' : 'Se désabonner'}
-                  </button>
-                </form>
-              </>
-            )}
+                <button 
+                  type="submit" 
+                  className={styles.button}
+                  disabled={status === 'loading' || csrfLoading}
+                >
+                  {status === 'loading' ? 'Traitement...' : 'Se désabonner'}
+                </button>
+              </form>
+            </>
+          )}
 
-            <p className={styles.note}>
-              Si vous rencontrez des difficultés pour vous désabonner, veuillez nous contacter à{' '}
-              <a href="mailto:contact@jardindeschefs.ca">contact@jardindeschefs.ca</a>
-            </p>
-          </>
-        )}
+          <p className={styles.note}>
+            Si vous rencontrez des difficultés pour vous désabonner, veuillez nous contacter à{' '}
+            <a href="mailto:contact@jardindeschefs.ca">contact@jardindeschefs.ca</a>
+          </p>
+        </>
+      )}
     </div>
   );
 }

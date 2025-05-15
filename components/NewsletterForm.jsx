@@ -1,6 +1,10 @@
 "use client";
 
 import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { newsletterSchema } from '@/lib/validationSchemas';
+import { sanitizeString } from '@/lib/validation';
 import styles from '@/styles/NewsletterForm.module.css';
 import { useCsrf } from '@/context/CsrfContext';
 
@@ -9,14 +13,16 @@ export default function NewsletterForm({
   buttonText = "S'abonner", 
   className = ""
 }) {
-  const [email, setEmail] = useState('');
   const [status, setStatus] = useState('idle'); // idle, loading, success, error
   const [message, setMessage] = useState('');
   const { csrfToken, isLoading: csrfLoading } = useCsrf();
   
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    
+  const { register, handleSubmit, reset, formState: { errors } } = useForm({
+    resolver: yupResolver(newsletterSchema),
+    mode: 'onBlur'
+  });
+  
+  const onSubmit = async (data) => {
     // Don't submit if CSRF token is not yet loaded
     if (csrfLoading || !csrfToken) {
       setStatus('error');
@@ -29,6 +35,9 @@ export default function NewsletterForm({
     setMessage('');
     
     try {
+      // Sanitize the email before submitting
+      const sanitizedEmail = sanitizeString(data.email);
+      
       // Call our Next.js API
       const response = await fetch('/api/newsletter/subscribe', {
         method: 'POST',
@@ -37,21 +46,21 @@ export default function NewsletterForm({
           'X-CSRF-Token': csrfToken
         },
         body: JSON.stringify({ 
-          email,
+          email: sanitizedEmail,
           csrf_token: csrfToken // Include in body as well for compatibility
         })
       });
       
-      const data = await response.json();
+      const responseData = await response.json();
       
       if (!response.ok) {
-        throw new Error(data.message || "Échec de l'abonnement");
+        throw new Error(responseData.message || "Échec de l'abonnement");
       }
       
       // Success!
       setStatus('success');
-      setMessage(data.message || 'Abonnement réussi !');
-      setEmail(''); // Clear email field
+      setMessage(responseData.message || 'Abonnement réussi !');
+      reset(); // Clear the form
     } catch (error) {
       // Handle existing subscribers or other errors
       setStatus('error');
@@ -61,16 +70,14 @@ export default function NewsletterForm({
   
   return (
     <div className={`${styles.newsletterForm} ${className}`}>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit(onSubmit)}>
         <div className={styles.inputWrapper}>
           <input
             type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            {...register('email')}
             placeholder={inputPlaceholder}
-            className={styles.emailInput}
+            className={`${styles.emailInput} ${errors.email ? styles.inputError : ''}`}
             disabled={status === 'loading' || csrfLoading}
-            required
           />
           <button 
             type="submit" 
@@ -80,6 +87,10 @@ export default function NewsletterForm({
             {status === 'loading' ? 'Envoi...' : buttonText}
           </button>
         </div>
+        
+        {errors.email && (
+          <div className={styles.errorMessage}>{errors.email.message}</div>
+        )}
         
         {status === 'success' && (
           <div className={styles.successMessage}>{message}</div>

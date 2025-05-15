@@ -128,8 +128,6 @@ export default function HomePage({ pageData, headerData, footerData }) {
   return (
     <>
       {/* 
-
-
       Add the loading overlay */}
       <ClientLoadingOverlay 
         minLoadTime={500} 

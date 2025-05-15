@@ -22,7 +22,8 @@ export const metadata = {
 
 export default async function Page() {
   // Fetch data on the server
-  const [headerData, footerData, siteIconUrl] = await Promise.all([
+  const [pageData, headerData, footerData, siteIconUrl] = await Promise.all([
+    getPageFieldsByName("confirmation-de-commande"),
     getPageFieldsByName("header"),
     getPageFieldsByName("footer"),
     fetchSiteIcon()
@@ -36,6 +37,7 @@ export default async function Page() {
   return (
     <Suspense fallback={<div>Loading order details...</div>}>
       <OrderConfirmationPage
+        pageData={pageData}
         headerData={headerData}
         footerData={footerData}
         siteIconUrl={siteIconUrl}

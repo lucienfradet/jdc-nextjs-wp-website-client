@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation'; // Add useSearchParams
+import { renderContent } from "@/lib/textUtils";
 import DesktopHeader from "@/components/desktop/Header";
 import MobileHeader from "@/components/mobile/Header";
 import DesktopFooter from "@/components/desktop/Footer";
@@ -10,7 +11,8 @@ import MobileFooter from "@/components/mobile/Footer";
 import styles from '@/styles/checkout/OrderConfirmationPage.module.css';
 import { useCart } from '@/context/CartContext';
 
-export default function OrderConfirmationPage({ headerData, footerData }) {
+export default function OrderConfirmationPage({ pageData, headerData, footerData }) {
+  const pageContent = pageData.acfFields;
   const [isMobile, setIsMobile] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [orderData, setOrderData] = useState(null);
@@ -87,30 +89,22 @@ export default function OrderConfirmationPage({ headerData, footerData }) {
             </svg>
           </div>
           
-          <h1>Merci pour votre commande!</h1>
+          <h1>{renderContent(pageContent["h1-title"])}</h1>
           
           <p className={styles.orderNumber}>
             Numéro de confirmation: <strong>{orderData.orderNumber}</strong>
           </p>
           
-          <p className={styles.confirmationMessage}>
-            Nous avons bien reçu votre commande et nous la préparons actuellement. Vous recevrez un courriel de confirmation avec les détails de votre commande.
-          </p>
+          <div className={styles.confirmationMessage}>
+            {renderContent(pageContent["message-confirmation"])}
+          </div>
           
           <div className={styles.nextSteps}>
-            <h2>Prochaines étapes</h2>
-            <ul>
-              <li>Vérifiez votre boîte de réception pour le courriel de confirmation.</li>
-              <li>Si vous avez choisi le paiement par virement, suivez les instructions dans le courriel.</li>
-              <li>Préparez-vous pour la cueillette à votre point de chute (si applicable).</li>
-            </ul>
+            {renderContent(pageContent["next-steps"])}
           </div>
           
           <div className={styles.contactInfo}>
-            <p>
-              Pour toute question concernant votre commande, n&apos;hésitez pas à
-              nous contacter par courriel à <a href="mailto:contact@jardindeschefs.com">contact@jardindeschefs.com</a>.
-            </p>
+            {renderContent(pageContent["contact-info"])}
           </div>
           
           <div className={styles.buttonContainer}>

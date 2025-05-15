@@ -8,8 +8,6 @@ const EmailConfirmation = ({
   localErrors, 
   setLocalErrors 
 }) => {
-  // const [emailTypoSuggestion, setEmailTypoSuggestion] = useState(null);
-  
   // Check if emails match when either field changes or during validation
   const validateEmails = () => {
     if (formData.billingEmail && formData.billingConfirmEmail && 
@@ -28,21 +26,6 @@ const EmailConfirmation = ({
       });
     }
   };
-  
-  // Future implementation: Email domain checking and typo detection
-  // useEffect(() => {
-    // This could check for common typos like gmail.con instead of gmail.com
-    /* 
-    if (formData.billingEmail && isValidEmailFormat(formData.billingEmail)) {
-      const suggestion = checkEmailForTypos(formData.billingEmail);
-      if (suggestion && suggestion !== formData.billingEmail) {
-        setEmailTypoSuggestion(suggestion);
-      } else {
-        setEmailTypoSuggestion(null);
-      }
-    }
-    */
-  // }, [formData.billingEmail]);
   
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -82,16 +65,6 @@ const EmailConfirmation = ({
         {localErrors.billingEmail && (
           <p className={styles.errorText}>{localErrors.billingEmail}</p>
         )}
-        
-        {/* Typo suggestion UI */}
-        {/*
-        {emailTypoSuggestion && (
-          <p className={styles.suggestionText}>
-            Vouliez-vous dire <strong>{emailTypoSuggestion}</strong>?
-          </p>
-        )}
-        */}
-
       </div>
       
       <div className={styles.formGroup}>

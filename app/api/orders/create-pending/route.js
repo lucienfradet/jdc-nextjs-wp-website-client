@@ -3,11 +3,14 @@ import prisma from '@/lib/prisma';
 import Stripe from 'stripe';
 import { withRateLimit } from '@/lib/rateLimiter';
 import { withCsrfProtection } from '@/lib/csrf-server';
+import { withSanitization } from '@/lib/apiMiddleware';
+import { sanitizeObject, sanitizeString } from '@/lib/serverSanitizers';
 
 async function handlePostRequest(request) {
   try {
     const body = await request.json();
-    const { orderNumber, orderData, paymentIntentId } = body;
+    const sanitizedBody = sanitizeObject(body);
+    const { orderNumber, orderData, paymentIntentId } = sanitizedBody;
     
     // Validation
     if (!orderNumber || !orderData || !paymentIntentId) {
@@ -51,7 +54,6 @@ async function handlePostRequest(request) {
       // Optional: Check payment intent is not too old (e.g., 1 hour max)
       const createdDate = new Date(paymentIntent.created * 1000);
       const now = new Date();
-      // const hoursDiff = (now - createdDate) / (1000 * 60 * 59);
       const hoursDiff = (now - createdDate) / (1000 * 60 * 59);
       
       if (hoursDiff > 1) {
@@ -83,31 +85,73 @@ async function handlePostRequest(request) {
     const { items, taxes, shippingCost } = validatedOrderData;
     
     // 4. PROCEED WITH ORDER CREATION
-    // Extract relevant data from orderData
-    const customer = orderData.customer; // Still use customer info from orderData
+    // Extract relevant customer data from orderData (still using this because it has the customer info)
+    const customer = orderData.customer;
+
+    // Sanitize all customer input fields
+    const sanitizedCustomer = {
+      billingEmail: sanitizeString(customer.billingEmail),
+      billingFirstName: sanitizeString(customer.billingFirstName),
+      billingLastName: sanitizeString(customer.billingLastName),
+      billingPhone: sanitizeString(customer.billingPhone || ''),
+      billingAddress1: sanitizeString(customer.billingAddress1 || ''),
+      billingAddress2: sanitizeString(customer.billingAddress2 || ''),
+      billingCity: sanitizeString(customer.billingCity || ''),
+      billingState: sanitizeString(customer.billingState || ''),
+      billingPostcode: sanitizeString(customer.billingPostcode || ''),
+      billingCountry: sanitizeString(customer.billingCountry || 'CA'),
+      shippingSameAsBilling: customer.shippingSameAsBilling !== false, // Default to true
+      shippingAddress1: sanitizeString(customer.shippingSameAsBilling !== false ? 
+                         customer.billingAddress1 : 
+                         customer.shippingAddress1 || ''),
+      shippingAddress2: sanitizeString(customer.shippingSameAsBilling !== false ? 
+                         customer.billingAddress2 : 
+                         customer.shippingAddress2 || ''),
+      shippingCity: sanitizeString(customer.shippingSameAsBilling !== false ? 
+                     customer.billingCity : 
+                     customer.shippingCity || ''),
+      shippingState: sanitizeString(customer.shippingSameAsBilling !== false ? 
+                      customer.billingState : 
+                      customer.shippingState || ''),
+      shippingPostcode: sanitizeString(customer.shippingSameAsBilling !== false ? 
+                         customer.billingPostcode : 
+                         customer.shippingPostcode || ''),
+      shippingCountry: sanitizeString(customer.shippingSameAsBilling !== false ? 
+                        customer.billingCountry : 
+                        customer.shippingCountry || 'CA'),
+      selectedPickupLocation: customer.selectedPickupLocation ? 
+                            sanitizeString(customer.selectedPickupLocation) : null
+    };
 
     // Always create a new customer record for each order
     const dbCustomer = await prisma.customer.create({
       data: {
-        email: customer.billingEmail,
-        firstName: customer.billingFirstName,
-        lastName: customer.billingLastName,
-        phone: customer.billingPhone || ''
+        email: sanitizedCustomer.billingEmail,
+        firstName: sanitizedCustomer.billingFirstName,
+        lastName: sanitizedCustomer.billingLastName,
+        phone: sanitizedCustomer.billingPhone
       }
     });
 
     // Handle pickup location if applicable
     let pickupLocationId = null;
-    if (customer.selectedPickupLocation && orderData.deliveryMethod === 'pickup') {
+    if (sanitizedCustomer.selectedPickupLocation && orderData.deliveryMethod === 'pickup') {
       // Find the pickup location in the database
-      const dbPickupLocation = await prisma.pickupLocation.findFirst({
-        where: {
-          wordpressId: parseInt(customer.selectedPickupLocation)
+      try {
+        const locationId = parseInt(sanitizedCustomer.selectedPickupLocation);
+        if (!isNaN(locationId)) {
+          const dbPickupLocation = await prisma.pickupLocation.findFirst({
+            where: {
+              wordpressId: locationId
+            }
+          });
+          
+          if (dbPickupLocation) {
+            pickupLocationId = dbPickupLocation.id;
+          }
         }
-      });
-      
-      if (dbPickupLocation) {
-        pickupLocationId = dbPickupLocation.id;
+      } catch (err) {
+        console.error('Error parsing pickup location ID:', err);
       }
     }
 
@@ -124,19 +168,19 @@ async function handlePostRequest(request) {
         customerId: dbCustomer.id,
         paymentMethod: 'stripe', // Assuming Stripe since we have paymentIntentId
         paymentIntentId,
-        billingAddress1: customer.billingAddress1 || '',
-        billingAddress2: customer.billingAddress2 || '',
-        billingCity: customer.billingCity || '',
-        billingState: customer.billingState || '',
-        billingPostcode: customer.billingPostcode || '',
-        billingCountry: customer.billingCountry || 'CA',
-        shippingSameAsBilling: customer.shippingSameAsBilling !== false, // Default to true
-        shippingAddress1: customer.shippingSameAsBilling !== false ? customer.billingAddress1 : customer.shippingAddress1 || '',
-        shippingAddress2: customer.shippingSameAsBilling !== false ? customer.billingAddress2 : customer.shippingAddress2 || '',
-        shippingCity: customer.shippingSameAsBilling !== false ? customer.billingCity : customer.shippingCity || '',
-        shippingState: customer.shippingSameAsBilling !== false ? customer.billingState : customer.shippingState || '',
-        shippingPostcode: customer.shippingSameAsBilling !== false ? customer.billingPostcode : customer.shippingPostcode || '',
-        shippingCountry: customer.shippingSameAsBilling !== false ? customer.billingCountry : customer.shippingCountry || 'CA',
+        billingAddress1: sanitizedCustomer.billingAddress1,
+        billingAddress2: sanitizedCustomer.billingAddress2,
+        billingCity: sanitizedCustomer.billingCity,
+        billingState: sanitizedCustomer.billingState,
+        billingPostcode: sanitizedCustomer.billingPostcode,
+        billingCountry: sanitizedCustomer.billingCountry,
+        shippingSameAsBilling: sanitizedCustomer.shippingSameAsBilling,
+        shippingAddress1: sanitizedCustomer.shippingAddress1,
+        shippingAddress2: sanitizedCustomer.shippingAddress2,
+        shippingCity: sanitizedCustomer.shippingCity,
+        shippingState: sanitizedCustomer.shippingState,
+        shippingPostcode: sanitizedCustomer.shippingPostcode,
+        shippingCountry: sanitizedCustomer.shippingCountry,
         status: 'pending',
         paymentStatus: 'pending',
         subtotal,
@@ -144,7 +188,7 @@ async function handlePostRequest(request) {
         taxDetails: taxes ? JSON.stringify(taxes) : '',
         shipping,
         total,
-        deliveryMethod: orderData.deliveryMethod || 'shipping',
+        deliveryMethod: sanitizeString(orderData.deliveryMethod || 'shipping'),
         pickupLocationId,
       }
     });
@@ -164,20 +208,20 @@ async function handlePostRequest(request) {
         data: {
           orderId: order.id,
           productId: item.id,
-          name: item.name,
+          name: sanitizeString(item.name),
           price: parseFloat(item.price),
           quantity: item.quantity,
           subtotal: parseFloat(item.price) * item.quantity,
           tax: itemTaxAmount,
           total: parseFloat(item.price) * item.quantity + itemTaxAmount,
-          shippingClass: item.shipping_class || 'standard',
+          shippingClass: sanitizeString(item.shipping_class || 'standard'),
           isPickupOnly: item.shipping_class === 'only_pickup',
           
           // Add booking details if applicable
           isBooking: isBooking,
-          bookingDate: bookingDetails?.date || null,
-          bookingTimeSlot: bookingDetails?.time_slot || null,
-          bookingPeople: bookingDetails?.people || null,
+          bookingDate: bookingDetails?.date ? sanitizeString(bookingDetails.date) : null,
+          bookingTimeSlot: bookingDetails?.time_slot ? sanitizeString(bookingDetails.time_slot) : null,
+          bookingPeople: bookingDetails?.people ? parseInt(bookingDetails.people, 10) : null,
         }
       });
     }
@@ -202,4 +246,4 @@ async function handlePostRequest(request) {
 }
 
 // Apply the rate limiter with the 'payment' key for payment-specific rate limits
-export const POST = withRateLimit(withCsrfProtection(handlePostRequest), 'payment');
+export const POST = withRateLimit(withCsrfProtection(withSanitization(handlePostRequest)), 'payment');
