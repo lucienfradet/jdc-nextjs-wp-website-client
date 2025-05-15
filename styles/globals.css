@@ -301,6 +301,14 @@ body {
   transform: translateY(0);
 }
 
+/* 
+   We MUST add the reCAPTCHA disclosure text to your forms 
+   as described in Google's terms if you use this option
+*/
+.grecaptcha-badge {
+  visibility: hidden !important;
+}
+
 /* Mobile responsive styles */
 @media (max-width: 576px) {
   .booking-confirmation-dialog {

@@ -1,10 +1,11 @@
-import Stripe from "stripe";
-import prisma from '@/lib/prisma';
-import { validateOrderData } from "@/lib/wooCommerce";
 import { withRateLimit } from '@/lib/rateLimiter';
 import { withCsrfProtection } from '@/lib/csrf-server';
 import { withSanitization } from '@/lib/apiMiddleware';
 import { sanitizeObject, sanitizeString } from '@/lib/serverSanitizers';
+import { verifyReCaptchaToken } from '@/lib/recaptcha';
+import Stripe from "stripe";
+import prisma from '@/lib/prisma';
+import { validateOrderData } from "@/lib/wooCommerce";
 
 // Generate a unique order number (format: JDC-YYYYMMDD-XXXX)
 const generateOrderNumber = () => {
@@ -25,7 +26,20 @@ async function handlePostRequest(request) {
 
     // Get and sanitize request body
     const body = await request.json();
-    const { amount, paymentMethodType, currency, metadata, idempotencyKey, orderData } = sanitizeObject(body);
+    const { amount, paymentMethodType, currency, metadata, idempotencyKey, orderData, recaptchaToken } = sanitizeObject(body);
+
+    // Verify reCAPTCHA token
+    const recaptchaResult = await verifyReCaptchaToken(recaptchaToken, 'payment_intent_creation');
+    
+    if (!recaptchaResult.success) {
+      return Response.json({ 
+        error: 'Vérification de sécurité échouée',
+        validationFailed: true,
+        details: recaptchaResult.error || 'reCAPTCHA validation failed'
+      }, { status: 400 });
+    }
+
+    console.log("reCAPTCHA verified before creating payment intent.")
 
     // Validate the entire order against WooCommerce data
     if (!orderData) {

@@ -15,23 +15,23 @@ export function middleware(request) {
       // Base restriction - only allow resources from same origin by default
       "default-src 'self'; " +
       
-      // Scripts: Allow from our domain, inline scripts (needed for React), cdnjs for libraries, and Stripe
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com https://js.stripe.com https://*.googleapis.com; " +
+      // Scripts: Allow from our domain, inline scripts (needed for React), cdnjs for libraries, Stripe, and Google (for reCAPTCHA)
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com https://js.stripe.com https://*.googleapis.com https://www.google.com https://www.gstatic.com; " +
       
-      // Styles: Allow from our domain, inline styles (needed for styled-components/tailwind), and cdnjs
-      "style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://*.googleapis.com; " +
+      // Styles: Allow from our domain, inline styles (needed for styled-components/tailwind), cdnjs, and Google
+      "style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://*.googleapis.com https://www.gstatic.com; " +
       
       // Images: Allow from our domain, data URLs (for small embedded images), WordPress sites, Stripe, Google Maps, and placeholder API
-      `img-src 'self' data: ${wordpressUrl} https://*.wordpress.com https://*.wp.com https://stripe.com https://*.stripe.com https://*.googleapis.com https://*.gstatic.com https://*.ggpht.com; ` +
+      `img-src 'self' data: ${wordpressUrl} https://*.wordpress.com https://*.wp.com https://stripe.com https://*.stripe.com https://*.googleapis.com https://*.gstatic.com https://*.ggpht.com https://www.google.com; ` +
       
-      // Fonts: Allow from our domain, cdnjs, and Google (for map fonts)
+      // Fonts: Allow from our domain, cdnjs, and Google (for map fonts and reCAPTCHA)
       "font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com; " +
       
-      // API connections: Allow to our domain, Stripe APIs, and Google Maps APIs
-      `connect-src 'self' ${wordpressUrl} https://*.stripe.com https://*.googleapis.com; ` +
+      // API connections: Allow to our domain, Stripe APIs, and Google APIs (including reCAPTCHA)
+      `connect-src 'self' ${wordpressUrl} https://*.stripe.com https://*.googleapis.com https://www.google.com https://www.gstatic.com; ` +
       
-      // Frames: Allow Stripe payment forms, YouTube embeds, and Google Maps
-      "frame-src 'self' https://js.stripe.com https://hooks.stripe.com https://www.youtube.com https://www.google.com; " +
+      // Frames: Allow Stripe payment forms, YouTube embeds, Google Maps, and reCAPTCHA frames
+      "frame-src 'self' https://js.stripe.com https://hooks.stripe.com https://www.youtube.com https://www.google.com https://recaptcha.google.com https://www.recaptcha.net; " +
       
       // Block all object tags (Flash, PDFs in object tags, etc.)
       "object-src 'none';",

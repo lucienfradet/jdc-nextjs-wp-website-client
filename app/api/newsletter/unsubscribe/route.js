@@ -3,10 +3,22 @@ import { withCsrfProtection } from '@/lib/csrf-server';
 import { withSanitization } from '@/lib/apiMiddleware';
 import { sanitizeString } from '@/lib/serverSanitizers';
 import { isValidEmail } from '@/lib/serverSanitizers';
+import { verifyReCaptchaToken } from '@/lib/recaptcha';
 
 async function handlePostRequest(request) {
   try {
-    const { email, token } = await request.json();
+    const { email, token, recaptchaToken } = await request.json();
+    
+    // First, verify the reCAPTCHA token
+    const recaptchaResult = await verifyReCaptchaToken(recaptchaToken, 'newsletter_unsubscribe');
+    
+    if (!recaptchaResult.success) {
+      return Response.json({ 
+        success: false, 
+        message: 'Vérification de sécurité échouée', 
+        details: recaptchaResult.error || 'reCAPTCHA validation failed'
+      }, { status: 400 });
+    }
     
     // Validate and sanitize email
     const sanitizedEmail = sanitizeString(email);

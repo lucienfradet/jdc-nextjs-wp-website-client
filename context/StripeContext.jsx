@@ -4,6 +4,7 @@ import { createContext, useContext, useState } from 'react';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
 import { useCsrf } from '@/context/CsrfContext';
+import { executeReCaptcha } from '@/lib/recaptcha';
 
 // Initialize Stripe
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
@@ -18,15 +19,32 @@ export function StripeProvider({ children }) {
   const [paymentError, setPaymentError] = useState(null);
   const [orderData, setOrderData] = useState(null);
   const [paymentIntentId, setPaymentId] = useState(null);
+  const [recaptchaLoaded, setRecaptchaLoaded] = useState(false);
   
   // Get CSRF token from context
   const { csrfToken } = useCsrf();
   
-  // Create a function to initialize a payment intent
+  // Create a function to initialize a payment intent with reCAPTCHA
   const createPaymentIntent = async (amount, orderData, taxes, shippingCost, metadata = {}) => {
     try {
       setPaymentStatus('processing');
       setPaymentError(null);
+      
+      // Execute reCAPTCHA first before creating payment intent
+      let recaptchaToken;
+      try {
+        recaptchaToken = await executeReCaptcha('payment_intent_creation');
+        setRecaptchaLoaded(true);
+      } catch (recaptchaError) {
+        console.error('reCAPTCHA execution failed:', recaptchaError);
+        setPaymentStatus('error');
+        setPaymentError({
+          type: 'recaptcha',
+          message: 'Security verification failed. Please try again.',
+          details: recaptchaError.message
+        });
+        return false;
+      }
       
       // Prepare the full order data for validation
       const fullOrderData = {
@@ -49,7 +67,8 @@ export function StripeProvider({ children }) {
           metadata,
           idempotencyKey: metadata.order_number,
           orderData: fullOrderData,
-          csrf_token: csrfToken // Also include in body for compatibility
+          csrf_token: csrfToken, // Also include in body for compatibility
+          recaptchaToken // Add the reCAPTCHA token
         }),
       });
 
@@ -58,6 +77,17 @@ export function StripeProvider({ children }) {
       
       // Check if the request was not successful (non-200 status)
       if (!response.ok) {
+        // Check if this is a reCAPTCHA verification error
+        if (data.details && data.details.includes('reCAPTCHA')) {
+          setPaymentStatus('error');
+          setPaymentError({
+            type: 'recaptcha',
+            message: 'Security verification failed. Please refresh the page and try again.',
+            details: data.details
+          });
+          return false;
+        }
+      
         // Handle validation errors - these come with a 400 status code
         if (data.validationFailed) {
           console.log('Validation error detected:', data);
@@ -222,7 +252,8 @@ export function StripeProvider({ children }) {
       paymentError,
       setPaymentError,
       clientSecret,
-      orderNumber
+      orderNumber,
+      recaptchaLoaded
     }}>
       {clientSecret ? (
         <Elements 

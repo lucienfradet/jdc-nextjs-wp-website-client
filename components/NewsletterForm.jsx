@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { newsletterSchema } from '@/lib/validationSchemas';
 import { sanitizeString } from '@/lib/validation';
+import { executeReCaptcha } from '@/lib/recaptcha';
 import styles from '@/styles/NewsletterForm.module.css';
 import { useCsrf } from '@/context/CsrfContext';
 
@@ -16,6 +17,7 @@ export default function NewsletterForm({
   const [status, setStatus] = useState('idle'); // idle, loading, success, error
   const [message, setMessage] = useState('');
   const { csrfToken, isLoading: csrfLoading } = useCsrf();
+  const [recaptchaError, setRecaptchaError] = useState(false);
   
   const { register, handleSubmit, reset, formState: { errors } } = useForm({
     resolver: yupResolver(newsletterSchema),
@@ -35,6 +37,9 @@ export default function NewsletterForm({
     setMessage('');
     
     try {
+      // Execute reCAPTCHA before form submission
+      const recaptchaToken = await executeReCaptcha('newsletter_subscription');
+
       // Sanitize the email before submitting
       const sanitizedEmail = sanitizeString(data.email);
       
@@ -47,13 +52,18 @@ export default function NewsletterForm({
         },
         body: JSON.stringify({ 
           email: sanitizedEmail,
-          csrf_token: csrfToken // Include in body as well for compatibility
+          csrf_token: csrfToken, // Include in body as well for compatibility
+          recaptchaToken // Add the reCAPTCHA token to the request
         })
       });
       
       const responseData = await response.json();
       
       if (!response.ok) {
+        if (responseData.details && responseData.details.includes('reCAPTCHA')) {
+          setRecaptchaError(true);
+          throw new Error("Vérification de sécurité échouée. Veuillez réessayer.");
+        }
         throw new Error(responseData.message || "Échec de l'abonnement");
       }
       
@@ -97,12 +107,19 @@ export default function NewsletterForm({
         )}
         
         {status === 'error' && (
-          <div className={styles.errorMessage}>{message}</div>
+          <div className={styles.errorMessage}>
+            {message}
+            {recaptchaError && (
+              <span> Cela peut arriver si votre connexion est instable ou si vous utilisez un VPN.</span>
+            )}
+          </div>
         )}
         
         <div className={styles.privacyNote}>
           <small>
-            Vous pouvez vous <a href="/unsubscribe">désabonner</a> à tout moment.
+            Vous pouvez vous <a href="/unsubscribe">désabonner</a> à tout moment.<br/>
+            Ce site est protégé par reCAPTCHA et la <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">politique de confidentialité</a> et les 
+            <a href="https://policies.google.com/terms" target="_blank" rel="noopener noreferrer"> conditions d&apos;utilisation</a> de Google s&apos;appliquent.
           </small>
         </div>
       </form>

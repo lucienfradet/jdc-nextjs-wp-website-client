@@ -7,6 +7,7 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { unsubscribeSchema } from '@/lib/validationSchemas';
 import { sanitizeString } from '@/lib/validation';
+import { executeReCaptcha } from '@/lib/recaptcha';
 import { useCsrf } from '@/context/CsrfContext';
 import styles from '@/styles/Unsubscribe.module.css';
 
@@ -14,6 +15,7 @@ export default function UnsubscribePage() {
   const [status, setStatus] = useState('idle'); // 'idle', 'loading', 'success', 'error'
   const [message, setMessage] = useState('');
   const [showForm, setShowForm] = useState(true);
+  const [recaptchaError, setRecaptchaError] = useState(false);
   const searchParams = useSearchParams();
   const { csrfToken, isLoading: csrfLoading } = useCsrf();
 
@@ -49,8 +51,12 @@ export default function UnsubscribePage() {
     // Set loading state
     setStatus('loading');
     setMessage('');
+    setRecaptchaError(false);
 
     try {
+      // Execute reCAPTCHA before form submission
+      const recaptchaToken = await executeReCaptcha('newsletter_unsubscribe');
+      
       // Sanitize email
       const sanitizedEmail = sanitizeString(data.email);
       
@@ -62,11 +68,21 @@ export default function UnsubscribePage() {
         },
         body: JSON.stringify({ 
           email: sanitizedEmail,
-          csrf_token: csrfToken // Include in body as well for compatibility
+          csrf_token: csrfToken, // Include in body as well for compatibility
+          recaptchaToken // Add the reCAPTCHA token
         }),
       });
 
       const responseData = await response.json();
+
+      // Check if reCAPTCHA validation failed
+      if (!response.ok) {
+        if (responseData.details && responseData.details.includes('reCAPTCHA')) {
+          setRecaptchaError(true);
+          throw new Error("Vérification de sécurité échouée. Veuillez réessayer.");
+        }
+        throw new Error(responseData.message || "Une erreur est survenue");
+      }
 
       // Always show success message for privacy reasons,
       // even if the email doesn't exist
@@ -74,7 +90,7 @@ export default function UnsubscribePage() {
       setMessage(responseData.message || 'Vous avez été désabonné avec succès');
     } catch (error) {
       setStatus('error');
-      setMessage('Une erreur est survenue. Veuillez réessayer.');
+      setMessage(error.message || 'Une erreur est survenue. Veuillez réessayer.');
       console.log(error);
       // Show the form again in case of error
       setShowForm(true);
@@ -107,8 +123,11 @@ export default function UnsubscribePage() {
           )}
 
           {status === 'error' && (
-            <div>
+            <div className={styles.errorMessage}>
               {message}
+              {recaptchaError && (
+                <span> Cela peut arriver si votre connexion est instable ou si vous utilisez un VPN.</span>
+              )}
             </div>
           )}
 
@@ -141,6 +160,13 @@ export default function UnsubscribePage() {
                   {status === 'loading' ? 'Traitement...' : 'Se désabonner'}
                 </button>
               </form>
+              
+              <div className={styles.note}>
+                <small>
+                  Ce site est protégé par reCAPTCHA et la <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">politique de confidentialité</a> et les 
+                  <a href="https://policies.google.com/terms" target="_blank" rel="noopener noreferrer"> conditions d&apos;utilisation</a> de Google s&apos;appliquent.
+                </small>
+              </div>
             </>
           )}
 
