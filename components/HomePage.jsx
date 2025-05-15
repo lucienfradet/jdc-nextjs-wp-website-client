@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import WPImage from "@/components/WPImage";
 import DesktopHeader from "@/components/desktop/Header";
 import MobileHeader from "@/components/mobile/Header";
@@ -15,12 +15,10 @@ import { convertLineBreaksToHtml, renderContent } from '@/lib/textUtils';
 
 export default function HomePage({ pageData, headerData, footerData }) {
   const pageContent = pageData.acfFields;
-  // debug statement
-  // console.log("Page Content:", pageContent);
-
+  
+  // Initialize isMobile with a proper default based on window size if available
   const [isMobile, setIsMobile] = useState(false);
-  const [opacity, setOpacity] = useState(1); // Start with full opacity
-  const [loadingComplete, setLoadingComplete] = useState(false);
+  const [opacity, setOpacity] = useState(1);
   const collabTextRef = useRef(null);
   const catchPhraseRef = useRef(null);
   const [lines, setLines] = useState([]);
@@ -37,78 +35,79 @@ export default function HomePage({ pageData, headerData, footerData }) {
       // If no <br> is found, linesArray will have a single element
       setLines(linesArray);
     }
+  }, [pageContent]);
+
+  // Define event handlers with useCallback to prevent recreating them on each render
+  const handleResize = useCallback(() => {
+    setIsMobile(window.innerWidth <= 991);
   }, []);
 
+  const handleScroll = useCallback(() => {
+    if (!collabTextRef.current) return;
+
+    const rect = collabTextRef.current.getBoundingClientRect();
+    const windowHeight = window.innerHeight;
+
+    // Calculate opacity based on how centered the element is
+    const distanceFromCenter = Math.abs(rect.top + rect.height / 2 - windowHeight / 2);
+    const maxDistance = windowHeight / 3; // Increased for smoother transition
+
+    // Simplified opacity calculation
+    const newOpacity = Math.max(0.4, 1 - (distanceFromCenter / maxDistance) * 0.4);
+    
+    setOpacity(newOpacity);
+  }, []);
+
+  const handleMobileCatchPhrase = useCallback(() => {
+    const isMobileView = window.innerWidth <= 479;
+    const introContainer = document.querySelector(`.${styles.introContainer}`);
+
+    // Remove any existing mobile catchphrase to avoid duplicates
+    const existingMobileCatchPhrase = document.querySelector(`.${styles.mobileCatchPhrase}`);
+    if (existingMobileCatchPhrase) {
+      existingMobileCatchPhrase.remove();
+    }
+
+    // Only proceed if we're in mobile view, have content, and the container exists
+    if (isMobileView && lines.length > 0 && introContainer) {
+      // Create a new div for the mobile catchphrase
+      const mobileCatchPhrase = document.createElement('div');
+      mobileCatchPhrase.classList.add(styles.mobileCatchPhrase);
+
+      // Create paragraph with the same content as the original catchphrase
+      const paragraph = document.createElement('p');
+      paragraph.innerHTML = lines[0];
+
+      // Add the second line with the special class if it exists
+      if (lines[1]) {
+        paragraph.innerHTML += `<br/><span class="${styles.secondLine}">${lines[1]}</span>`;
+      }
+
+      mobileCatchPhrase.appendChild(paragraph);
+
+      // Insert at the beginning of the intro container
+      if (!introContainer.querySelector(`.${styles.mobileCatchPhrase}`)) {
+        introContainer.insertBefore(mobileCatchPhrase, introContainer.firstChild);
+      }
+    }
+  }, [lines]);
+
+  // Setup effect for initial checks and event listeners
   useEffect(() => {
+    // Set initial isMobile state
+    if (typeof window !== 'undefined') {
+      setIsMobile(window.innerWidth <= 991);
+    }
+    
     // Add a class to body during loading
     document.body.classList.add('page-loading');
 
-    const handleResize = () => {
-      setIsMobile(window.innerWidth <= 991); // Define breakpoint for mobile/tablet
-    };
-
-    // Change opacity of collab text element background with scroll distance from center
-    const handleScroll = () => {
-      if (!collabTextRef.current) return;
-
-      const rect = collabTextRef.current.getBoundingClientRect();
-      const windowHeight = window.innerHeight;
-
-      // Calculate opacity based on how centered the element is
-      const distanceFromCenter = Math.abs(rect.top + rect.height / 2 - windowHeight / 2);
-      const maxDistance = windowHeight / 5;
-
-      const isMobileCSS = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--is-mobile'));
-
-      // isMobile is constantly true and was removed from dependency because it was causing problems
-      let newOpacity = isMobileCSS
-        ? Math.max(0.2, 1 - (distanceFromCenter / maxDistance) * 0.3)
-        : Math.max(0.6, 1 - (distanceFromCenter / maxDistance) * 0.3);
-
-      setOpacity(newOpacity);
-    };
-
-    const handleMobileCatchPhrase = () => {
-      const isMobileView = window.innerWidth <= 479;
-      const introContainer = document.querySelector(`.${styles.introContainer}`);
-
-      // Remove any existing mobile catchphrase to avoid duplicates
-      const existingMobileCatchPhrase = document.querySelector(`.${styles.mobileCatchPhrase}`);
-      if (existingMobileCatchPhrase) {
-        existingMobileCatchPhrase.remove();
-      }
-
-      // Only proceed if we're in mobile view, have content, and the container exists
-      if (isMobileView && lines.length > 0 && introContainer) {
-        // Create a new div for the mobile catchphrase instead of cloning
-        const mobileCatchPhrase = document.createElement('div');
-        mobileCatchPhrase.classList.add(styles.mobileCatchPhrase);
-
-        // Create paragraph with the same content as the original catchphrase
-        const paragraph = document.createElement('p');
-        paragraph.innerHTML = lines[0];
-
-        // Add the second line with the special class if it exists
-        if (lines[1]) {
-          paragraph.innerHTML += `<br/><span class="${styles.secondLine}">${lines[1]}</span>`;
-        }
-
-        mobileCatchPhrase.appendChild(paragraph);
-
-        // Insert at the beginning of the intro container
-        if (!introContainer.querySelector(`.${styles.mobileCatchPhrase}`)) {
-          introContainer.insertBefore(mobileCatchPhrase, introContainer.firstChild);
-        }
-      }
-    };
-
-    // Set up all event listeners
+    // Set up event listeners
     window.addEventListener("resize", handleResize);
     window.addEventListener("scroll", handleScroll);
     window.addEventListener('resize', handleMobileCatchPhrase);
     
     // Initial checks
-    handleResize();
     handleScroll();
     handleMobileCatchPhrase();
 
@@ -117,28 +116,29 @@ export default function HomePage({ pageData, headerData, footerData }) {
       window.removeEventListener("scroll", handleScroll);
       window.removeEventListener('resize', handleMobileCatchPhrase);
     };
-  }, [loadingComplete, lines]);
+  }, [handleResize, handleScroll, handleMobileCatchPhrase]);
 
-  // Handle loading complete callback
-  const handleLoadingComplete = () => {
-    setLoadingComplete(true);
-    setIsMobile(window.innerWidth <= 991);
-  };
+  // Effect to handle mobile catchphrase updates when lines change
+  useEffect(() => {
+    if (lines.length > 0) {
+      handleMobileCatchPhrase();
+    }
+  }, [lines, handleMobileCatchPhrase]);
 
   return (
     <>
-      {/* 
-      Add the loading overlay */}
+      {/* Add the loading overlay */}
       <ClientLoadingOverlay 
         minLoadTime={500} 
-        onLoadingComplete={handleLoadingComplete} 
       />
 
-      {isMobile ? (
+      {/* Always render both headers but use CSS to show/hide them */}
+      <div className={isMobile ? styles.mobileHeaderVisible : styles.mobileHeaderHidden}>
         <MobileHeader pageData={headerData} />
-      ) : (
+      </div>
+      <div className={isMobile ? styles.desktopHeaderHidden : styles.desktopHeaderVisible}>
         <DesktopHeader pageData={headerData} />
-      )}
+      </div>
 
       <main className={styles.homepageBody}>
         <section className={styles.titleSection}>
@@ -146,8 +146,8 @@ export default function HomePage({ pageData, headerData, footerData }) {
             {isMobile ? (
               <HomePageSvgTitleSection mobile={true} />
             ) : (
-                <HomePageSvgTitleSection mobile={false} />
-              )}
+              <HomePageSvgTitleSection mobile={false} />
+            )}
           </div>
           <div className={styles.catchPhrase}>
             <p ref={catchPhraseRef}>
@@ -161,6 +161,8 @@ export default function HomePage({ pageData, headerData, footerData }) {
             </p>
           </div>
         </section>
+        
+        {/* Rest of the component remains the same */}
         <section className={styles.introSection}>
           <div className={styles.introContainer}>
             <div className={styles.imgCrewContainer}>
@@ -185,6 +187,7 @@ export default function HomePage({ pageData, headerData, footerData }) {
             </svg>
           </div>
         </section>
+        
         <section className={styles.produitsSection}>
           <div className={styles.produitsContainer}>
             <h2>{pageContent["h2-produits"]}</h2>
@@ -201,6 +204,7 @@ export default function HomePage({ pageData, headerData, footerData }) {
             <WPImage className={styles.imgProduits} image={pageContent["img-produits"]} />
           </div>
         </section>
+        
         <section className={styles.collabSection}>
           <svg className={styles.collabSVG} xmlns="http://www.w3.org/2000/svg" width="1766" height="638" viewBox="0 0 1766 638" fill="none">
             <path d="M43.7062 221.241C-32.7938 180.5 289.604 75.0716 318.206 250.5C342.216 397.759 80.9928 509.928 190.206 587.5C350.706 701.5 477.304 240.743 655.263 311.515C749.247 348.892 728.538 439.52 825.359 451.273C956.919 467.243 961.832 70.5473 1088.39 127.624C1164.92 162.134 1149.78 349.903 1229.56 352.975C1298.3 355.621 1303.83 208.471 1372.03 195.162C1445.33 180.859 1471.48 319.259 1545.2 311.515C1647.62 300.756 1733.71 32 1733.71 32" stroke="url(#paint0_linear_208_80)" strokeWidth="63" strokeLinecap="round"/>
@@ -244,8 +248,8 @@ export default function HomePage({ pageData, headerData, footerData }) {
                             {linkText.trim()}
                           </a>
                         ) : (
-                            linkText.trim()
-                          )}
+                          linkText.trim()
+                        )}
                         {rest.length > 0 ? `, ${rest.join(",").trim()}` : ""}
                       </p>
                     );
@@ -288,11 +292,13 @@ export default function HomePage({ pageData, headerData, footerData }) {
 
         <EventsSection title={pageContent["h2-events"] || "Événements et actualités"} />
 
-        {isMobile ? (
+        {/* Consistent footer rendering approach */}
+        <div className={isMobile ? styles.mobileFooterVisible : styles.mobileFooterHidden}>
           <MobileFooter pageData={footerData} />
-        ) : (
-            <DesktopFooter pageData={footerData} />
-          )}
+        </div>
+        <div className={isMobile ? styles.desktopFooterHidden : styles.desktopFooterVisible}>
+          <DesktopFooter pageData={footerData} />
+        </div>
       </main>
     </>
   );

@@ -852,6 +852,48 @@
   }
 }
 
+/* Header visibility classes */
+.mobileHeaderVisible {
+  display: block;
+}
+
+.mobileHeaderHidden {
+  display: none;
+}
+
+.desktopHeaderVisible {
+  display: block;
+  position: relative;
+  z-index: 100; /* Ensure header stays above other content */
+}
+
+.desktopHeaderHidden {
+  display: none;
+}
+
+/* Footer visibility classes */
+.mobileFooterVisible {
+  display: block;
+}
+
+.mobileFooterHidden {
+  display: none;
+}
+
+.desktopFooterVisible {
+  display: block;
+}
+
+.desktopFooterHidden {
+  display: none;
+}
+
+/* Add a higher z-index for header sections when they need to be above content */
+:global(header) {
+  position: relative;
+  z-index: 1000;
+}
+
 @media screen and (max-width: 866px) {
   .catchPhrase {
     font-size: 2.8vw;
