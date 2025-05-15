@@ -8,6 +8,7 @@ import DesktopFooter from "@/components/desktop/Footer";
 import MobileFooter from "@/components/mobile/Footer";
 import { renderContent } from "@/lib/textUtils";
 import styles from '@/styles/AProposPage.module.css';
+import useIntersectionObserver from '@/lib/useIntersectionObserver'; // Import the hook
 
 export default function AProposPage({ 
   pageData,
@@ -20,6 +21,22 @@ export default function AProposPage({
   const [activeCircle, setActiveCircle] = useState(null);
   const [clickedImages, setClickedImages] = useState({ img1: false, img2: false, img3: false });
   const [circlesInView, setCirclesInView] = useState({ circle1: false, circle2: false });
+
+
+  // Set up the intersection observer
+  const [addScrollRef, observerEntries] = useIntersectionObserver({
+    rootMargin: '0px 0px -100px 0px',
+    threshold: 0.1
+  });
+
+  // Handle visibility based on intersection
+  useEffect(() => {
+    observerEntries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, [observerEntries]);
   
   const circle1Ref = useRef(null);
   const circle2Ref = useRef(null);
@@ -145,7 +162,10 @@ export default function AProposPage({
           </div>
 
         {/* Section 1 */}
-        <section className={styles.section1}>
+        <section 
+          className={`${styles.section1} reveal-on-scroll`}
+          ref={addScrollRef}
+        >
           <div className={styles.backgroundContainer}>
             <WPImage 
               image={pageContent["section-1"]["background-img"]} 
@@ -166,7 +186,9 @@ export default function AProposPage({
         </section>
 
         {/* Section 2 */}
-        <section className={styles.section2}>
+        <section 
+          className={`${styles.section2}`}
+        >
           <div className={styles.circlesContainer}>
             <div 
               ref={circle1Ref}
@@ -220,7 +242,10 @@ export default function AProposPage({
         </section>
 
         {/* Section 3 */}
-        <section className={styles.section3}>
+        <section 
+          className={`${styles.section3} reveal-on-scroll`}
+          ref={addScrollRef}
+        >
           <div className={styles.centerImageContainer}>
             <WPImage 
               image={pageContent["section-3"]["center-img"]} 
@@ -275,7 +300,10 @@ export default function AProposPage({
         </section>
 
         {/* Section 4 */}
-        <section className={styles.section4}>
+        <section 
+          className={`${styles.section4} reveal-on-scroll`}
+          ref={addScrollRef}
+        >
           <div className={styles.contentContainer}>
             <div className={styles.textSide}>
               <h2>{pageContent["section-4"]["title"]}</h2>
@@ -304,7 +332,10 @@ export default function AProposPage({
         </section>
 
         {/* Section 5 - Podcast */}
-        <section className={styles.section5}>
+        <section 
+          className={`${styles.section5} reveal-on-scroll`}
+          ref={addScrollRef}
+        >
           <div className={styles.podcastContainer}>
             <div className={styles.podcastContent}>
               <h2>{pageContent["section-5"]["title"]}</h2>

@@ -289,6 +289,18 @@ body {
   border: 1px solid var(--red);
 }
 
+/* Scroll animation classes */
+.reveal-on-scroll {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+
+.reveal-on-scroll.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
 /* Mobile responsive styles */
 @media (max-width: 576px) {
   .booking-confirmation-dialog {

@@ -8,6 +8,7 @@ import DesktopFooter from "@/components/desktop/Footer";
 import MobileFooter from "@/components/mobile/Footer";
 import { renderContent } from "@/lib/textUtils";
 import styles from '@/styles/ContactPage.module.css';
+import useIntersectionObserver from '@/lib/useIntersectionObserver'; // Import the hook
 
 export default function ContactPage({ 
   pageData,
@@ -17,6 +18,21 @@ export default function ContactPage({
 }) {
   const pageContent = pageData.acfFields;
   const [isMobile, setIsMobile] = useState(false);
+
+  // Set up the intersection observer
+  const [addScrollRef, observerEntries] = useIntersectionObserver({
+    rootMargin: '0px 0px -100px 0px',
+    threshold: 0.1
+  });
+
+  // Handle visibility based on intersection
+  useEffect(() => {
+    observerEntries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, [observerEntries]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -82,7 +98,7 @@ export default function ContactPage({
           </defs>
         </svg>
 
-        <section className={styles.contactSection}>
+        <section className={`${styles.contactSection} reveal-on-scroll`} ref={addScrollRef}>
           <div className={styles.mapContainer}>
             <iframe 
               src={`https://www.google.com/maps/embed/v1/place?key=${mapsApiKey}&q=${encodedAddress}`} 

@@ -1,3 +1,6 @@
+// Modifications to HomePage.jsx
+// Here's an example of the changes you would make:
+
 "use client";
 
 import { useEffect, useRef, useState, useCallback } from "react";
@@ -12,6 +15,7 @@ import ClientLoadingOverlay from "@/components/loading/ClientLoadingOverlay";
 import Link from "next/link";
 import styles from '@/styles/HomePage.module.css';
 import { convertLineBreaksToHtml, renderContent } from '@/lib/textUtils';
+import useIntersectionObserver from '@/lib/useIntersectionObserver'; // Import the hook
 
 export default function HomePage({ pageData, headerData, footerData }) {
   const pageContent = pageData.acfFields;
@@ -22,6 +26,21 @@ export default function HomePage({ pageData, headerData, footerData }) {
   const collabTextRef = useRef(null);
   const catchPhraseRef = useRef(null);
   const [lines, setLines] = useState([]);
+
+  // Set up the intersection observer
+  const [addScrollRef, observerEntries] = useIntersectionObserver({
+    rootMargin: '0px 0px -100px 0px',
+    threshold: 0.1
+  });
+
+  // Handle visibility based on intersection
+  useEffect(() => {
+    observerEntries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, [observerEntries]);
 
   // Detect <br> and adjust second line
   useEffect(() => {
@@ -162,8 +181,10 @@ export default function HomePage({ pageData, headerData, footerData }) {
           </div>
         </section>
         
-        {/* Rest of the component remains the same */}
-        <section className={styles.introSection}>
+        {/* Using the reveal-on-scroll class for sections */}
+        <section 
+          className={`${styles.introSection}`}
+        >
           <div className={styles.introContainer}>
             <div className={styles.imgCrewContainer}>
               <WPImage className={styles.imgCrew} image={pageContent["img-crew"]} />
@@ -188,7 +209,10 @@ export default function HomePage({ pageData, headerData, footerData }) {
           </div>
         </section>
         
-        <section className={styles.produitsSection}>
+        <section 
+          className={`${styles.produitsSection} reveal-on-scroll`}
+          ref={addScrollRef}
+        >
           <div className={styles.produitsContainer}>
             <h2>{pageContent["h2-produits"]}</h2>
             <div className={styles.columnsWrapper}>
@@ -205,8 +229,12 @@ export default function HomePage({ pageData, headerData, footerData }) {
           </div>
         </section>
         
-        <section className={styles.collabSection}>
+        <section 
+          className={`${styles.collabSection} reveal-on-scroll`}
+          ref={addScrollRef}
+        >
           <svg className={styles.collabSVG} xmlns="http://www.w3.org/2000/svg" width="1766" height="638" viewBox="0 0 1766 638" fill="none">
+            {/* SVG content remains the same */}
             <path d="M43.7062 221.241C-32.7938 180.5 289.604 75.0716 318.206 250.5C342.216 397.759 80.9928 509.928 190.206 587.5C350.706 701.5 477.304 240.743 655.263 311.515C749.247 348.892 728.538 439.52 825.359 451.273C956.919 467.243 961.832 70.5473 1088.39 127.624C1164.92 162.134 1149.78 349.903 1229.56 352.975C1298.3 355.621 1303.83 208.471 1372.03 195.162C1445.33 180.859 1471.48 319.259 1545.2 311.515C1647.62 300.756 1733.71 32 1733.71 32" stroke="url(#paint0_linear_208_80)" strokeWidth="63" strokeLinecap="round"/>
             <defs>
               <linearGradient id="paint0_linear_208_80" x1="401.428" y1="-363.684" x2="1554.7" y2="350.256" gradientUnits="userSpaceOnUse">
@@ -221,28 +249,29 @@ export default function HomePage({ pageData, headerData, footerData }) {
           </svg>
           <div className={styles.collabContainer}>
             <div 
-              ref={collabTextRef}
-              className={styles.collabTextContainer}
+              ref={(el) => {
+                collabTextRef.current = el;
+                addScrollRef(el);
+              }}
+              className={`${styles.collabTextContainer} reveal-on-scroll`}
               style={{ "--bg-opacity": opacity }}
             >
               <WPImage className={styles.imgLogoNFriends} image={pageContent["img-jdc-n-friends"]} />
               <h2>{pageContent["h2-collaborateurs"]}</h2>
-              {/* dynamic implementation of collaborators */}
+              {/* Collaborators remain the same */}
               {
                 Object.keys(pageContent)
                 .filter((key) => key.startsWith("text-collaborateur-"))
                 .map((key) => {
-                  const collaboratorIndex = key.split("-").pop(); // Extract the index from the key
+                  const collaboratorIndex = key.split("-").pop();
                   const text = pageContent[key];
                   const urlKey = `url-collaborateur-${collaboratorIndex}`;
                   const url = pageContent[urlKey];
 
-                  // check if empty
                   if (text && text.trim()) {
                     const [linkText, ...rest] = text.split(",");
                     return (
                       <p key={key}>
-                        {/* also check if empty */}
                         {url && url.trim() ? (
                           <a href={url} target="_blank" rel="noopener noreferrer">
                             {linkText.trim()}
@@ -254,7 +283,7 @@ export default function HomePage({ pageData, headerData, footerData }) {
                       </p>
                     );
                   }
-                  return null; // Skip if text is empty
+                  return null;
                 })
               }
             </div>
@@ -264,9 +293,13 @@ export default function HomePage({ pageData, headerData, footerData }) {
           </div>
         </section>
 
-        <section className={styles.abonnSection}>
+        <section 
+          className={`${styles.abonnSection} reveal-on-scroll`}
+          ref={addScrollRef}
+        >
           <div className={styles.abonnContainer}>
-            <div className={styles.textContent}>
+            {/* Add nested animations with delay for children elements */}
+            <div className={`${styles.textContent} reveal-on-scroll delay-200`} ref={addScrollRef}>
               <h2>{pageContent["h2-abonnements"]}</h2>
               {renderContent(pageContent["paragraph-abonnements"])}
               <Link href={pageContent["btn-abonnements-url"] || "/abonnement"}>
@@ -274,7 +307,7 @@ export default function HomePage({ pageData, headerData, footerData }) {
               </Link>
             </div>
 
-            <div className={styles.imageGallery}>
+            <div className={`${styles.imageGallery} reveal-on-scroll delay-300`} ref={addScrollRef}>
               <WPImage className={styles.imgAbonn1} image={pageContent["img-abonnements-1"]} />
               <WPImage className={styles.imgAbonn2} image={pageContent["img-abonnements-2"]} />
             </div>
@@ -290,7 +323,11 @@ export default function HomePage({ pageData, headerData, footerData }) {
           </div>
         </section>
 
-        <EventsSection title={pageContent["h2-events"] || "Événements et actualités"} />
+        <EventsSection 
+          title={pageContent["h2-events"] || "Événements et actualités"}
+          className="reveal-on-scroll"
+          ref={addScrollRef} 
+        />
 
         {/* Consistent footer rendering approach */}
         <div className={isMobile ? styles.mobileFooterVisible : styles.mobileFooterHidden}>
