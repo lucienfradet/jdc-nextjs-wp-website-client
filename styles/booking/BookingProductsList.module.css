@@ -7,9 +7,16 @@
 .productGrid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-  gap: 30px;
+  gap: 20px;
   padding: 20px 0;
-  max-width: 600px; /* Adjust this value based on your design */
+  max-width: 90vw; /* Adjust this value based on your design */
+  margin: auto;
+  justify-items: center; /* Centers items horizontally */
+  align-items: center;   /* Centers items vertically */
+}
+
+.productGrid > *:only-child {
+  max-width: 60%; /* Match the minmax width */
 }
 
 .loading {
@@ -50,5 +57,11 @@
 @media (min-width: 1400px) {
   .productGrid {
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .productGrid > *:only-child {
+    max-width: 100%; /* Match the minmax width */
   }
 }

@@ -1,9 +1,8 @@
 .agrotourismeBody {
-  padding-top: var(--header-height);
   background: var(--beige);
   color: var(--green);
   font-family: 'Roboto';
-  overflow-x: hidden;
+  overflow: hidden;
 }
 
 /* Hero Section */
@@ -12,6 +11,7 @@
   background-color: var(--green);
   color: var(--beige);
   padding: 80px 40px;
+  padding-top: calc(var(--header-height) + 4rem);
   text-align: center;
 }
 
@@ -150,12 +150,9 @@
 
 /* Responsive styles */
 @media (max-width: 991px) {
-  .agrotourismeBody {
-    padding-top: var(--header-height-mobile);
-  }
-
   .heroSection {
     padding: 60px 30px;
+    padding-top: calc(var(--header-height-mobile) + 2rem);
   }
 
   .heroSection h1 {
@@ -222,6 +219,7 @@
   .bookingSection,
   .faqSection {
     padding: 40px 20px;
+    padding-top: calc(var(--header-height-mobile) + 2rem);
   }
 
   .textColumn {

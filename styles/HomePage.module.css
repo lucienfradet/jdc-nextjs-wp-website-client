@@ -1,5 +1,4 @@
 .homepageBody {
-  padding-top: var(--header-height);
   overflow-y: hidden;
   z-index: 0;
   background: var(--beige);
@@ -9,6 +8,7 @@
 /* Title section */
 .titleSection {
   position: relative; /* To position elements inside the section */
+  padding-top: var(--header-height);
   background-color: var(--green); /* Section background color */
   color: var(--beige); /* Text color */
   height: 43vw; /* Fixed height for the section */
@@ -626,11 +626,8 @@
 
 /* MEDIA QUERIES */
 @media screen and (max-width: 991px) {
-  .homepageBody {
-    padding-top: var(--header-height-mobile);
-  }
-
   .titleSection {
+    padding-top: var(--header-height-mobile);
     height: 61vw;
   }
 

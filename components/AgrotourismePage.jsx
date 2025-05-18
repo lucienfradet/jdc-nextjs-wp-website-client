@@ -9,6 +9,7 @@ import MobileFooter from "@/components/mobile/Footer";
 import BookingProductsList from "@/components/booking/BookingProductsList";
 import styles from '@/styles/AgrotourismePage.module.css';
 import { renderContent } from '@/lib/textUtils';
+import useIntersectionObserver from '@/lib/useIntersectionObserver';
 
 export default function AgrotourismePage({ 
   pageData,
@@ -18,6 +19,21 @@ export default function AgrotourismePage({
 }) {
   const [isMobile, setIsMobile] = useState(false);
   const pageContent = pageData.acfFields;
+
+  // Set up the intersection observer
+  const [addScrollRef, observerEntries] = useIntersectionObserver({
+    rootMargin: '0px 0px -100px 0px',
+    threshold: 0.1
+  });
+
+  // Handle visibility based on intersection
+  useEffect(() => {
+    observerEntries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, [observerEntries]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -42,7 +58,7 @@ export default function AgrotourismePage({
 
       <main className={styles.agrotourismeBody}>
         {/* Hero section */}
-        <section className={styles.heroSection}>
+        <section className={`${styles.heroSection}`}>
           <div className={styles.heroContent}>
             <h1>{pageContent["titre-principal"]}</h1>
             <div className={styles.heroDescription}>
@@ -52,7 +68,7 @@ export default function AgrotourismePage({
         </section>
 
         {/* Info section with 2 images */}
-        <section className={styles.infoSection}>
+        <section className={`${styles.infoSection} reveal-on-scroll`} ref={addScrollRef}>
           <div className={styles.infoContainer}>
             <div className={styles.imageColumn}>
               {pageContent["image-gauche"] && (
@@ -86,7 +102,7 @@ export default function AgrotourismePage({
         </section>
 
         {/* Booking section */}
-        <section className={styles.bookingSection}>
+        <section className={`${styles.bookingSection} reveal-on-scroll`} ref={addScrollRef}>
           <div className={styles.bookingContainer}>
             <h2>{pageContent["titre-visites"] || "Nos visites guidées"}</h2>
             <div className={styles.bookingDescription}>
@@ -101,7 +117,7 @@ export default function AgrotourismePage({
 
         {/* FAQ Section (optional) */}
         {pageContent["faq-titre"] && (
-          <section className={styles.faqSection}>
+          <section className={`${styles.faqSection} reveal-on-scroll`} ref={addScrollRef}>
             <div className={styles.faqContainer}>
               <h2>{pageContent["faq-titre"]}</h2>
               <div className={styles.faqGrid}>
