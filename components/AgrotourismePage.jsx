@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import WPImage from "@/components/WPImage";
 import DesktopHeader from "@/components/desktop/Header";
 import MobileHeader from "@/components/mobile/Header";
@@ -18,7 +18,9 @@ export default function AgrotourismePage({
   bookingProducts
 }) {
   const [isMobile, setIsMobile] = useState(false);
+  const [activeImageSet, setActiveImageSet] = useState(0);
   const pageContent = pageData.acfFields;
+  const SLIDE_INTERVAL = 5000; // Rotation time in milliseconds
 
   // Set up the intersection observer
   const [addScrollRef, observerEntries] = useIntersectionObserver({
@@ -48,6 +50,35 @@ export default function AgrotourismePage({
     };
   }, []);
 
+  // Image rotation for mobile view
+  useEffect(() => {
+    if (!isMobile) return;
+    
+    // Add a small delay to ensure proper rendering before starting the rotation
+    const initialTimer = setTimeout(() => {
+      const rotationTimer = setInterval(() => {
+        setActiveImageSet(prev => (prev === 0 ? 1 : 0));
+      }, SLIDE_INTERVAL);
+      
+      return () => {
+        clearInterval(rotationTimer);
+      };
+    }, 500);
+    
+    return () => {
+      clearTimeout(initialTimer);
+    };
+  }, [isMobile, SLIDE_INTERVAL]);
+
+  // Images array - assuming you'll provide these in the CMS
+  // If not already in the CMS, you'll need to modify the data structure
+  const introImages = [
+    pageContent["image-gauche"],
+    pageContent["image-droite"],
+    pageContent["image-trois"] || pageContent["image-gauche"], // Fallback if not available
+    pageContent["image-quatre"] || pageContent["image-droite"], // Fallback if not available
+  ];
+
   return (
     <>
       {isMobile ? (
@@ -67,20 +98,10 @@ export default function AgrotourismePage({
           </div>
         </section>
 
-        {/* Info section with 2 images */}
+        {/* Info section with 4 images */}
         <section className={`${styles.infoSection} reveal-on-scroll`} ref={addScrollRef}>
           <div className={styles.infoContainer}>
-            <div className={styles.imageColumn}>
-              {pageContent["image-gauche"] && (
-                <div className={styles.imageWrapper}>
-                  <WPImage 
-                    image={pageContent["image-gauche"]}
-                    className={styles.infoImage}
-                  />
-                </div>
-              )}
-            </div>
-            
+            {/* Text Column */}
             <div className={styles.textColumn}>
               <h2>{pageContent["titre-info"]}</h2>
               <div className={styles.infoText}>
@@ -88,16 +109,53 @@ export default function AgrotourismePage({
               </div>
             </div>
             
-            <div className={styles.imageColumn}>
-              {pageContent["image-droite"] && (
-                <div className={styles.imageWrapper}>
-                  <WPImage 
-                    image={pageContent["image-droite"]}
-                    className={styles.infoImage}
-                  />
-                </div>
-              )}
+            {/* Images Gallery */}
+            <div className={styles.imagesGallery}>
+              {introImages.map((image, index) => {
+                const isFirstSet = index < 2;
+                const isVisible = !isMobile || (activeImageSet === 0 && isFirstSet) || (activeImageSet === 1 && !isFirstSet);
+                
+                // On desktop, display all images in a grid
+                // On mobile, only display the active set
+                return (
+                  <div 
+                    key={`intro-image-${index}`} 
+                    className={`${styles.imageColumn} ${isMobile ? (isVisible ? styles.visible : styles.hidden) : ''}`}
+                    style={{
+                      // For desktop view, all images remain in the grid
+                      // For mobile view, explicitly set grid positions for proper layout
+                      gridColumn: isMobile ? (index % 2 === 0 ? "1" : "2") : "auto",
+                      gridRow: isMobile ? (index < 2 ? "1" : "2") : "auto"
+                    }}
+                  >
+                    {image && (
+                      <div className={styles.imageWrapper}>
+                        <WPImage 
+                          image={image}
+                          className={styles.infoImage}
+                        />
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+              
             </div>
+            {/* Indicators for mobile view */}
+            {isMobile && (
+              <div className={styles.imageIndicators}>
+                <button 
+                  className={`${styles.indicator} ${activeImageSet === 0 ? styles.active : ''}`}
+                  onClick={() => setActiveImageSet(0)}
+                  aria-label="View first set of images"
+                />
+                <button 
+                  className={`${styles.indicator} ${activeImageSet === 1 ? styles.active : ''}`}
+                  onClick={() => setActiveImageSet(1)}
+                  aria-label="View second set of images"
+                />
+              </div>
+            )}
           </div>
         </section>
 
