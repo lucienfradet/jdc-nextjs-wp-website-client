@@ -92,10 +92,6 @@
   animation: cascadeAnimation8 1.5s ease-in-out 1.6s forwards;
 }
 
-:root {
-  --cascade-step: 10vw; /* This is your variable that defines the cascade step */
-}
-
 /* Define increasing cascade distances using the variable */
 @keyframes cascadeAnimation1 {
   0% { opacity: 0; transform: translateY(0); }
@@ -153,10 +149,6 @@
   
   .h1LogoHollow {
     width: 90vw; /* Match the mobile width of h1Logo */
-  }
-
-  :root {
-    --cascade-step: 12.5vw; /* This is your variable that defines the cascade step */
   }
 }
 
@@ -883,12 +875,6 @@
 
 .desktopFooterHidden {
   display: none;
-}
-
-/* Add a higher z-index for header sections when they need to be above content */
-:global(header) {
-  position: relative;
-  z-index: 1000;
 }
 
 @media screen and (max-width: 866px) {

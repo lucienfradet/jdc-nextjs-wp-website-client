@@ -189,7 +189,7 @@ const PaymentPageContent = ({
     return (
       <div className={styles.csrfError}>
         <h2>Erreur de sécurité</h2>
-        <p>Votre session a expiré ou n'est pas valide. Veuillez retourner à la page de paiement et réessayer.</p>
+        <p>Votre session a expiré ou n&apos;est pas valide. Veuillez retourner à la page de paiement et réessayer.</p>
         <Link href="/checkout" className={styles.backLink}>
           Retour au formulaire de paiement
         </Link>

@@ -1,12 +1,11 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import styles from '@/styles/events/EventList.module.css';
 
 export default function ShareButton({ url, title, children }) {
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
-  const textAreaRef = useRef(null);
 
   // Function to copy text using the fallback method (textarea element)
   const copyTextFallback = (text) => {
@@ -30,6 +29,7 @@ export default function ShareButton({ url, title, children }) {
       
       return successful;
     } catch (err) {
+      console.error(err);
       return false;
     }
   };

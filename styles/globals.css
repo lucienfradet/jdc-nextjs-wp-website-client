@@ -17,7 +17,16 @@
   --header-height-mobile: 100px;
 
   --is-mobile: 0;
+
+  --cascade-step: 10vw; /* This is your variable that defines the cascade step */
 }
+
+/* Add a higher z-index for header sections when they need to be above content */
+header {
+  position: relative;
+  z-index: 1000;
+}
+
 
 @media (prefers-color-scheme: dark) {
   :root {
@@ -29,6 +38,7 @@
 @media (max-width: 991px) {
   :root {
     --is-mobile: 1;
+    --cascade-step: 12.5vw; /* This is your variable that defines the cascade step */
   }
 }
 

@@ -5,7 +5,7 @@ import BookingProductCard from './BookingProductCard';
 import styles from '@/styles/booking/BookingProductsList.module.css';
 
 export default function BookingProductsList({ products }) {
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, _setIsLoading] = useState(false);
 
   if (!products || products.length === 0) {
     return (

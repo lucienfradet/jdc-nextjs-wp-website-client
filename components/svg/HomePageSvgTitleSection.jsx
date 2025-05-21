@@ -1,6 +1,6 @@
 import styles from '@/styles/HomePage.module.css';
 
-export default function HomePageSvgTitleSection({ mobile }) {
+export default function HomePageSvgTitleSection() {
   return (
     <>
       <svg className={styles.h1Logo} viewBox="0 0 952 139" fill="none" xmlns="http://www.w3.org/2000/svg">
