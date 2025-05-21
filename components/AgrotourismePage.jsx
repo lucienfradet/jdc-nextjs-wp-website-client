@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useRef } from "react";
 import WPImage from "@/components/WPImage";
 import DesktopHeader from "@/components/desktop/Header";
 import MobileHeader from "@/components/mobile/Header";
@@ -15,12 +15,22 @@ export default function AgrotourismePage({
   pageData,
   headerData,
   footerData,
-  bookingProducts
+  bookingProducts,
+  showSwipeInstruction = false // Optional prop to control swipe instruction visibility
 }) {
   const [isMobile, setIsMobile] = useState(false);
   const [activeImageSet, setActiveImageSet] = useState(0);
+  const [userInteracted, setUserInteracted] = useState(false); // Track if user has clicked on image indicators
+  const rotationTimerRef = useRef(null); // Ref to store the interval ID
   const pageContent = pageData.acfFields;
   const SLIDE_INTERVAL = 5000; // Rotation time in milliseconds
+  
+  // Touch handling for swipe
+  const [touchStart, setTouchStart] = useState(null);
+  const [touchEnd, setTouchEnd] = useState(null);
+  
+  // Minimum swipe distance (in px)
+  const minSwipeDistance = 50;
 
   // Set up the intersection observer
   const [addScrollRef, observerEntries] = useIntersectionObserver({
@@ -50,25 +60,85 @@ export default function AgrotourismePage({
     };
   }, []);
 
-  // Image rotation for mobile view
+  // Image rotation for mobile view - only if user has not interacted with indicators
   useEffect(() => {
-    if (!isMobile) return;
+    if (!isMobile) return; // Only run this effect on mobile
+    
+    // Clear any existing timers first to prevent multiple timers
+    if (rotationTimerRef.current) {
+      clearInterval(rotationTimerRef.current);
+      rotationTimerRef.current = null;
+    }
+    
+    // Don't set up new timer if user has already interacted
+    if (userInteracted) return;
     
     // Add a small delay to ensure proper rendering before starting the rotation
     const initialTimer = setTimeout(() => {
-      const rotationTimer = setInterval(() => {
+      rotationTimerRef.current = setInterval(() => {
         setActiveImageSet(prev => (prev === 0 ? 1 : 0));
       }, SLIDE_INTERVAL);
-      
-      return () => {
-        clearInterval(rotationTimer);
-      };
     }, 500);
     
     return () => {
       clearTimeout(initialTimer);
+      if (rotationTimerRef.current) {
+        clearInterval(rotationTimerRef.current);
+        rotationTimerRef.current = null;
+      }
     };
-  }, [isMobile, SLIDE_INTERVAL]);
+  }, [isMobile, SLIDE_INTERVAL, userInteracted]);
+
+  // Handler for indicator button clicks
+  const handleIndicatorClick = (setIndex) => {
+    setActiveImageSet(setIndex);
+    setUserInteracted(true); // Mark that user has interacted
+    
+    // Immediately clear any existing interval when user interacts
+    if (rotationTimerRef.current) {
+      clearInterval(rotationTimerRef.current);
+      rotationTimerRef.current = null;
+    }
+  };
+  
+  // Touch event handlers for swipe
+  const onTouchStart = (e) => {
+    setTouchEnd(null); // Reset touchEnd
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const onTouchMove = (e) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const onTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+    
+    // Only handle swipe if it's significant enough
+    if (isLeftSwipe || isRightSwipe) {
+      // Mark that user has interacted (just like clicking indicators)
+      setUserInteracted(true);
+      
+      // Clear rotation timer when user swipes
+      if (rotationTimerRef.current) {
+        clearInterval(rotationTimerRef.current);
+        rotationTimerRef.current = null;
+      }
+      
+      // Change image set based on swipe direction
+      if (isLeftSwipe) {
+        // Swipe left - go to next set
+        setActiveImageSet(prev => prev === 0 ? 1 : 0);
+      } else if (isRightSwipe) {
+        // Swipe right - go to previous set
+        setActiveImageSet(prev => prev === 1 ? 0 : 1);
+      }
+    }
+  };
 
   // Images array - assuming you'll provide these in the CMS
   // If not already in the CMS, you'll need to modify the data structure
@@ -109,8 +179,13 @@ export default function AgrotourismePage({
               </div>
             </div>
             
-            {/* Images Gallery */}
-            <div className={styles.imagesGallery}>
+            {/* Images Gallery with Swipe Functionality */}
+            <div 
+              className={styles.imagesGallery}
+              onTouchStart={isMobile ? onTouchStart : undefined}
+              onTouchMove={isMobile ? onTouchMove : undefined}
+              onTouchEnd={isMobile ? onTouchEnd : undefined}
+            >
               {introImages.map((image, index) => {
                 const isFirstSet = index < 2;
                 const isVisible = !isMobile || (activeImageSet === 0 && isFirstSet) || (activeImageSet === 1 && !isFirstSet);
@@ -146,14 +221,20 @@ export default function AgrotourismePage({
               <div className={styles.imageIndicators}>
                 <button 
                   className={`${styles.indicator} ${activeImageSet === 0 ? styles.active : ''}`}
-                  onClick={() => setActiveImageSet(0)}
+                  onClick={() => handleIndicatorClick(0)}
                   aria-label="View first set of images"
                 />
                 <button 
                   className={`${styles.indicator} ${activeImageSet === 1 ? styles.active : ''}`}
-                  onClick={() => setActiveImageSet(1)}
+                  onClick={() => handleIndicatorClick(1)}
                   aria-label="View second set of images"
                 />
+              </div>
+            )}
+            {/* Optional swipe instruction in French */}
+            {isMobile && showSwipeInstruction && (
+              <div className={styles.swipeInstruction}>
+                <p>Faire glisser pour naviguer</p>
               </div>
             )}
           </div>

@@ -124,6 +124,25 @@
   background-color: var(--green);
 }
 
+.swipeInstruction {
+  text-align: center;
+  color: var(--green);
+  font-size: 0.9rem;
+  margin-top: 10px;
+  opacity: 0.7;
+  font-style: italic;
+}
+
+.imagesGallery {
+  touch-action: pan-y; /* Allow vertical scrolling but capture horizontal swipes */
+  user-select: none; /* Prevent text selection during swipe */
+}
+
+/* You might want to enhance transitions for smoother swipe experience */
+.visible, .hidden {
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
 .textColumn {
   width: 100%;
   max-width: 900px;
