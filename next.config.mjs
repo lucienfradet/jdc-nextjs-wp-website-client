@@ -2,18 +2,26 @@
 const nextConfig = {
   output: 'standalone',
   reactStrictMode: true,
-  basePath: process.env.NEXT_PUBLIC_BASE_PATH || '', // Serve the app under /jardindeschefs
+  basePath: process.env.NEXT_PUBLIC_BASE_PATH || '',
   images: {
     remotePatterns: [
+      // Development - localhost
       {
-        protocol: 'https', // or 'http' if you're using an unsecured domain
+        protocol: 'https',
         hostname: '127.0.0.1',
         pathname: '/wp-content/uploads/**',
       },
+      // Production - WordPress hostname from environment
       {
         protocol: 'https',
-        hostname: process.env.NEXT_PUBLIC_WORDPRESS_BASE_URL|| 'wordpress.jardindeschefs.ca', // Use the third domain or fallback
+        hostname: process.env.NEXT_PUBLIC_WORDPRESS_HOSTNAME || 'wordpress.jardindeschefs.ca',
         pathname: '/wp-content/uploads/**',
+      },
+      // Fallback - allow all WordPress paths
+      {
+        protocol: 'https',
+        hostname: process.env.NEXT_PUBLIC_WORDPRESS_HOSTNAME || 'wordpress.jardindeschefs.ca',
+        pathname: '/**',
       },
     ],
   },
