@@ -3,46 +3,47 @@ import styles from '@/styles/ClientLoadingOverlay.module.css';
 
 const ClientLoadingOverlay = ({ minLoadTime = 500, onLoadingComplete }) => {
   const [loading, setLoading] = useState(true);
+  const [mounted, setMounted] = useState(false);
 
-  // Use useCallback to prevent unnecessary re-renders
+  // Ensure component is mounted before showing
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const completeLoading = useCallback(() => {
-    // console.log("Animation complete, removing overlay");
     setLoading(false);
     
-    // Notify parent component that loading is truly complete
     if (onLoadingComplete) {
       onLoadingComplete();
     }
   }, [onLoadingComplete]);
 
   useEffect(() => {
-    // console.log(`Loading with minLoadTime: ${minLoadTime}ms`);
-    
-    // Clear any existing classes first to avoid conflicts
-    document.body.classList.remove('page-loaded');
-    
-    // Set loading state
-    document.body.classList.add('page-loading');
-    
-    // Keep track of whether the component is still mounted
+    if (!mounted) return;
+
     let isMounted = true;
     
-    // Don't remove overlay until animations have completed
+    // Set loading state immediately
+    if (typeof document !== 'undefined') {
+      document.body.classList.remove('page-loaded');
+      document.body.classList.add('page-loading');
+    }
+    
+    // Wait for minimum load time
     const revealTimer = setTimeout(() => {
-      // console.log("Starting reveal animation");
-      
       if (!isMounted) return;
       
-      // Add loaded class and remove loading class
-      document.body.classList.add('page-loaded');
-      document.body.classList.remove('page-loading');
+      if (typeof document !== 'undefined') {
+        document.body.classList.add('page-loaded');
+        document.body.classList.remove('page-loading');
+      }
       
-      // Wait for all animations to complete before removing overlay
+      // Complete loading after animations
       const completeTimer = setTimeout(() => {
         if (isMounted) {
           completeLoading();
         }
-      }, 2000); // Increased to ensure all transitions complete
+      }, 1500);
       
       return () => clearTimeout(completeTimer);
     }, minLoadTime);
@@ -51,7 +52,12 @@ const ClientLoadingOverlay = ({ minLoadTime = 500, onLoadingComplete }) => {
       isMounted = false;
       clearTimeout(revealTimer);
     };
-  }, [minLoadTime, completeLoading]);
+  }, [minLoadTime, completeLoading, mounted]);
+
+  // Don't render anything on server or if not mounted
+  if (!mounted || typeof window === 'undefined') {
+    return null;
+  }
 
   // Return null early if not loading
   if (!loading) return null;
