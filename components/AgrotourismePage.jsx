@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import WPImage from "@/components/WPImage";
 import DesktopHeader from "@/components/desktop/Header";
 import MobileHeader from "@/components/mobile/Header";
@@ -16,30 +16,54 @@ export default function AgrotourismePage({
   headerData,
   footerData,
   bookingProducts,
-  showSwipeInstruction = false // Optional prop to control swipe instruction visibility
+  showSwipeInstruction = false
 }) {
   const [isMobile, setIsMobile] = useState(false);
   const [activeImageSet, setActiveImageSet] = useState(0);
-  const [userInteracted, setUserInteracted] = useState(false); // Track if user has clicked on image indicators
-  const rotationTimerRef = useRef(null); // Ref to store the interval ID
-  const pageContent = pageData.acfFields;
-  const SLIDE_INTERVAL = 5000; // Rotation time in milliseconds
+  const [userInteracted, setUserInteracted] = useState(false);
   
-  // Touch handling for swipe
+  // Use refs for cleanup - CRITICAL FIX
+  const rotationTimerRef = useRef(null);
+  const initialTimerRef = useRef(null);
+  const isMountedRef = useRef(true); // Track if component is mounted
+  
+  const pageContent = pageData.acfFields;
+  const SLIDE_INTERVAL = 5000;
+  
+  // Touch handling
   const [touchStart, setTouchStart] = useState(null);
   const [touchEnd, setTouchEnd] = useState(null);
-  
-  // Minimum swipe distance (in px)
   const minSwipeDistance = 50;
 
-  // Set up the intersection observer
   const [addScrollRef, observerEntries] = useIntersectionObserver({
     rootMargin: '0px 0px -100px 0px',
     threshold: 0.1
   });
 
-  // Handle visibility based on intersection
+  const clearAllTimers = useCallback(() => {
+    if (rotationTimerRef.current) {
+      clearInterval(rotationTimerRef.current);
+      rotationTimerRef.current = null;
+    }
+    if (initialTimerRef.current) {
+      clearTimeout(initialTimerRef.current);
+      initialTimerRef.current = null;
+    }
+  }, []);
+
   useEffect(() => {
+    isMountedRef.current = true;
+    
+    return () => {
+      isMountedRef.current = false;
+      clearAllTimers();
+    };
+  }, [clearAllTimers]);
+
+  // Handle intersection observer visibility
+  useEffect(() => {
+    if (!isMountedRef.current) return;
+    
     observerEntries.forEach(entry => {
       if (entry.isIntersecting) {
         entry.target.classList.add('visible');
@@ -47,106 +71,94 @@ export default function AgrotourismePage({
     });
   }, [observerEntries]);
 
+  // Simplified resize handler with cleanup
   useEffect(() => {
+    if (!isMountedRef.current) return;
+    
     const handleResize = () => {
+      if (!isMountedRef.current) return;
       setIsMobile(window.innerWidth <= 991);
     };
 
-    window.addEventListener("resize", handleResize);
     handleResize(); // Initial check
+    window.addEventListener("resize", handleResize);
 
     return () => {
       window.removeEventListener("resize", handleResize);
     };
   }, []);
 
-  // Image rotation for mobile view - only if user has not interacted with indicators
+  // Simplified timer management - only one effect
   useEffect(() => {
-    if (!isMobile) return; // Only run this effect on mobile
+    // Clear any existing timers first
+    clearAllTimers();
     
-    // Clear any existing timers first to prevent multiple timers
-    if (rotationTimerRef.current) {
-      clearInterval(rotationTimerRef.current);
-      rotationTimerRef.current = null;
+    // Only set up timer if mobile, mounted, and user hasn't interacted
+    if (!isMobile || !isMountedRef.current || userInteracted) {
+      return;
     }
     
-    // Don't set up new timer if user has already interacted
-    if (userInteracted) return;
-    
-    // Add a small delay to ensure proper rendering before starting the rotation
-    const initialTimer = setTimeout(() => {
+    // Small delay before starting rotation
+    initialTimerRef.current = setTimeout(() => {
+      if (!isMountedRef.current || userInteracted) return;
+      
       rotationTimerRef.current = setInterval(() => {
+        if (!isMountedRef.current) return;
+        
         setActiveImageSet(prev => (prev === 0 ? 1 : 0));
       }, SLIDE_INTERVAL);
     }, 500);
     
-    return () => {
-      clearTimeout(initialTimer);
-      if (rotationTimerRef.current) {
-        clearInterval(rotationTimerRef.current);
-        rotationTimerRef.current = null;
-      }
-    };
-  }, [isMobile, SLIDE_INTERVAL, userInteracted]);
+    // Cleanup function
+    return clearAllTimers;
+  }, [isMobile, userInteracted, clearAllTimers, SLIDE_INTERVAL]);
 
-  // Handler for indicator button clicks
-  const handleIndicatorClick = (setIndex) => {
-    setActiveImageSet(setIndex);
-    setUserInteracted(true); // Mark that user has interacted
+  // Simplified indicator click handler
+  const handleIndicatorClick = useCallback((setIndex) => {
+    if (!isMountedRef.current) return;
     
-    // Immediately clear any existing interval when user interacts
-    if (rotationTimerRef.current) {
-      clearInterval(rotationTimerRef.current);
-      rotationTimerRef.current = null;
-    }
-  };
+    setActiveImageSet(setIndex);
+    setUserInteracted(true);
+    clearAllTimers(); // Stop all timers when user interacts
+  }, [clearAllTimers]);
   
-  // Touch event handlers for swipe
-  const onTouchStart = (e) => {
-    setTouchEnd(null); // Reset touchEnd
+  // FIXED: Touch handlers with proper checks
+  const onTouchStart = useCallback((e) => {
+    if (!isMountedRef.current) return;
+    setTouchEnd(null);
     setTouchStart(e.targetTouches[0].clientX);
-  };
+  }, []);
 
-  const onTouchMove = (e) => {
+  const onTouchMove = useCallback((e) => {
+    if (!isMountedRef.current) return;
     setTouchEnd(e.targetTouches[0].clientX);
-  };
+  }, []);
 
-  const onTouchEnd = () => {
-    if (!touchStart || !touchEnd) return;
+  const onTouchEnd = useCallback(() => {
+    if (!isMountedRef.current || !touchStart || !touchEnd) return;
     
     const distance = touchStart - touchEnd;
     const isLeftSwipe = distance > minSwipeDistance;
     const isRightSwipe = distance < -minSwipeDistance;
     
-    // Only handle swipe if it's significant enough
     if (isLeftSwipe || isRightSwipe) {
-      // Mark that user has interacted (just like clicking indicators)
       setUserInteracted(true);
+      clearAllTimers();
       
-      // Clear rotation timer when user swipes
-      if (rotationTimerRef.current) {
-        clearInterval(rotationTimerRef.current);
-        rotationTimerRef.current = null;
-      }
-      
-      // Change image set based on swipe direction
       if (isLeftSwipe) {
-        // Swipe left - go to next set
         setActiveImageSet(prev => prev === 0 ? 1 : 0);
       } else if (isRightSwipe) {
-        // Swipe right - go to previous set
         setActiveImageSet(prev => prev === 1 ? 0 : 1);
       }
     }
-  };
+  }, [touchStart, touchEnd, clearAllTimers, minSwipeDistance]);
 
-  // Images array - assuming you'll provide these in the CMS
-  // If not already in the CMS, you'll need to modify the data structure
+  // Images array
   const introImages = [
     pageContent["image-gauche"],
     pageContent["image-droite"],
-    pageContent["image-trois"] || pageContent["image-gauche"], // Fallback if not available
-    pageContent["image-quatre"] || pageContent["image-droite"], // Fallback if not available
+    pageContent["image-trois"] || pageContent["image-gauche"],
+    pageContent["image-quatre"] || pageContent["image-droite"],
   ];
 
   return (
@@ -179,7 +191,7 @@ export default function AgrotourismePage({
               </div>
             </div>
             
-            {/* Images Gallery with Swipe Functionality */}
+            {/* FIXED: Images Gallery with proper event handlers */}
             <div 
               className={styles.imagesGallery}
               onTouchStart={isMobile ? onTouchStart : undefined}
@@ -190,15 +202,11 @@ export default function AgrotourismePage({
                 const isFirstSet = index < 2;
                 const isVisible = !isMobile || (activeImageSet === 0 && isFirstSet) || (activeImageSet === 1 && !isFirstSet);
                 
-                // On desktop, display all images in a grid
-                // On mobile, only display the active set
                 return (
                   <div 
                     key={`intro-image-${index}`} 
                     className={`${styles.imageColumn} ${isMobile ? (isVisible ? styles.visible : styles.hidden) : ''}`}
                     style={{
-                      // For desktop view, all images remain in the grid
-                      // For mobile view, explicitly set grid positions for proper layout
                       gridColumn: isMobile ? (index % 2 === 0 ? "1" : "2") : "auto",
                       gridRow: isMobile ? (index < 2 ? "1" : "2") : "auto"
                     }}
@@ -214,8 +222,8 @@ export default function AgrotourismePage({
                   </div>
                 );
               })}
-              
             </div>
+            
             {/* Indicators for mobile view */}
             {isMobile && (
               <div className={styles.imageIndicators}>
@@ -231,7 +239,8 @@ export default function AgrotourismePage({
                 />
               </div>
             )}
-            {/* Optional swipe instruction in French */}
+            
+            {/* Optional swipe instruction */}
             {isMobile && showSwipeInstruction && (
               <div className={styles.swipeInstruction}>
                 <p>Faire glisser pour naviguer</p>
@@ -254,13 +263,12 @@ export default function AgrotourismePage({
           </div>
         </section>
 
-        {/* FAQ Section (optional) */}
+        {/* FAQ Section */}
         {pageContent["faq-titre"] && (
           <section className={`${styles.faqSection} reveal-on-scroll`} ref={addScrollRef}>
             <div className={styles.faqContainer}>
               <h2>{pageContent["faq-titre"]}</h2>
               <div className={styles.faqGrid}>
-                {/* Display FAQ items if they exist in page content */}
                 {Array.from({ length: 4 }).map((_, index) => {
                   const questionKey = `faq-question-${index + 1}`;
                   const answerKey = `faq-reponse-${index + 1}`;

@@ -4,9 +4,9 @@ import { notFound } from 'next/navigation';
 import { stripHtml } from '@/lib/textUtils';
 import { cache } from 'react';
 
-// export const revalidate = 3600;
+export const revalidate = 1800;
 // 0 for testing
-export const revalidate = 0;
+// export const revalidate = 0;
 
 
 // Cached product fetching function

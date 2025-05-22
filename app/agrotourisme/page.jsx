@@ -2,9 +2,9 @@ import { getPageFieldsByName } from '@/lib/cachedApi';
 import AgrotourismePage from '@/components/AgrotourismePage';
 import { notFound } from 'next/navigation';
 
-// export const revalidate = 3600;
+export const revalidate = 3600;
 // 0 for testing
-export const revalidate = 0;
+// export const revalidate = 0;
 
 // Generate metadata based on CMS data
 export async function generateMetadata() {
