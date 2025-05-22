@@ -9,44 +9,73 @@ async function handlePostRequest(request) {
     
     const taxRatesData = await fetchTaxRates();
     
-    // Format taxRatesData
+    // Format taxRatesData - get both customer province and Quebec rates
     const federalRate = taxRatesData.find(tax => 
       tax.country === 'CA' && (!tax.state || tax.state === '')
     ).rate / 100;
 
-    // Check if province is found in tax rates data
+    // Check if federal rate is found
     if (!federalRate) {
       throw new Error(`Federal tax rate not found`);
     }
 
-    const provincialRateRaw = taxRatesData.filter(tax => 
+    // Get customer province tax rates
+    const customerProvincialRateRaw = taxRatesData.filter(tax => 
       tax.country === 'CA' && tax.state.toLowerCase() === province.toLowerCase()
-    )
+    );
 
-    // Check if province is found in tax rates data
-    if (provincialRateRaw.length === 0) {
+    // Check if customer province is found in tax rates data
+    if (customerProvincialRateRaw.length === 0) {
       throw new Error(`Tax rates for province ${province} not found`);
     }
 
-    const provincialRate = provincialRateRaw[0].rate / 100;
+    const customerProvincialRate = customerProvincialRateRaw[0].rate / 100;
+
+    // Get Quebec tax rates for booking items
+    const quebecProvincialRateRaw = taxRatesData.filter(tax => 
+      tax.country === 'CA' && tax.state.toLowerCase() === 'qc'
+    );
+
+    if (quebecProvincialRateRaw.length === 0) {
+      throw new Error(`Quebec tax rates not found for booking items`);
+    }
+
+    const quebecProvincialRate = quebecProvincialRateRaw[0].rate / 100;
+
+    // Get tax labels for both provinces
+    const { federalLabel: customerFederalLabel, provincialLabel: customerProvincialLabel } = getTaxLabels(province);
+    const { federalLabel: quebecFederalLabel, provincialLabel: quebecProvincialLabel } = getTaxLabels('QC');
     
-    // Get tax labels based on province
-    const { federalLabel, provincialLabel } = getTaxLabels(province);
-    
-    // Calculate taxes for each item
+    // Initialize result with customer province labels
     const result = {
       items: [],
       taxSummary: {
-        [federalLabel]: { rate: federalRate, amount: 0 }
+        [customerFederalLabel]: { rate: federalRate, amount: 0 }
       }
     };
     
-    // Add provincial tax entry if applicable
-    if (provincialLabel && provincialRate > 0) {
-      result.taxSummary[provincialLabel] = { rate: provincialRate, amount: 0 };
-    } else if (federalLabel === 'HST') {
+    // Add customer provincial tax entry if applicable
+    if (customerProvincialLabel && customerProvincialRate > 0) {
+      result.taxSummary[customerProvincialLabel] = { rate: customerProvincialRate, amount: 0 };
+    } else if (customerFederalLabel === 'HST') {
       // For HST provinces, the rate is combined federal + provincial
-      result.taxSummary[federalLabel].rate = federalRate + provincialRate;
+      result.taxSummary[customerFederalLabel].rate = federalRate + customerProvincialRate;
+    }
+
+    // Add Quebec tax labels to summary if we have booking items and customer is not in Quebec
+    const hasBookingItems = items.some(item => item.type === 'mwb_booking' || item.isBooking);
+    const customerIsNotInQuebec = province.toLowerCase() !== 'qc';
+    
+    if (hasBookingItems && customerIsNotInQuebec) {
+      // Add Quebec TPS if not already present
+      if (!result.taxSummary[quebecFederalLabel]) {
+        result.taxSummary[quebecFederalLabel] = { rate: federalRate, amount: 0 };
+      }
+      
+      // Add Quebec TVQ
+      if (quebecProvincialLabel && quebecProvincialRate > 0) {
+        result.taxSummary[quebecProvincialLabel] = { rate: quebecProvincialRate, amount: 0 };
+      }
     }
     
     // Calculate taxes for each item
@@ -62,16 +91,33 @@ async function handlePostRequest(request) {
       };
       
       if (itemTax.taxable) {
-        // Calculate federal tax
-        const federalTaxAmount = subtotal * federalRate;
-        itemTax.taxes[federalLabel] = federalTaxAmount;
-        result.taxSummary[federalLabel].amount += federalTaxAmount;
+        // Determine if this is a booking item
+        const isBookingItem = item.type === 'mwb_booking' || item.isBooking;
         
-        // Calculate provincial tax if applicable
-        if (provincialLabel && provincialRate > 0) {
-          const provincialTaxAmount = subtotal * provincialRate;
-          itemTax.taxes[provincialLabel] = provincialTaxAmount;
-          result.taxSummary[provincialLabel].amount += provincialTaxAmount;
+        if (isBookingItem) {
+          // Use Quebec taxes for booking items
+          const federalTaxAmount = subtotal * federalRate;
+          itemTax.taxes[quebecFederalLabel] = federalTaxAmount;
+          result.taxSummary[quebecFederalLabel].amount += federalTaxAmount;
+          
+          // Calculate Quebec provincial tax
+          if (quebecProvincialLabel && quebecProvincialRate > 0) {
+            const provincialTaxAmount = subtotal * quebecProvincialRate;
+            itemTax.taxes[quebecProvincialLabel] = provincialTaxAmount;
+            result.taxSummary[quebecProvincialLabel].amount += provincialTaxAmount;
+          }
+        } else {
+          // Use customer's province taxes for non-booking items
+          const federalTaxAmount = subtotal * federalRate;
+          itemTax.taxes[customerFederalLabel] = federalTaxAmount;
+          result.taxSummary[customerFederalLabel].amount += federalTaxAmount;
+          
+          // Calculate customer's provincial tax if applicable
+          if (customerProvincialLabel && customerProvincialRate > 0) {
+            const provincialTaxAmount = subtotal * customerProvincialRate;
+            itemTax.taxes[customerProvincialLabel] = provincialTaxAmount;
+            result.taxSummary[customerProvincialLabel].amount += provincialTaxAmount;
+          }
         }
       }
       
@@ -85,14 +131,15 @@ async function handlePostRequest(request) {
     );
 
     // Add taxes to shipping if needed
-    result.appliedToShipping = provincialRateRaw[0].shipping;
+    // For shipping, always use customer's province rates
+    result.appliedToShipping = customerProvincialRateRaw[0].shipping;
     if (result.appliedToShipping) {
-      result.totalTax += (shipping * federalRate + shipping * provincialRate);
-      if (provincialLabel) {
-        result.taxSummary[provincialLabel].amount += shipping * provincialRate;
-        result.taxSummary[federalLabel].amount += shipping * federalRate;
+      result.totalTax += (shipping * federalRate + shipping * customerProvincialRate);
+      if (customerProvincialLabel) {
+        result.taxSummary[customerProvincialLabel].amount += shipping * customerProvincialRate;
+        result.taxSummary[customerFederalLabel].amount += shipping * federalRate;
       } else {
-        result.taxSummary[federalLabel].amount += shipping * federalRate;
+        result.taxSummary[customerFederalLabel].amount += shipping * federalRate;
       }
     }
     

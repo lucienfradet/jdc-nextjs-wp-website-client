@@ -54,6 +54,8 @@ export function StripeProvider({ children }) {
         total: amount
       };
 
+      console.log(fullOrderData)
+
       const response = await fetch('/api/stripe/create-payment-intent', {
         method: 'POST',
         headers: {

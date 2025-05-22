@@ -131,6 +131,7 @@ sudo docker compose -f docker-compose.yml -f docker-compose.prod.yml up
 #### Update local Database in production
 
 Make sure that all migration files are safe to run and wont result in data loss!
+This should also be run at least ounce on production server in order to deploy the db!
 ```bash
 npx prisma migrate deploy
 ```
