@@ -1,65 +1,37 @@
-import { getPageFieldsByName } from '@/lib/cachedApi';
-import Abonnement from '@/components/Abonnement';
-import { notFound } from 'next/navigation';
+'use client';
+import { useEffect } from 'react';
+import styles from '@/styles/RedirectPage.module.css';
 
-export const revalidate = 3600;
+export default function AbonnementPage() {
+  useEffect(() => {
+    // Redirect after 1.5 seconds
+    const timer = setTimeout(() => {
+      window.location.href = 'https://www.potagerdelacrapaudine.ca/services';
+    }, 1500);
 
-// Generate metadata based on CMS data
-export async function generateMetadata() {
-  // This fetch is now cached
-  const pageData = await getPageFieldsByName("abonnement");
-  
-  if (!pageData) {
-    return null;
-  }
-  
-  // Access the metadata fields from your CMS data
-  const { acfFields } = pageData;
-  
-  return {
-    title: acfFields["head-title"] || 'Le Jardin des chefs',
-    description: acfFields["head-description"] || undefined,
-    alternates: {
-      canonical: '/abonnement',
-    },
-    openGraph: {
-      title: acfFields["head-title"] || 'Le Jardin des chefs',
-      description: acfFields["head-description"] || undefined,
-      url: '/abonnement',
-    },
-  };
-}
-
-export default async function Page() {
-  const filterType = "panier-de-legumes"
-  // Fetch data on the server
-  const [pageData, headerData, footerData, productsRes, pointsRes] = await Promise.all([
-    getPageFieldsByName("abonnement"),
-    getPageFieldsByName("header"),
-    getPageFieldsByName("footer"),
-    fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/products/by-filter/${filterType}`, { cache: "no-store" }),
-    fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/point_de_chute`, { cache: "no-store" })
-  ]);
-
-  if (!pageData || !headerData || !footerData) {
-    console.error("Required CMS data not found");
-    notFound();
-  }
-
-  if (!productsRes.ok || !pointsRes.ok) {
-    console.error("Error fetching products or points de chutes");
-  }
-
-  const products = await productsRes.json();
-  const pointDeChute = await pointsRes.json();
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
-    <Abonnement
-      pageData={pageData}
-      headerData={headerData}
-      footerData={footerData}
-      pointDeChute={pointDeChute}
-      products={products}
-    />
+    <div className={styles.container}>
+      <div className={styles.card}>
+        <h1 className={styles.title}>Redirection en cours...</h1>
+        <div className={styles.loadingSpinner}></div>
+        <p className={styles.message}>
+          Vous êtes redirigé vers la plateforme d&apos;abonnement de nos partenaires des <strong>jardins de la crapaudine</strong>.
+        </p>
+        <p className={styles.submessage}>
+          Si la redirection ne fonctionne pas automatiquement, cliquez sur le lien ci-dessous :
+        </p>
+        <a 
+          href="https://www.potagerdelacrapaudine.ca/services"
+          className={styles.button}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Accéder à la plateforme d&apos;abonnement
+        </a>
+      </div>
+    </div>
   );
 }
