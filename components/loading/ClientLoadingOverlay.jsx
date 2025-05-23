@@ -1,25 +1,18 @@
-import React, { useState, useEffect, useCallback } from 'react';
+"use client";
+import React, { useState, useEffect } from 'react';
 import styles from '@/styles/ClientLoadingOverlay.module.css';
 
 const ClientLoadingOverlay = ({ minLoadTime = 500, onLoadingComplete }) => {
+  const [isClient, setIsClient] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [mounted, setMounted] = useState(false);
 
-  // Ensure component is mounted before showing
+  // Handle client-side mounting to prevent hydration mismatch
   useEffect(() => {
-    setMounted(true);
+    setIsClient(true);
   }, []);
 
-  const completeLoading = useCallback(() => {
-    setLoading(false);
-    
-    if (onLoadingComplete) {
-      onLoadingComplete();
-    }
-  }, [onLoadingComplete]);
-
   useEffect(() => {
-    if (!mounted) return;
+    if (!isClient) return;
 
     let isMounted = true;
     
@@ -41,7 +34,8 @@ const ClientLoadingOverlay = ({ minLoadTime = 500, onLoadingComplete }) => {
       // Complete loading after animations
       const completeTimer = setTimeout(() => {
         if (isMounted) {
-          completeLoading();
+          setLoading(false);
+          onLoadingComplete?.();
         }
       }, 1500);
       
@@ -52,10 +46,10 @@ const ClientLoadingOverlay = ({ minLoadTime = 500, onLoadingComplete }) => {
       isMounted = false;
       clearTimeout(revealTimer);
     };
-  }, [minLoadTime, completeLoading, mounted]);
+  }, [minLoadTime, onLoadingComplete, isClient]);
 
-  // Don't render anything on server or if not mounted
-  if (!mounted || typeof window === 'undefined') {
+  // Don't render anything on server to prevent hydration mismatch
+  if (!isClient) {
     return null;
   }
 

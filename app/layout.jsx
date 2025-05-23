@@ -44,8 +44,8 @@ export const viewport = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
-      <body>
+    <html lang="fr">
+      <body suppressHydrationWarning={true}>
         <Suspense fallback={<Loading />}>
           <CsrfProvider>
             <CartProvider>
