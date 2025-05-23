@@ -193,7 +193,7 @@
 }
 
 .imgCrewContainer {
-  position: absolute;
+  position: absolute !important;
   top: 0; /* Move it halfway outside the top of the section */
   transform: translateY(-50%);
   display: inline-block; /* Make the container size match its content */
@@ -212,7 +212,7 @@
 
 /* Label Image */
 .labelImg {
-  position: absolute;
+  position: absolute !important;
   top: 0; /* Near the top of the image */
   left: -5%; /* Slightly left-aligned */
   transform: rotate(-10deg); /* Angled to the left */
@@ -261,7 +261,7 @@
 
 /* Side Image */
 .imageSide {
-  position: absolute;
+  position: absolute !important;
   bottom: 0; /* Place halfway outside the section at the bottom */
   transform: translateY(50%);
   left: 0; /* Hug the left side of the viewport */
@@ -276,7 +276,7 @@
 
 /* Background SVG */
 .backgroundSVG {
-  position: absolute;
+  position: absolute !important;
   top: 0; /* Center vertically within the section */
   left: -25%; /* Center horizontally within the viewport */
   transform: translate(15vw, -20%); /* Adjust to center the SVG */
@@ -298,18 +298,14 @@
 .produitsContainer {
   position: relative;
   max-width: 1000px; /* Limit the width of the content */
-  padding: 60px;
   text-align: left; /* Align text to the left */
   display: flex;
   align-items: flex-start; /* Align children at the top */
   justify-content: space-between; /* Distribute children evenly */
   flex-direction: column; /* Stack heading and columns vertically */
   gap: 20px; /* Space between children */
-
-  max-width: 1000px; /* Limit the width of the content */
   margin: 0 auto; /* Center the container horizontally */
   padding: 60px 60px; /* Adjust padding for the section content */
-  position: relative; /* Enable positioning for child elements */
 }
 
 .produitsContainer h2 {
@@ -344,7 +340,7 @@
 }
 
 .imgProduits {
-  position: absolute;
+  position: absolute !important;
   bottom: 0; /* Hug the bottom edge of the section */
   right: 20px; /* Slight padding from the right edge */
   width: clamp(270px, 25vw, 300px);
@@ -401,7 +397,7 @@
 
 /* Logo image (bottom-left corner of the rectangle) */
 .imgLogoNFriends {
-  position: absolute;
+  position: absolute !important;
   bottom: -150px;
   left: clamp(-220px, -15vw, -150px);
   width: clamp(200px, 25vw, 300px);
@@ -422,7 +418,7 @@
 }
 
 .imgCollabBackgroundContainer {
-  position: absolute; /* Position relative to its parent */
+  position: absolute !important;
   top: 0;             /* Align to the top of the parent */
   left: 0;            /* Align to the left of the parent */
   width: 100vw;       /* Full viewport width */
@@ -434,7 +430,7 @@
 
 /* Background image */
 .imgCollabBackground {
-  position: absolute;
+  position: absolute !important;
   top: -15vw;
   left: -25vw;
   width: calc(120vw + 30%); /* Dynamically increase the width */
@@ -560,7 +556,7 @@
 }
 
 .imgAbonn2 {
-  position: absolute;
+  position: absolute !important;
   width: 60%;
   height: 400px;
   object-fit: cover;
@@ -588,7 +584,7 @@
 
 /* Subtle background elements - minimal style */
 .backgroundElements {
-  position: absolute;
+  position: absolute !important;
   top: 0;
   left: 0;
   width: 100%;
@@ -599,7 +595,7 @@
 }
 
 .backgroundElements svg {
-  position: absolute;
+  position: absolute !important;
 }
 
 .abonnSVG1 {
@@ -750,7 +746,7 @@
   }
 
   .imgProduits {
-    position: absolute;
+    position: absolute !important;
     bottom: 0; /* Hug the bottom edge of the section */
     right: 20px; /* Slight padding from the right edge */
     width: clamp(300px, 40vw, 400px);
@@ -1104,7 +1100,7 @@
   
   /* Adjust the label */
   .labelImg {
-    position: absolute;
+    position: absolute !important;
     left: 2.9rem;
     top: 0.1rem;
     margin-top: 10px;
