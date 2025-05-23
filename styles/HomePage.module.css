@@ -193,7 +193,7 @@
 }
 
 .imgCrewContainer {
-  position: absolute !important;
+  position: absolute;
   top: 0; /* Move it halfway outside the top of the section */
   transform: translateY(-50%);
   display: inline-block; /* Make the container size match its content */
@@ -212,7 +212,7 @@
 
 /* Label Image */
 .labelImg {
-  position: absolute !important;
+  position: absolute;
   top: 0; /* Near the top of the image */
   left: -5%; /* Slightly left-aligned */
   transform: rotate(-10deg); /* Angled to the left */
@@ -276,7 +276,7 @@
 
 /* Background SVG */
 .backgroundSVG {
-  position: absolute !important;
+  position: absolute;
   top: 0; /* Center vertically within the section */
   left: -25%; /* Center horizontally within the viewport */
   transform: translate(15vw, -20%); /* Adjust to center the SVG */
@@ -430,7 +430,7 @@
 
 /* Background image */
 .imgCollabBackground {
-  position: absolute !important;
+  position: absolute;
   top: -15vw;
   left: -25vw;
   width: calc(120vw + 30%); /* Dynamically increase the width */
@@ -584,7 +584,7 @@
 
 /* Subtle background elements - minimal style */
 .backgroundElements {
-  position: absolute !important;
+  position: absolute;
   top: 0;
   left: 0;
   width: 100%;
@@ -595,7 +595,7 @@
 }
 
 .backgroundElements svg {
-  position: absolute !important;
+  position: absolute;
 }
 
 .abonnSVG1 {
@@ -627,7 +627,7 @@
     padding: 20px;
     right: 10%;
     top: 60%;
-    transform: translateY(-50%);
+    transform: translateY(-22%);
     font-size: 3.1vw;
     max-width: 40%;
     line-height: 1.5;
@@ -706,7 +706,7 @@
   }
 
   .imageSide {
-    display: none;
+    display: none !important;
   }
 
   /* Center produits title */
@@ -746,7 +746,6 @@
   }
 
   .imgProduits {
-    position: absolute !important;
     bottom: 0; /* Hug the bottom edge of the section */
     right: 20px; /* Slight padding from the right edge */
     width: clamp(300px, 40vw, 400px);
@@ -821,7 +820,7 @@
   }
 
   .imgAbonn2 {
-    display: none;
+    display: none !important;
   }
 
   .abonnSVG1 {
@@ -955,6 +954,10 @@
 }
 
 @media screen and (max-width: 580px) {
+  .catchPhrase {
+    transform: translateY(0%);
+  }
+
   .introContainer {
     padding-left: 5vw;
     padding-right: 5vw;
@@ -1100,7 +1103,7 @@
   
   /* Adjust the label */
   .labelImg {
-    position: absolute !important;
+    position: absolute;
     left: 2.9rem;
     top: 0.1rem;
     margin-top: 10px;
@@ -1121,6 +1124,15 @@
     background: var(--beige);
     padding: 0.3rem;
     border-radius: 5px;
+  }
+
+  .collabTextContainer {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+
+  .collabTextContainer p {
+    font-size: 1rem;
   }
   
   /* Abonnement small phone */
