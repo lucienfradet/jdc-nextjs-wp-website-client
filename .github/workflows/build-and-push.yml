@@ -33,6 +33,16 @@ jobs:
 
       - name: Build Next.js
         run: npm run build
+        env:
+          NEXT_PUBLIC_WORDPRESS_HOSTNAME: wordpress.jardindeschefs.ca
+          NEXT_PUBLIC_WORDPRESS_BASE_URL: https://wordpress.jardindeschefs.ca/
+          NEXT_PUBLIC_WORDPRESS_API_URL: https://wordpress.jardindeschefs.ca/wp-json/wp/v2/
+          NEXT_PUBLIC_WORDPRESS_GRAPHQL_URL: https://wordpress.jardindeschefs.ca/graphql
+          NEXT_PUBLIC_SITE_URL: https://jardindeschefs.ca
+          NEXT_PUBLIC_SSL_IGNORE: false
+          # Dummy values for build time only
+          DATABASE_URL: "mysql://dummy:dummy@localhost:3306/dummy"
+          REDIS_URL: "redis://localhost:6379"
 
   build-and-push:
     needs: test
