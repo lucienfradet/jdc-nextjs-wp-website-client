@@ -4,13 +4,23 @@ import styles from '@/styles/RedirectPage.module.css';
 
 export default function AbonnementPage() {
   useEffect(() => {
-    // Redirect after 1.5 seconds
+    // Redirect after 1.5 seconds - opens in new tab
     const timer = setTimeout(() => {
-      window.location.href = 'https://www.potagerdelacrapaudine.ca/services';
+      window.open('https://www.potagerdelacrapaudine.ca/services', '_blank');
+      window.location.href = '/';
     }, 1500);
 
     return () => clearTimeout(timer);
   }, []);
+
+  const handleGoHome = () => {
+    window.location.href = '/';
+  };
+
+  const handleGoOut = () => {
+    window.open('https://www.potagerdelacrapaudine.ca/services', '_blank');
+    window.location.href = '/';
+  };
 
   return (
     <div className={styles.container}>
@@ -23,14 +33,22 @@ export default function AbonnementPage() {
         <p className={styles.submessage}>
           Si la redirection ne fonctionne pas automatiquement, cliquez sur le lien ci-dessous :
         </p>
-        <a 
-          href="https://www.potagerdelacrapaudine.ca/services"
-          className={styles.button}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Accéder à la plateforme d&apos;abonnement
-        </a>
+        <div className={styles.buttonContainer}>
+          <button 
+            onClick={handleGoOut}
+            className={`${styles.button} ${styles.homeButton}`}
+          >
+            Accéder à la plateforme d&apos;abonnement
+          </button>
+        </div>
+        <div className={styles.buttonContainer}>
+          <button 
+            onClick={handleGoHome}
+            className={`${styles.button} ${styles.homeButton}`}
+          >
+            Retour à l&apos;accueil
+          </button>
+        </div>
       </div>
     </div>
   );

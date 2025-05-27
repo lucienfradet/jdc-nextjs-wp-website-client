@@ -51,7 +51,7 @@ Implement Cloudflare reverse proxy as security features
 
 ### First update after deployment:
 - [x] Fix the a propos youtube link permissions
--[ ] Crapaudine ouvrir une seconde tab au lieu de changer de site completement
+- [x] Crapaudine ouvrir une seconde tab au lieu de changer de site completement
 - [x] Enbale wordpress cron
 - [ ] Fix the loading between booking, checkout, payment and booking to detail!
 - [ ] Test large file upload

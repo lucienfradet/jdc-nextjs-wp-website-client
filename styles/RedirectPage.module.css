@@ -77,6 +77,10 @@
   margin: 0 auto 2.5rem auto;
 }
 
+.buttonContainer {
+  margin-top: 1.5rem;
+}
+
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
