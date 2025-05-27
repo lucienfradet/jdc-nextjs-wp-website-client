@@ -64,16 +64,15 @@ async function handlePostRequest(request) {
 
     // Add Quebec tax labels to summary if we have booking items and customer is not in Quebec
     const hasBookingItems = items.some(item => item.type === 'mwb_booking' || item.isBooking);
-    const customerIsNotInQuebec = province.toLowerCase() !== 'qc';
     
-    if (hasBookingItems && customerIsNotInQuebec) {
-      // Add Quebec TPS if not already present
+    if (hasBookingItems) {
+      // Always ensure Quebec tax labels exist when there are booking items
       if (!result.taxSummary[quebecFederalLabel]) {
         result.taxSummary[quebecFederalLabel] = { rate: federalRate, amount: 0 };
       }
-      
-      // Add Quebec TVQ
-      if (quebecProvincialLabel && quebecProvincialRate > 0) {
+
+      // Add Quebec TVQ if not already present
+      if (quebecProvincialLabel && quebecProvincialRate > 0 && !result.taxSummary[quebecProvincialLabel]) {
         result.taxSummary[quebecProvincialLabel] = { rate: quebecProvincialRate, amount: 0 };
       }
     }
@@ -97,26 +96,27 @@ async function handlePostRequest(request) {
         if (isBookingItem) {
           // Use Quebec taxes for booking items
           const federalTaxAmount = subtotal * federalRate;
+
+          // Safety check: ensure Quebec federal label exists
+          if (!result.taxSummary[quebecFederalLabel]) {
+            console.error(`Quebec federal tax label "${quebecFederalLabel}" not found in tax summary`);
+            throw new Error(`Tax calculation error: Quebec federal tax not configured`);
+          }
+
           itemTax.taxes[quebecFederalLabel] = federalTaxAmount;
           result.taxSummary[quebecFederalLabel].amount += federalTaxAmount;
-          
+
           // Calculate Quebec provincial tax
           if (quebecProvincialLabel && quebecProvincialRate > 0) {
+            // Safety check: ensure Quebec provincial label exists
+            if (!result.taxSummary[quebecProvincialLabel]) {
+              console.error(`Quebec provincial tax label "${quebecProvincialLabel}" not found in tax summary`);
+              throw new Error(`Tax calculation error: Quebec provincial tax not configured`);
+            }
+
             const provincialTaxAmount = subtotal * quebecProvincialRate;
             itemTax.taxes[quebecProvincialLabel] = provincialTaxAmount;
             result.taxSummary[quebecProvincialLabel].amount += provincialTaxAmount;
-          }
-        } else {
-          // Use customer's province taxes for non-booking items
-          const federalTaxAmount = subtotal * federalRate;
-          itemTax.taxes[customerFederalLabel] = federalTaxAmount;
-          result.taxSummary[customerFederalLabel].amount += federalTaxAmount;
-          
-          // Calculate customer's provincial tax if applicable
-          if (customerProvincialLabel && customerProvincialRate > 0) {
-            const provincialTaxAmount = subtotal * customerProvincialRate;
-            itemTax.taxes[customerProvincialLabel] = provincialTaxAmount;
-            result.taxSummary[customerProvincialLabel].amount += provincialTaxAmount;
           }
         }
       }
