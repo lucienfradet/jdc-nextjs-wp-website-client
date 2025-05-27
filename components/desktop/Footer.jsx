@@ -1,4 +1,4 @@
-import NavigationLink from '../NavigationLink';
+import Link from 'next/link';
 import WPImage from '@/components/WPImage';
 import styles from '@/styles/desktop/Footer.module.css';
 import NewsletterForm from '@/components/NewsletterForm';
@@ -11,22 +11,22 @@ export default function Footer({ pageData }) {
       {/* Column 1: Logo */}
       <div className={styles.columns}>
         <div className={styles.footerCol}>
-          <NavigationLink href="/">
+          <Link href="/">
             <WPImage className={styles.footerLogo} image={pageContent["img-logo"]} forceFullSize={true} />
-          </NavigationLink>
+          </Link>
         </div>
 
         {/* Column 2: Links and address */}
         <div className={styles.footerCol}>
           <div className={styles.linkWrapper}>
             <div className={styles.linkColumn}>
-              <NavigationLink href="/a-propos">{pageContent["a-propos"]}</NavigationLink>
-              <NavigationLink href="/agrotourisme">{pageContent["agrotourisme"]}</NavigationLink>
-              <NavigationLink href="/evenements">{pageContent["evenements"]}</NavigationLink>
+              <a href="/a-propos">{pageContent["a-propos"]}</a>
+              <a href="/agrotourisme">{pageContent["agrotourisme"]}</a>
+              <a href="/evenements">{pageContent["evenements"]}</a>
             </div>
             <div className={styles.linkColumn}>
-              <NavigationLink href="/abonnement">{pageContent["abonnement"]}</NavigationLink>
-              <NavigationLink href="/contact">{pageContent["contact"]}</NavigationLink>
+              <a href="/abonnement">{pageContent["abonnement"]}</a>
+              <a href="/contact">{pageContent["contact"]}</a>
               {/*<a href="/unsubscribe">Se désabonner</a>*/}
             </div>
           </div>

@@ -31,7 +31,7 @@
 }
 
 .logo {
-  position: static; /* Overlapping the second image */
+  position: static !important; /* Overlapping the second image */
   top: 0;
   left: 0;
   width: 40px; /* Ensure both images have the same size */
@@ -42,7 +42,7 @@
 }
 
 .logoRed {
-  position: absolute; /* Overlapping the first image */
+  position: absolute !important; /* Overlapping the first image */
   top: 0;
   left: 0;
   width: 40px; /* Ensure both images have the same size */

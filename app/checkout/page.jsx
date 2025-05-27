@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { getPageFieldsByName } from '@/lib/api';
 import CheckoutPage from '@/components/checkout/CheckoutPage';
+import Loading from '@/components/loading/Loading';
 import { notFound } from 'next/navigation';
 
 export default function Page() {
@@ -43,7 +44,6 @@ export default function Page() {
 
     fetchData();
 
-
     const loadSavedFormData = () => {
       try {
         const storedFormData = sessionStorage.getItem('checkoutFormData');
@@ -58,11 +58,10 @@ export default function Page() {
     loadSavedFormData();
   }, []);
 
-  // Only render the CheckoutPage when we have data
+  // Show loading while fetching data
   if (!pageData) {
-    return null; // Let the LoadingWrapper handle the loading UI
+    return <Loading />;
   }
-
 
   return (
     <CheckoutPage

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { getPageFieldsByName } from '@/lib/api';
 import { fetchSiteIcon } from "@/lib/api";
 import PaymentPage from '@/components/checkout/PaymentPage';
+import Loading from '@/components/loading/Loading';
 import { notFound, useRouter } from 'next/navigation';
 
 export default function Page() {
@@ -56,9 +57,8 @@ export default function Page() {
     fetchData();
   }, [router]);
 
-  // Only render the PaymentPage when we have data
   if (!pageData) {
-    return null; // Let the LoadingWrapper handle the loading UI
+    return <Loading />;
   }
 
   return (

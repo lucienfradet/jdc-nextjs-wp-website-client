@@ -4,7 +4,6 @@ import { CsrfProvider } from '@/context/CsrfContext';
 import { NavigationProvider } from '@/context/NavigationContext';
 import { Suspense } from 'react';
 import Loading from '@/components/loading/Loading';
-import NavigationLoader from '@/components/loading/NavigationLoader';
 import { fetchSiteIcon } from '@/lib/api';
 
 export async function generateMetadata() {
@@ -52,7 +51,6 @@ export default function RootLayout({ children }) {
           <NavigationProvider>  {/* Add this */}
             <CsrfProvider>
               <CartProvider>
-                <NavigationLoader />  {/* Add this */}
                 {children}
               </CartProvider>
             </CsrfProvider>
