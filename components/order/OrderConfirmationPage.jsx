@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import Link from 'next/link';
+import NavigationLink from '../NavigationLink';
 import { useRouter, useSearchParams } from 'next/navigation'; // Add useSearchParams
 import { renderContent } from "@/lib/textUtils";
 import DesktopHeader from "@/components/desktop/Header";
@@ -108,9 +108,9 @@ export default function OrderConfirmationPage({ pageData, headerData, footerData
           </div>
           
           <div className={styles.buttonContainer}>
-            <Link href="/" className={styles.returnButton}>
+            <NavigationLink href="/" className={styles.returnButton}>
               Retourner à l&apos;accueil
-            </Link>
+            </NavigationLink>
           </div>
         </div>
       </main>

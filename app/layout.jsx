@@ -1,8 +1,10 @@
 import '@/styles/globals.css';
 import { CartProvider } from '@/context/CartContext';
 import { CsrfProvider } from '@/context/CsrfContext';
+import { NavigationProvider } from '@/context/NavigationContext';
 import { Suspense } from 'react';
 import Loading from '@/components/loading/Loading';
+import NavigationLoader from '@/components/loading/NavigationLoader';
 import { fetchSiteIcon } from '@/lib/api';
 
 export async function generateMetadata() {
@@ -47,11 +49,14 @@ export default function RootLayout({ children }) {
     <html lang="fr">
       <body suppressHydrationWarning={true}>
         <Suspense fallback={<Loading />}>
-          <CsrfProvider>
-            <CartProvider>
-              {children}
-            </CartProvider>
-          </CsrfProvider>
+          <NavigationProvider>  {/* Add this */}
+            <CsrfProvider>
+              <CartProvider>
+                <NavigationLoader />  {/* Add this */}
+                {children}
+              </CartProvider>
+            </CsrfProvider>
+          </NavigationProvider>  {/* Add this */}
         </Suspense>
       </body>
     </html>

@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
+import { useNavigation } from '@/context/NavigationContext';
+import NavigationLink from '@/components/NavigationLink';
 import WPImage from '@/components/WPImage';
 import DesktopHeader from '@/components/desktop/Header';
 import MobileHeader from '@/components/mobile/Header';
@@ -16,6 +17,7 @@ import styles from '@/styles/booking/BookingDetailPage.module.css';
 
 export default function BookingDetailPage({ headerData, footerData, product }) {
   const router = useRouter();
+  const { startNavigation } = useNavigation();
   const { addToCart, hasBookingInCart, showBookingConfirmation } = useCart();
   const [isMobile, setIsMobile] = useState(false);
   
@@ -285,6 +287,7 @@ export default function BookingDetailPage({ headerData, footerData, product }) {
       addToCart(bookingProduct, people, {
         onSuccess: () => {
           // Only redirect if add was successful and no confirmation needed
+          startNavigation();
           router.push('/checkout');
         },
         onCancel: () => {
@@ -376,7 +379,7 @@ export default function BookingDetailPage({ headerData, footerData, product }) {
 
       <main className={styles.bookingDetailContainer}>
         <div className={styles.backLink}>
-          <Link href="/agrotourisme">← Retour aux visites</Link>
+          <NavigationLink href="/agrotourisme">← Retour aux visites</NavigationLink>
         </div>
 
         <div className={styles.bookingDetailContent}>

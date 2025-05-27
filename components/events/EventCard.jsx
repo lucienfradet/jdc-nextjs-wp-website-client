@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import NavigationLink from '../NavigationLink';
 import WPImage from '@/components/WPImage';
 import styles from '@/styles/events/EventCard.module.css';
 import { useEffect, useState } from 'react';
@@ -48,7 +48,7 @@ export default function EventCard({ post }) {
   
   return (
     <article className={styles.eventCard}>
-      <Link href={`/evenements/${slug}`} className={styles.cardLink} draggable="false">
+      <NavigationLink href={`/evenements/${slug}`} className={styles.cardLink} draggable="false">
         {featuredImage && (
           <div className={styles.imageContainer}>
             <WPImage image={featuredImage} className={styles.image} draggable="false" />
@@ -77,7 +77,7 @@ export default function EventCard({ post }) {
           
           <div className={styles.readMore}>Lire plus →</div>
         </div>
-      </Link>
+      </NavigationLink>
     </article>
   );
 }

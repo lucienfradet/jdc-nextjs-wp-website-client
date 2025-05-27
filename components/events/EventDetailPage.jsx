@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Link from 'next/link';
+import NavigationLink from '../NavigationLink';
 import EventDetail from '@/components/events/EventDetail';
 import DesktopHeader from "@/components/desktop/Header";
 import MobileHeader from "@/components/mobile/Header";
@@ -39,9 +39,9 @@ export default function EventDetailPage({
 
       <main className={styles.eventDetailPage}>
         <div className={styles.backLinkContainer}>
-          <Link href="/evenements" className={styles.backLink}>
+          <NavigationLink href="/evenements" className={styles.backLink}>
             &larr; Retour aux événements
-          </Link>
+          </NavigationLink>
         </div>
         
         <EventDetail post={post} />

@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import styles from '@/styles/desktop/Header.module.css';
 import WPImage from '@/components/WPImage';
-import Link from 'next/link';
+import NavigationLink from '@/components/NavigationLink';
 import DrawerCart from "@/components/DrawerCart";
 import { useCart } from '@/context/CartContext';
 import { usePathname } from 'next/navigation';
@@ -42,45 +42,46 @@ export default function Header({ pageData }) {
   return (
     <header className={`${styles.header} ${isHidden ? styles.hidden : ''}`}>
       {/* Logo */}
-      <Link href="/" passHref className={styles.logoContainer}>
+      <NavigationLink href="/" passHref className={styles.logoContainer}>
         <div className={styles.logoWrapper}>
           <WPImage className={styles.logo} image={pageContent["img-logo"]} forceFullSize={true} />
           <WPImage className={styles.logoRed} image={pageContent["img-logo-red"]} forceFullSize={true} />
         </div>
-      </Link>
+      </NavigationLink>
 
       {/* Navigation Links */}
       <nav className={styles.nav}>
-        <a 
+        <NavigationLink 
           href="/a-propos" 
           className={pathname === '/a-propos' ? styles.active : ''}
         >
           {pageContent["a-propos"]}
-        </a>
-        <a 
+        </NavigationLink>
+
+        <NavigationLink 
           href="/abonnement" 
           className={pathname === '/abonnement' ? styles.active : ''}
         >
           {pageContent["abonnement"]}
-        </a>
-        <a 
+        </NavigationLink>
+        <NavigationLink 
           href="/agrotourisme" 
           className={pathname === '/agrotourisme' ? styles.active : ''}
         >
           {pageContent["agrotourisme"]}
-        </a>
-        <a 
+        </NavigationLink>
+        <NavigationLink 
           href="/evenements" 
           className={pathname === '/evenements' ? styles.active : ''}
         >
           {pageContent["evenements"]}
-        </a>
-        <a 
+        </NavigationLink>
+        <NavigationLink 
           href="/contact" 
           className={pathname === '/contact' ? styles.active : ''}
         >
           {pageContent["contact"]}
-        </a>
+        </NavigationLink>
       </nav>
 
       {/* Cart Icon with number indicator */}

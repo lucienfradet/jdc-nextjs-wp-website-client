@@ -3,7 +3,7 @@ import styles from '@/styles/DrawerCart.module.css';
 import { useState, useRef } from 'react';
 import { useCart } from '@/context/CartContext';
 import ProductGrid from '@/components/products/ProductGrid';
-import Link from 'next/link';
+import NavigationLink from './NavigationLink';
 import Box from '@mui/material/Box';
 import { Drawer } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
@@ -89,9 +89,9 @@ export default function DrawerCart({ trigger }) {
             )}
             {cart.length > 0 && (
               <div className={styles.checkoutContainer}>
-                <Link href="/checkout" className={styles.checkoutButton} onClick={toggleDrawer(false)}>
+                <NavigationLink href="/checkout" className={styles.checkoutButton} onClick={toggleDrawer(false)}>
                   Passer la commande
-                </Link>
+                </NavigationLink>
               </div>
             )}
           </div>

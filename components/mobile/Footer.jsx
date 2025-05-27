@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import NavigationLink from '../NavigationLink';
 import WPImage from '@/components/WPImage';
 import  styles from '@/styles/mobile/Footer.module.css';
 import NewsletterForm from '../NewsletterForm';
@@ -11,9 +11,9 @@ export default function Footer({ pageData }) {
       {/* Column 1: Logo */}
       <div className={styles.columns}>
         <div className={styles.footerCol}>
-          <Link href="/">
+          <NavigationLink href="/">
             <WPImage className={styles.footerLogo} image={pageContent["img-logo"]} forceFullSize={true} />
-          </Link>
+          </NavigationLink>
         </div>
 
         {/* Column 2: address */}

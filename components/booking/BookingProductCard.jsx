@@ -1,6 +1,6 @@
 "use client";
 
-import Link from 'next/link';
+import NavigationLink from '@/components/NavigationLink'; // Change this import
 import WPImage from '@/components/WPImage';
 import styles from '@/styles/booking/BookingProductCard.module.css';
 import { renderContent, stripHtml } from '@/lib/textUtils';
@@ -52,13 +52,13 @@ export default function BookingProductCard({ product, buttonText, buttonLink }) 
           {shortDescription}
         </div>
         
-        <Link 
+        <NavigationLink
           href={buttonLink} 
           className={`${styles.bookButton} ${isOutOfStock ? styles.disabledButton : ''}`}
           aria-disabled={isOutOfStock}
         >
           {isOutOfStock ? "Non disponible" : (buttonText || "Réserver")}
-        </Link>
+        </NavigationLink>
       </div>
     </div>
   );

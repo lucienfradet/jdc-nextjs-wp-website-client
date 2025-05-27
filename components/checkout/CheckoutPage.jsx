@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import styles from '@/styles/checkout/CheckoutPage.module.css';
 import { useCart } from '@/context/CartContext';
 import { useCsrf } from '@/context/CsrfContext';
+import { useNavigation } from '@/context/NavigationContext';
 import CheckoutForm from '@/components/checkout/CheckoutForm';
 import OrderSummary from '@/components/checkout/OrderSummary';
 import PaymentSelector from '@/components/checkout/PaymentSelector';
@@ -22,6 +23,7 @@ export default function CheckoutPage({
   pointDeChute
 }) {
   const router = useRouter();
+  const { startNavigation } = useNavigation();
   const [isMobile, setIsMobile] = useState(false);
   const { 
     cart, 
@@ -196,6 +198,7 @@ export default function CheckoutPage({
       sessionStorage.setItem('csrfToken', csrfToken); // Store CSRF token
       
       // Redirect to the payment page
+      startNavigation();
       router.push('/payment');
     } catch (error) {
       console.error('Error processing form:', error);

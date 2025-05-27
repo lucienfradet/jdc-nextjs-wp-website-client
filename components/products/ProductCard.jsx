@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from 'react';
-import Link from 'next/link';
+import NavigationLink from '../NavigationLink';
 import WPImage from "@/components/WPImage";
 import styles from "@/styles/products/ProductCard.module.css";
 import { useCart } from '@/context/CartContext';
@@ -60,7 +60,7 @@ export default function ProductCard({
 
   return (
     <article className={`${styles.card} ${className || ""} ${isAddingToCart ? styles.addingToCart : ''}`}>
-      <Link className={styles.cardLink} href={isBookingProduct ? `/agrotourisme/${product.id}` : `/products/${product.id}`}>
+      <NavigationLink className={styles.cardLink} href={isBookingProduct ? `/agrotourisme/${product.id}` : `/products/${product.id}`}>
         <div className={styles.imageContainer}>
           {product.images?.[0] && (
             <WPImage image={product.images[0]} className={styles.image} />
@@ -83,7 +83,7 @@ export default function ProductCard({
           )}
 
         </div>
-      </Link>
+      </NavigationLink>
 
       {/* Show booking details if this is a booking product in the cart */}
       {showRemove && isBookingProduct && product.booking_details && (

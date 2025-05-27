@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
+import NavigationLink from '../NavigationLink';
 import styles from '@/styles/checkout/PaymentPage.module.css';
 import { useCart } from '@/context/CartContext';
 import { useCsrf } from '@/context/CsrfContext';
@@ -190,9 +190,9 @@ const PaymentPageContent = ({
       <div className={styles.csrfError}>
         <h2>Erreur de sécurité</h2>
         <p>Votre session a expiré ou n&apos;est pas valide. Veuillez retourner à la page de paiement et réessayer.</p>
-        <Link href="/checkout" className={styles.backLink}>
+        <NavigationLink href="/checkout" className={styles.backLink}>
           Retour au formulaire de paiement
-        </Link>
+        </NavigationLink>
       </div>
     );
   }
@@ -226,7 +226,7 @@ const PaymentPageContent = ({
 
       <main className={styles.paymentPageContainer}>
         <div className={styles.backLink}>
-          <Link href="/checkout">← Retour au formulaire</Link>
+          <NavigationLink href="/checkout">← Retour au formulaire</NavigationLink>
         </div>
 
         <h1 className={styles.pageTitle}>Paiement par carte</h1>
