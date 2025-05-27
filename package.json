@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
-    "start": "next start -H $HOST -p $PORT",
+    "start": "next start",
     "lint": "next lint",
     "prisma:dev": "dotenv -e .env.development -- npx prisma",
     "test": "echo 'No tests yet!'"
