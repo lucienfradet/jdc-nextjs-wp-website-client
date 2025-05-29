@@ -30,7 +30,7 @@ header {
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #282828;
+    --background: var(--green);
     --foreground: #ededed;
   }
 }
