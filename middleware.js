@@ -11,7 +11,8 @@ export function middleware(request) {
   const publicSiteUrlWWW = process.env.NEXT_PUBLIC_SITE_URL_WWW || 'https://www.jardindeschefs.ca';
 
   // Check if we're in production
-  const isProduction = process.env.NODE_ENV === 'production';
+  // const isProduction = process.env.NODE_ENV === 'production';
+  const isProduction = true;
   
   // Build CSP upgrade directive conditionally
   const cspUpgrade = isProduction ? "upgrade-insecure-requests;" : "";
