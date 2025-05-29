@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, useCallback } from "react";
-import { useLoading } from '@/components/loading/LoadingManager';
+// import { useLoading } from '@/components/loading/LoadingManager';
 import WPImage from "@/components/WPImage";
 import DesktopHeader from "@/components/desktop/Header";
 import MobileHeader from "@/components/mobile/Header";
@@ -9,7 +9,7 @@ import DesktopFooter from "@/components/desktop/Footer";
 import MobileFooter from "@/components/mobile/Footer";
 import HomePageSvgTitleSection from "@/components/svg/HomePageSvgTitleSection";
 import EventsSection from "@/components/events/EventsSection";
-import PageRevealAnimation from "./loading/PageRevealAnimation";
+// import PageRevealAnimation from "./loading/PageRevealAnimation";
 import Link from "next/link";
 import styles from '@/styles/HomePage.module.css';
 import { convertLineBreaksToHtml, renderContent } from '@/lib/textUtils';
@@ -17,8 +17,9 @@ import useIntersectionObserver from '@/lib/useIntersectionObserver'; // Import t
 
 export default function HomePage({ pageData, headerData, footerData }) {
   const pageContent = pageData.acfFields;
-  const { isReady } = useLoading();
-  
+  // const { isReady } = useLoading();
+  const isReady = true;
+
   // Initialize isMobile with a proper default based on window size if available
   const [isMobile, setIsMobile] = useState(false);
   const [opacity, setOpacity] = useState(1);
@@ -143,14 +144,22 @@ export default function HomePage({ pageData, headerData, footerData }) {
     }
   }, [lines, handleMobileCatchPhrase]);
 
+  useEffect(() => {
+    console.log('HomePage: Loading state changed:', { isReady });
+  }, [isReady]);
+
+  console.log('HomePage: ACTUAL RENDER');
+
   return (
     <>
+      {/*
       <PageRevealAnimation 
         minLoadTime={1000}
         onRevealComplete={() => {
           // Any additional logic after reveal completes
         }}
       />
+      */}
 
       {/* Hide content until ready */}
       <div className={isReady ? styles.contentVisible : styles.contentHidden}>

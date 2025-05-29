@@ -1,5 +1,5 @@
 "use client";
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useCallback } from 'react';
 
 const LoadingContext = createContext();
 
@@ -16,15 +16,16 @@ export const LoadingProvider = ({ children }) => {
   const [isRevealing, setIsRevealing] = useState(false);
   const [isReady, setIsReady] = useState(false);
 
-  const startReveal = () => {
+  // Use useCallback to prevent functions from changing on every render
+  const startReveal = useCallback(() => {
     setIsInitialLoading(false);
     setIsRevealing(true);
-  };
+  }, []);
 
-  const completeReveal = () => {
+  const completeReveal = useCallback(() => {
     setIsRevealing(false);
     setIsReady(true);
-  };
+  }, []);
 
   return (
     <LoadingContext.Provider value={{
