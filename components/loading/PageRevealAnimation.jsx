@@ -40,25 +40,26 @@ const PageRevealAnimation = ({ minLoadTime = 1000, onRevealComplete }) => {
     revealTimer = setTimeout(() => {
       if (!isMounted) return;
       
-      console.log('PageReveal: Starting reveal phase');
+      console.log('PageReveal: Starting reveal phase - making content visible AND starting animation');
+      
+      // Make content visible AND start reveal animation simultaneously
       startReveal();
+      completeReveal(); // This sets isReady to true immediately
       
       if (typeof document !== 'undefined') {
-        document.body.classList.add('page-revealing');
+        document.body.classList.add('page-revealing', 'page-loaded');
         document.body.classList.remove('page-loading');
-        console.log('PageReveal: Added page-revealing class');
+        console.log('PageReveal: Added page-revealing and page-loaded classes');
       }
       
-      // Complete reveal after animation duration
+      // Clean up the reveal overlay after animation duration
       completeTimer = setTimeout(() => {
         if (isMounted) {
-          console.log('PageReveal: Completing reveal');
+          console.log('PageReveal: Animation complete - cleaning up overlay');
           if (typeof document !== 'undefined') {
-            document.body.classList.add('page-loaded');
-            document.body.classList.remove('page-loading', 'page-revealing');
-            console.log('PageReveal: Added page-loaded class');
+            document.body.classList.remove('page-revealing');
+            console.log('PageReveal: Removed page-revealing class');
           }
-          completeReveal();
           onRevealCompleteRef.current?.();
           console.log('PageReveal: Animation sequence complete');
         }
@@ -71,7 +72,7 @@ const PageRevealAnimation = ({ minLoadTime = 1000, onRevealComplete }) => {
       if (completeTimer) clearTimeout(completeTimer);
       console.log('PageReveal: Cleanup completed');
     };
-  }, [minLoadTime, isClient, isInitialLoading, startReveal, completeReveal]);
+  }, [minLoadTime, isClient, startReveal, completeReveal]); // Removed isInitialLoading from dependencies
 
   // Add debug logging for state changes
   useEffect(() => {
