@@ -21,7 +21,7 @@ export default function AgrotourismePage({
   const [isMobile, setIsMobile] = useState(false);
   const [activeImageSet, setActiveImageSet] = useState(0);
   const [userInteracted, setUserInteracted] = useState(false);
-  
+
   // Use refs for cleanup - CRITICAL FIX
   const rotationTimerRef = useRef(null);
   const initialTimerRef = useRef(null);

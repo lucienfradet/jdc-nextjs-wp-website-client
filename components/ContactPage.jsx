@@ -25,8 +25,6 @@ export default function ContactPage({
     threshold: 0.1
   });
 
-  console.log("nothing was ever fixed")
-
   // Handle visibility based on intersection
   useEffect(() => {
     observerEntries.forEach(entry => {

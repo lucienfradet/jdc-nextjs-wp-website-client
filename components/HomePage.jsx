@@ -17,7 +17,7 @@ import useIntersectionObserver from '@/lib/useIntersectionObserver'; // Import t
 
 export default function HomePage({ pageData, headerData, footerData }) {
   const pageContent = pageData.acfFields;
-  const { isReady, isInitialLoading } = useLoading();
+  const { isReady } = useLoading();
 
   // Initialize isMobile with a proper default based on window size if available
   const [isMobile, setIsMobile] = useState(false);
@@ -146,8 +146,6 @@ export default function HomePage({ pageData, headerData, footerData }) {
   useEffect(() => {
     console.log('HomePage: Loading state changed:', { isReady });
   }, [isReady]);
-
-  console.log("ah FUUUUUUUUUUUUUUUUUUUUUUUUCK")
 
   return (
     <>
