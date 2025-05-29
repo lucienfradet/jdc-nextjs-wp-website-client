@@ -1,13 +1,15 @@
 "use client";
+
 import React, { useState, useEffect, useRef } from 'react';
 import { useLoading } from '@/components/loading/LoadingManager';
 import styles from '@/styles/PageRevealAnimation.module.css';
 
 const PageRevealAnimation = ({ minLoadTime = 1000, onRevealComplete }) => {
-  const { isInitialLoading, isRevealing, startReveal, completeReveal } = useLoading();
-  const [isClient, setIsClient] = useState(false);
+  const { isInitialLoading, startReveal, completeReveal } = useLoading();
+  const [showOverlay, setShowOverlay] = useState(true);
+  const [startAnimation, setStartAnimation] = useState(false);
   const onRevealCompleteRef = useRef(onRevealComplete);
-  const hasStartedRef = useRef(false); // Prevent multiple starts
+  const hasStartedRef = useRef(false);
   
   // Update ref when callback changes
   useEffect(() => {
@@ -15,77 +17,70 @@ const PageRevealAnimation = ({ minLoadTime = 1000, onRevealComplete }) => {
   }, [onRevealComplete]);
 
   useEffect(() => {
-    setIsClient(true);
-  }, []);
-
-  useEffect(() => {
-    // Prevent running multiple times
-    if (!isClient || !isInitialLoading || hasStartedRef.current) return;
-
-    console.log('PageReveal: Starting animation sequence (once only)');
-    hasStartedRef.current = true; // Mark as started
+    // Only run once when initially loading
+    if (!isInitialLoading || hasStartedRef.current) return;
     
-    let isMounted = true;
-    let revealTimer;
-    let completeTimer;
+    console.log('PageReveal: Starting sequence');
+    hasStartedRef.current = true;
     
-    // Keep initial loading state
+    let readyTimer;
+    let animationTimer;
+    let cleanupTimer;
+    
+    // Add body class to prevent scrolling
     if (typeof document !== 'undefined') {
       document.body.classList.add('page-loading');
-      document.body.classList.remove('page-loaded', 'page-revealing');
-      console.log('PageReveal: Added page-loading class');
     }
     
-    // Wait for minimum load time, then start reveal
-    revealTimer = setTimeout(() => {
-      if (!isMounted) return;
+    // After minimum load time, make content visible and start animation
+    readyTimer = setTimeout(() => {
+      console.log('PageReveal: Making content visible behind overlay');
       
-      console.log('PageReveal: Starting reveal phase - making content visible AND starting animation');
+      // Make content visible (but it's still hidden by the green overlay)
+      completeReveal(); // Sets isReady to true
       
-      // Make content visible AND start reveal animation simultaneously
-      startReveal();
-      completeReveal(); // This sets isReady to true immediately
-      
-      if (typeof document !== 'undefined') {
-        document.body.classList.add('page-revealing', 'page-loaded');
-        document.body.classList.remove('page-loading');
-        console.log('PageReveal: Added page-revealing and page-loaded classes');
-      }
-      
-      // Clean up the reveal overlay after animation duration
-      completeTimer = setTimeout(() => {
-        if (isMounted) {
-          console.log('PageReveal: Animation complete - cleaning up overlay');
+      // Small delay to ensure content is rendered before starting animation
+      animationTimer = setTimeout(() => {
+        console.log('PageReveal: Starting reveal animation');
+        setStartAnimation(true);
+        startReveal();
+        
+        if (typeof document !== 'undefined') {
+          document.body.classList.add('page-revealing');
+          document.body.classList.remove('page-loading');
+        }
+        
+        // Remove overlay after animation completes
+        cleanupTimer = setTimeout(() => {
+          console.log('PageReveal: Animation complete, removing overlay');
+          setShowOverlay(false);
+          
           if (typeof document !== 'undefined') {
             document.body.classList.remove('page-revealing');
-            console.log('PageReveal: Removed page-revealing class');
+            document.body.classList.add('page-loaded');
           }
+          
           onRevealCompleteRef.current?.();
-          console.log('PageReveal: Animation sequence complete');
-        }
-      }, 1500); // Reveal animation duration
+        }, 1200); // Animation duration
+        
+      }, 100); // Small delay to ensure content is rendered
+      
     }, minLoadTime);
     
     return () => {
-      isMounted = false;
-      if (revealTimer) clearTimeout(revealTimer);
-      if (completeTimer) clearTimeout(completeTimer);
-      console.log('PageReveal: Cleanup completed');
+      if (readyTimer) clearTimeout(readyTimer);
+      if (animationTimer) clearTimeout(animationTimer);
+      if (cleanupTimer) clearTimeout(cleanupTimer);
     };
-  }, [minLoadTime, isClient, startReveal, completeReveal]); // Removed isInitialLoading from dependencies
+  }, [isInitialLoading, minLoadTime, startReveal, completeReveal]);
 
-  // Add debug logging for state changes
-  useEffect(() => {
-    console.log('PageReveal states:', { isClient, isInitialLoading, isRevealing });
-  }, [isClient, isInitialLoading, isRevealing]);
-
-  // Show the reveal overlay during initial loading and revealing
-  if (!isClient || (!isInitialLoading && !isRevealing)) {
+  // Don't render overlay if we're done
+  if (!showOverlay) {
     return null;
   }
   
   return (
-    <div className={styles.loadingOverlay}>
+    <div className={`${styles.loadingOverlay} ${startAnimation ? styles.animating : ''}`}>
       <div className={styles.loadingContent}>
         <div className={styles.revealLine} />
         <div className={styles.revealLine} />
