@@ -3,6 +3,7 @@ import { CartProvider } from '@/context/CartContext';
 import { CsrfProvider } from '@/context/CsrfContext';
 import { NavigationProvider } from '@/context/NavigationContext';
 import { Suspense } from 'react';
+import { LoadingProvider } from '@/components/loading/LoadingManager';
 import Loading from '@/components/loading/Loading';
 import { fetchSiteIcon } from '@/lib/api';
 
@@ -47,15 +48,17 @@ export default function RootLayout({ children }) {
   return (
     <html lang="fr">
       <body suppressHydrationWarning={true}>
-        <Suspense fallback={<Loading />}>
-          <NavigationProvider>  {/* Add this */}
-            <CsrfProvider>
-              <CartProvider>
-                {children}
-              </CartProvider>
-            </CsrfProvider>
-          </NavigationProvider>  {/* Add this */}
-        </Suspense>
+        <LoadingProvider>
+          <Suspense fallback={<Loading />}>
+            <NavigationProvider>
+              <CsrfProvider>
+                <CartProvider>
+                  {children}
+                </CartProvider>
+              </CsrfProvider>
+            </NavigationProvider>
+          </Suspense>
+        </LoadingProvider>
       </body>
     </html>
   );

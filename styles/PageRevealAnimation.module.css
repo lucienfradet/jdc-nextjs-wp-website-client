@@ -1,0 +1,47 @@
+.loadingOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10000;
+  overflow: hidden;
+  pointer-events: none;
+  background: transparent;
+}
+
+.loadingContent {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.revealLine {
+  flex: 1;
+  background-color: var(--green);
+  transform-origin: top;
+  transform: scaleY(1);
+  transition: none; /* No transition initially */
+}
+
+/* When animating class is added, enable transitions and scale down */
+.animating .revealLine {
+  transition: transform 0.8s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+.animating .revealLine:nth-child(1) {
+  transform: scaleY(0);
+  transition-delay: 0s;
+}
+
+.animating .revealLine:nth-child(2) {
+  transform: scaleY(0);
+  transition-delay: 0.2s;
+}
+
+.animating .revealLine:nth-child(3) {
+  transform: scaleY(0);
+  transition-delay: 0.4s;
+}

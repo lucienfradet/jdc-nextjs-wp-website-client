@@ -51,36 +51,36 @@ export default function Header({ pageData }) {
 
       {/* Navigation Links */}
       <nav className={styles.nav}>
-        <a 
+        <Link 
           href="/a-propos" 
           className={pathname === '/a-propos' ? styles.active : ''}
         >
           {pageContent["a-propos"]}
-        </a>
-        <a 
+        </Link>
+        <Link 
           href="/abonnement" 
           className={pathname === '/abonnement' ? styles.active : ''}
         >
           {pageContent["abonnement"]}
-        </a>
-        <a 
+        </Link>
+        <Link 
           href="/agrotourisme" 
           className={pathname === '/agrotourisme' ? styles.active : ''}
         >
           {pageContent["agrotourisme"]}
-        </a>
-        <a 
+        </Link>
+        <Link 
           href="/evenements" 
           className={pathname === '/evenements' ? styles.active : ''}
         >
           {pageContent["evenements"]}
-        </a>
-        <a 
+        </Link>
+        <Link 
           href="/contact" 
           className={pathname === '/contact' ? styles.active : ''}
         >
           {pageContent["contact"]}
-        </a>
+        </Link>
       </nav>
 
       {/* Cart Icon with number indicator */}

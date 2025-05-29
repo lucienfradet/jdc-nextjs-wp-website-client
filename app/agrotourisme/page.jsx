@@ -39,7 +39,7 @@ export default async function Page() {
     getPageFieldsByName("agrotourisme"),
     getPageFieldsByName("header"),
     getPageFieldsByName("footer"),
-    fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/products/by-filter/${filterType}`, { cache: "no-store" }),
+    fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/products/by-filter/${filterType}`, { next: { revalidate: 1800 } }),
   ]);
 
   if (!pageData || !headerData || !footerData) {
