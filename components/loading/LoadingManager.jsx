@@ -16,9 +16,10 @@ export const LoadingProvider = ({ children }) => {
   const [isRevealing, setIsRevealing] = useState(false);
   const [isReady, setIsReady] = useState(false);
 
+  console.log(`isInitialLoading: ${isInitialLoading}`);
+
   // Use useCallback to prevent functions from changing on every render
   const startReveal = useCallback(() => {
-    setIsInitialLoading(false);
     setIsRevealing(true);
   }, []);
 
@@ -30,6 +31,7 @@ export const LoadingProvider = ({ children }) => {
   return (
     <LoadingContext.Provider value={{
       isInitialLoading,
+      setIsInitialLoading,
       isRevealing,
       isReady,
       startReveal,

@@ -17,7 +17,7 @@ import useIntersectionObserver from '@/lib/useIntersectionObserver'; // Import t
 
 export default function HomePage({ pageData, headerData, footerData }) {
   const pageContent = pageData.acfFields;
-  const { isReady } = useLoading();
+  const { isReady, isInitialLoading } = useLoading();
 
   // Initialize isMobile with a proper default based on window size if available
   const [isMobile, setIsMobile] = useState(false);
@@ -149,12 +149,14 @@ export default function HomePage({ pageData, headerData, footerData }) {
 
   return (
     <>
-      <PageRevealAnimation 
-        minLoadTime={50}
-        onRevealComplete={() => {
-          // Any additional logic after reveal completes
-        }}
-      />
+      {isInitialLoading && (
+        <PageRevealAnimation 
+          minLoadTime={50}
+          onRevealComplete={() => {
+            // Any additional logic after reveal completes
+          }}
+        />
+      )}
 
       {/* Hide content until ready */}
       <div className={isReady ? styles.contentVisible : styles.contentHidden}>

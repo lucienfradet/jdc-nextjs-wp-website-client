@@ -5,7 +5,7 @@ import { useLoading } from '@/components/loading/LoadingManager';
 import styles from '@/styles/PageRevealAnimation.module.css';
 
 const PageRevealAnimation = ({ minLoadTime = 1000, onRevealComplete }) => {
-  const { isInitialLoading, startReveal, completeReveal } = useLoading();
+  const { isInitialLoading, setIsInitialLoading, startReveal, completeReveal } = useLoading();
   const [showOverlay, setShowOverlay] = useState(true);
   const [startAnimation, setStartAnimation] = useState(false);
   const onRevealCompleteRef = useRef(onRevealComplete);
@@ -19,7 +19,7 @@ const PageRevealAnimation = ({ minLoadTime = 1000, onRevealComplete }) => {
   useEffect(() => {
     // Only run once when initially loading
     if (!isInitialLoading) {
-      setShowOverlay(false);
+      console.log("we're returning!")
       return;
     }
     
@@ -47,6 +47,7 @@ const PageRevealAnimation = ({ minLoadTime = 1000, onRevealComplete }) => {
         cleanupTimer = setTimeout(() => {
           console.log('PageReveal: Animation complete, removing overlay');
           setShowOverlay(false);
+          setIsInitialLoading(false);
           
           onRevealCompleteRef.current?.();
         }, 1200); // Animation duration
