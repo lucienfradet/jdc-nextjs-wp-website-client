@@ -2,7 +2,7 @@
 const nextConfig = {
   output: 'standalone',
   reactStrictMode: true,
-  basePath: process.env.NEXT_PUBLIC_BASE_PATH || '',
+  basePath: process.env.NEXT_PUBLIC_BASE_PATH === 'undefined' ? undefined : process.env.NEXT_PUBLIC_BASE_PATH,
   images: {
     remotePatterns: [
       // Development - localhost

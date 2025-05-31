@@ -84,7 +84,6 @@ jobs:
             NEXT_PUBLIC_WORDPRESS_GRAPHQL_URL=https://wordpress.jardindeschefs.ca/graphql
             NEXT_PUBLIC_SITE_URL=https://jardindeschefs.ca
             NEXT_PUBLIC_SITE_URL_WWW=https://www.jardindeschefs.ca
-            NEXT_PUBLIC_BASE_PATH=''
             NEXT_PUBLIC_SSL_IGNORE=false
             NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=${{ secrets.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY }}
             NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=${{ secrets.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY }}
