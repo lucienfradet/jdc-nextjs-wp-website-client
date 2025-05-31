@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useNavigation } from '@/context/NavigationContext';
+import { usePathname } from 'next/navigation';
 
 export default function NavigationLink({ 
   href, 
@@ -12,6 +13,7 @@ export default function NavigationLink({
   ...props 
 }) {
   const { startNavigation } = useNavigation();
+  const pathname = usePathname();
 
   const handleClick = (e) => {
     // Call custom onClick if provided
@@ -19,12 +21,10 @@ export default function NavigationLink({
       onClick(e);
     }
     
-    // If navigation wasn't prevented and we should show loader
-    if (!e.defaultPrevented && showLoader) {
-      // Small delay to ensure click registers before loading starts
-      setTimeout(() => {
-        startNavigation();
-      }, 50);
+    // Only show loader if navigation wasn't prevented and we should show loader
+    // and we're actually navigating to a different page
+    if (!e.defaultPrevented && showLoader && href !== pathname) {
+      startNavigation();
     }
   };
 

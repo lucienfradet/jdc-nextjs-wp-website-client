@@ -5,6 +5,7 @@ import { NavigationProvider } from '@/context/NavigationContext';
 import { Suspense } from 'react';
 import { LoadingProvider } from '@/components/loading/LoadingManager';
 import Loading from '@/components/loading/Loading';
+import NavigationLoader from '@/components/loading/NavigationLoader';
 import { fetchSiteIcon } from '@/lib/api';
 
 export async function generateMetadata() {
@@ -49,15 +50,16 @@ export default function RootLayout({ children }) {
     <html lang="fr">
       <body suppressHydrationWarning={true}>
         <LoadingProvider>
-          <Suspense fallback={<Loading />}>
-            <NavigationProvider>
+          <NavigationProvider>
+            <Suspense fallback={<Loading />}>
               <CsrfProvider>
                 <CartProvider>
                   {children}
+                  <NavigationLoader />
                 </CartProvider>
               </CsrfProvider>
-            </NavigationProvider>
-          </Suspense>
+            </Suspense>
+          </NavigationProvider>
         </LoadingProvider>
       </body>
     </html>

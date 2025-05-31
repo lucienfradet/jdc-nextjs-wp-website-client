@@ -8,6 +8,10 @@
   display: flex;
 }
 
+.eventCard h2 {
+  font-size: clamp(25px, 2.5vw, 37px) !important;
+}
+
 .eventCard:hover {
   transform: translateY(-5px);
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
