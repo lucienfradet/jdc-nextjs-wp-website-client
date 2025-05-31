@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 import styles from '@/styles/desktop/Header.module.css';
 import WPImage from '@/components/WPImage';
 import Link from 'next/link';
-import NavigationLink from '../NavigationLink';
 import DrawerCart from "@/components/DrawerCart";
 import { useCart } from '@/context/CartContext';
 import { usePathname } from 'next/navigation';
@@ -43,12 +42,12 @@ export default function Header({ pageData }) {
   return (
     <header className={`${styles.header} ${isHidden ? styles.hidden : ''}`}>
       {/* Logo */}
-      <NavigationLink href="/" passHref className={styles.logoContainer}>
+      <Link href="/" passHref className={styles.logoContainer}>
         <div className={styles.logoWrapper}>
           <WPImage className={styles.logo} image={pageContent["img-logo"]} forceFullSize={true} />
           <WPImage className={styles.logoRed} image={pageContent["img-logo-red"]} forceFullSize={true} />
         </div>
-      </NavigationLink>
+      </Link>
 
       {/* Navigation Links */}
       <nav className={styles.nav}>

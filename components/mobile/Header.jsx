@@ -6,7 +6,6 @@ import WPImage from '@/components/WPImage';
 import BurgerMenu from "@/components/BurgerMenu";
 import DrawerCart from "@/components/DrawerCart";
 import Link from 'next/link';
-import NavigationLink from '../NavigationLink';
 import { useCart } from '@/context/CartContext';
 import { usePathname } from 'next/navigation';
 
@@ -55,11 +54,11 @@ export default function Header({ pageData }) {
   return (
     <header className={`${styles.header} ${isHidden ? styles.hidden : ''}`}>
       {/* Logo */}
-      <NavigationLink href="/" passHref className={styles.logoContainer}>
+      <Link href="/" passHref className={styles.logoContainer}>
         <div className={styles.logoWrapper}>
           <WPImage className={styles.logo} image={pageContent["img-logo"]} forceFullSize={true} />
         </div>
-      </NavigationLink>
+      </Link>
 
       {/* Cart Icon with number indicator */}
       <div className={styles.cartContainer}>
