@@ -83,9 +83,11 @@ jobs:
             NEXT_PUBLIC_WORDPRESS_API_URL=https://wordpress.jardindeschefs.ca/wp-json/wp/v2/
             NEXT_PUBLIC_WORDPRESS_GRAPHQL_URL=https://wordpress.jardindeschefs.ca/graphql
             NEXT_PUBLIC_SITE_URL=https://jardindeschefs.ca
+            NEXT_PUBLIC_SITE_URL_WWW=https://www.jardindeschefs.ca
+            NEXT_PUBLIC_BASE_PATH=''
             NEXT_PUBLIC_SSL_IGNORE=false
-            # Dummy values for build time only
-            DATABASE_URL="mysql://dummy:dummy@localhost:3306/dummy"
-            REDIS_URL="redis://localhost:6379"
+            NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=${{ secrets.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY }}
+            NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=${{ secrets.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY }}
+            NEXT_PUBLIC_RECAPTCHA_SITE_KEY=${{ secrets.NEXT_PUBLIC_RECAPTCHA_SITE_KEY }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}

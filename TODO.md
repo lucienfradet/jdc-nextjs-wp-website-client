@@ -8,3 +8,6 @@
 - [x] Fix Header z-index
 - [x] Check to revalidate fetching products more often than hourly!
 - [x] Fix the homePage Loading
+
+### Second update after deployment:
+- [ ] Fix google maps api key
