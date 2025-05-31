@@ -19,11 +19,10 @@ const PageRevealAnimation = ({ minLoadTime = 1000, onRevealComplete }) => {
   useEffect(() => {
     // Only run once when initially loading
     if (!isInitialLoading) {
-      console.log("we're returning!")
       return;
     }
     
-    console.log('PageReveal: Starting sequence');
+    // console.log('PageReveal: Starting sequence');
     hasStartedRef.current = true;
     
     let readyTimer;
@@ -32,20 +31,20 @@ const PageRevealAnimation = ({ minLoadTime = 1000, onRevealComplete }) => {
     
     // After minimum load time, make content visible and start animation
     readyTimer = setTimeout(() => {
-      console.log('PageReveal: Making content visible behind overlay');
+      // console.log('PageReveal: Making content visible behind overlay');
       
       // Make content visible (but it's still hidden by the green overlay)
       completeReveal(); // Sets isReady to true
       
       // Small delay to ensure content is rendered before starting animation
       animationTimer = setTimeout(() => {
-        console.log('PageReveal: Starting reveal animation');
+        // console.log('PageReveal: Starting reveal animation');
         setStartAnimation(true);
         startReveal();
         
         // Remove overlay after animation completes
         cleanupTimer = setTimeout(() => {
-          console.log('PageReveal: Animation complete, removing overlay');
+          // console.log('PageReveal: Animation complete, removing overlay');
           setShowOverlay(false);
           setIsInitialLoading(false);
           
