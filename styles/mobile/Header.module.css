@@ -10,7 +10,7 @@
   top: 0;
   width: 100%;
   transition: opacity 0.5s ease, transform 0.3s ease;
-  z-index: 100;
+  z-index: 9000;
 }
 .hidden {
   transform: translateY(-100%); /* Move header out of view */

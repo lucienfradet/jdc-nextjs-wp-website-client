@@ -56,6 +56,6 @@ Implement Cloudflare reverse proxy as security features
 - [x] Fix the loading between booking, checkout, payment and booking to detail!
 - [ ] Test large file upload
 - [x] Fix the Header middleware files and test ounce deployed
-- [ ] Fix Header z-index
-- [ ] Check to revalidate fetching products more often than hourly!
+- [x] Fix Header z-index
+- [x] Check to revalidate fetching products more often than hourly!
 - [ ] Fix the homePage Loading
