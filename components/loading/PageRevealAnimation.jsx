@@ -18,7 +18,10 @@ const PageRevealAnimation = ({ minLoadTime = 1000, onRevealComplete }) => {
 
   useEffect(() => {
     // Only run once when initially loading
-    if (!isInitialLoading) return;
+    if (!isInitialLoading) {
+      setShowOverlay(false);
+      return;
+    }
     
     console.log('PageReveal: Starting sequence');
     hasStartedRef.current = true;
