@@ -50,13 +50,13 @@ export default function RootLayout({ children }) {
       <body suppressHydrationWarning={true}>
         <LoadingProvider>
           <Suspense fallback={<Loading />}>
-            <NavigationProvider>  {/* Add this */}
+            <NavigationProvider>
               <CsrfProvider>
                 <CartProvider>
                   {children}
                 </CartProvider>
               </CsrfProvider>
-            </NavigationProvider>  {/* Add this */}
+            </NavigationProvider>
           </Suspense>
         </LoadingProvider>
       </body>
