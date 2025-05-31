@@ -143,10 +143,6 @@ export default function HomePage({ pageData, headerData, footerData }) {
     }
   }, [lines, handleMobileCatchPhrase]);
 
-  useEffect(() => {
-    console.log('HomePage: Loading state changed:', { isReady });
-  }, [isReady]);
-
   return (
     <>
       {isInitialLoading && (
