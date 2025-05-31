@@ -198,3 +198,5 @@ is used to cleanup ValidatedPaymentIntent that have expired
 
 It is being called using `CRON_SECRET_KEY` in the header by the cron container.
 
+### Relases
+Latest production build v1.1 31/05/25
