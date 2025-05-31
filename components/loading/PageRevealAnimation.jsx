@@ -10,7 +10,7 @@ const PageRevealAnimation = ({ minLoadTime = 1000, onRevealComplete }) => {
   const [startAnimation, setStartAnimation] = useState(false);
   const onRevealCompleteRef = useRef(onRevealComplete);
   const hasStartedRef = useRef(false);
-  
+
   // Update ref when callback changes
   useEffect(() => {
     onRevealCompleteRef.current = onRevealComplete;
@@ -18,7 +18,7 @@ const PageRevealAnimation = ({ minLoadTime = 1000, onRevealComplete }) => {
 
   useEffect(() => {
     // Only run once when initially loading
-    if (!isInitialLoading || hasStartedRef.current) return;
+    if (!isInitialLoading) return;
     
     console.log('PageReveal: Starting sequence');
     hasStartedRef.current = true;
@@ -26,11 +26,6 @@ const PageRevealAnimation = ({ minLoadTime = 1000, onRevealComplete }) => {
     let readyTimer;
     let animationTimer;
     let cleanupTimer;
-    
-    // Add body class to prevent scrolling
-    if (typeof document !== 'undefined') {
-      document.body.classList.add('page-loading');
-    }
     
     // After minimum load time, make content visible and start animation
     readyTimer = setTimeout(() => {
@@ -45,20 +40,10 @@ const PageRevealAnimation = ({ minLoadTime = 1000, onRevealComplete }) => {
         setStartAnimation(true);
         startReveal();
         
-        if (typeof document !== 'undefined') {
-          document.body.classList.add('page-revealing');
-          document.body.classList.remove('page-loading');
-        }
-        
         // Remove overlay after animation completes
         cleanupTimer = setTimeout(() => {
           console.log('PageReveal: Animation complete, removing overlay');
           setShowOverlay(false);
-          
-          if (typeof document !== 'undefined') {
-            document.body.classList.remove('page-revealing');
-            document.body.classList.add('page-loaded');
-          }
           
           onRevealCompleteRef.current?.();
         }, 1200); // Animation duration

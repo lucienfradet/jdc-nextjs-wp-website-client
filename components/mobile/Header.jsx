@@ -43,6 +43,8 @@ export default function Header({ pageData }) {
       }
     };
 
+    setIsHidden(false);
+
     window.addEventListener('scroll', handleScroll);
     return () => {
       window.removeEventListener('scroll', handleScroll);
