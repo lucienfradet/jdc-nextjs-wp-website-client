@@ -12,7 +12,7 @@ export function middleware(request) {
 
   // Check if we're in production
   // const isProduction = process.env.NODE_ENV === 'production';
-  const isProduction = true;
+  const isProduction = false;
   
   // Build CSP upgrade directive conditionally
   const cspUpgrade = isProduction ? "upgrade-insecure-requests;" : "";
