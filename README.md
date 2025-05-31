@@ -198,3 +198,9 @@ is used to cleanup ValidatedPaymentIntent that have expired
 
 It is being called using `CRON_SECRET_KEY` in the header by the cron container.
 
+### Deployment
+
+#### Using GitHub Actions
+- In order to bake NEXT_PUBLIC variables in the build, the keys need to be
+inside the Dockerfile or GitHub secrets (available in repo settings) for non
+sharable keys
