@@ -297,6 +297,15 @@
   z-index: 0; /* Place it below all other content */
 }
 
+.svgOverlay {
+  position: absolute;
+  left: -100px;
+  bottom: -150px;
+  width: 200%;
+  height: 8rem;
+  background: linear-gradient(to bottom, rgba(245, 240, 225, 0), var(--beige) 25%, var(--beige) 50%);
+}
+
 
 /* 
 * Produits Section 

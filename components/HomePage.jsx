@@ -209,6 +209,7 @@ export default function HomePage({ pageData, headerData, footerData }) {
                   </linearGradient>
                 </defs>
               </svg>
+              <div className={styles.svgOverlay}></div>
             </div>
           </section>
 
