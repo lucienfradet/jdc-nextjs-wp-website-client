@@ -2,8 +2,8 @@
 @import './fonts.css';
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #303030;
+  --foreground: #ededed;
   --green: #24311B;
   --green-transparent: rgba(36, 49, 27, 0.85);
   --red: #A22D22;

@@ -306,6 +306,129 @@
   background: linear-gradient(to bottom, rgba(245, 240, 225, 0), var(--beige) 25%, var(--beige) 50%);
 }
 
+/* 
+* Piment Section 
+*/
+.pimentSection {
+  position: relative;
+  background-color: var(--red);
+  color: var(--beige);
+  padding: 80px 0;
+  overflow: hidden;
+}
+
+.pimentContainer {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 60px;
+  position: relative;
+}
+
+/* Main content area with left/right images and center text */
+.pimentMainContent {
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr;
+  gap: 40px;
+  align-items: center;
+  margin-bottom: 80px;
+  position: relative;
+}
+
+.imgPiment1 {
+  width: 100%;
+  max-width: 250px;
+  height: 300px;
+  object-fit: cover;
+  border-radius: 12px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+  transform: rotate(-5deg);
+  transition: transform 0.3s ease;
+}
+
+.imgPiment1:hover {
+  transform: rotate(-2deg) scale(1.05);
+}
+
+.imgPiment2 {
+  width: 100%;
+  max-width: 250px;
+  height: 300px;
+  object-fit: cover;
+  border-radius: 12px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+  transform: rotate(5deg);
+  transition: transform 0.3s ease;
+  justify-self: end;
+}
+
+.imgPiment2:hover {
+  transform: rotate(2deg) scale(1.05);
+}
+
+.imgPiment1 img,
+.imgPiment2 img {
+  border-radius: 12px;
+}
+
+.pimentTextContent {
+  text-align: center;
+  padding: 0 20px;
+  z-index: 2;
+}
+
+.pimentTextContent h2 {
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  font-weight: bold;
+  margin-bottom: 25px;
+  letter-spacing: 1px;
+}
+
+.pimentTextContent div {
+  font-size: clamp(1rem, 1.8vw, 1.3rem);
+  line-height: 1.6;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* Products section at the bottom */
+.pimentProductsSection {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: center;
+  margin-top: 60px;
+}
+
+.pimentProductsText {
+  font-size: clamp(1rem, 1.5vw, 1.2rem);
+  line-height: 1.7;
+  padding: 20px;
+}
+
+.pimentProductsText p {
+  margin-bottom: 15px;
+}
+
+.imgProduitsPiment {
+  width: 100%;
+  max-width: 400px;
+  height: 350px;
+  object-fit: cover;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  transition: transform 0.3s ease;
+  justify-self: end;
+}
+
+.imgProduitsPiment:hover {
+  transform: scale(1.03);
+}
+
+.imgProduitsPiment img {
+  border-radius: 15px;
+}
+
+
 
 /* 
 * Produits Section 
@@ -800,6 +923,55 @@
     width: clamp(200px, 25vw, 300px);
   }
 
+  .pimentSection {
+    padding: 60px 0;
+  }
+
+  .pimentContainer {
+    padding: 0 40px;
+  }
+
+  .pimentMainContent {
+    grid-template-columns: 1fr;
+    gap: 30px;
+    margin-bottom: 60px;
+    text-align: center;
+  }
+
+  .imgPiment1,
+  .imgPiment2 {
+    max-width: 200px;
+    height: 250px;
+    margin: 0 auto;
+    transform: none;
+  }
+
+  .imgPiment1:hover,
+  .imgPiment2:hover {
+    transform: scale(1.05);
+  }
+
+  .pimentTextContent {
+    order: -1;
+    padding: 0;
+  }
+
+  .pimentTextContent h2 {
+    font-size: clamp(1.8rem, 6vw, 3rem);
+  }
+
+  .pimentProductsSection {
+    grid-template-columns: 1fr;
+    gap: 40px;
+    text-align: center;
+  }
+
+  .imgProduitsPiment {
+    justify-self: center;
+    max-width: 350px;
+    height: 300px;
+  }
+
 
   /* abonnement tablet */
   .abonnSection {
@@ -1003,6 +1175,49 @@
     max-width: 200px; /* Ensure it's not too large */
   }
 
+  .pimentSection {
+    padding: 50px 0;
+  }
+
+  .pimentContainer {
+    padding: 0 20px;
+  }
+
+  .pimentMainContent {
+    gap: 25px;
+    margin-bottom: 50px;
+  }
+
+  .imgPiment1,
+  .imgPiment2 {
+    max-width: 180px;
+    height: 220px;
+  }
+
+  .pimentTextContent h2 {
+    font-size: clamp(1.5rem, 7vw, 2.5rem);
+    margin-bottom: 20px;
+  }
+
+  .pimentTextContent div {
+    font-size: clamp(0.9rem, 4vw, 1.1rem);
+  }
+
+  .pimentProductsSection {
+    gap: 30px;
+    margin-top: 40px;
+  }
+
+  .pimentProductsText {
+    font-size: clamp(0.9rem, 3.5vw, 1.1rem);
+    padding: 10px;
+  }
+
+  .imgProduitsPiment {
+    max-width: 280px;
+    height: 250px;
+  }
+
   /* Abonnement phone */
   .abonnSection {
     padding: 60px 0;
@@ -1145,6 +1360,25 @@
     background: var(--beige);
     padding: 0.3rem;
     border-radius: 5px;
+  }
+
+  .pimentSection {
+    padding: 40px 0;
+  }
+
+  .imgPiment1,
+  .imgPiment2 {
+    max-width: 150px;
+    height: 180px;
+  }
+
+  .pimentTextContent h2 {
+    font-size: clamp(1.3rem, 8vw, 2rem);
+  }
+
+  .imgProduitsPiment {
+    max-width: 250px;
+    height: 200px;
   }
 
   .collabTextContainer {

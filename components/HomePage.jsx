@@ -213,6 +213,26 @@ export default function HomePage({ pageData, headerData, footerData }) {
             </div>
           </section>
 
+          <section className={`${styles.pimentSection} reveal-on-scroll`} ref={addScrollRef}>
+            <div className={styles.pimentContainer}>
+              <div className={styles.pimentMainContent}>
+                <WPImage className={styles.imgPiment1} image={pageContent["img-piment-1"]} />
+                <div className={styles.pimentTextContent}>
+                  <h2>{pageContent["h2-piment"]}</h2>
+                  <div>{renderContent(pageContent["paragraph-piment"])}</div>
+                </div>
+                <WPImage className={styles.imgPiment2} image={pageContent["img-piment-2"]} />
+              </div>
+              
+              <div className={styles.pimentProductsSection}>
+                <div className={styles.pimentProductsText}>
+                  {renderContent(pageContent["paragraph-produits-piment"])}
+                </div>
+                <WPImage className={styles.imgProduitsPiment} image={pageContent["img-produits-piment"]} />
+              </div>
+            </div>
+          </section>
+
           <section className={`${styles.produitsSection} reveal-on-scroll`} ref={addScrollRef}>
             <div className={styles.produitsContainer}>
               <h2>{pageContent["h2-produits"]}</h2>
