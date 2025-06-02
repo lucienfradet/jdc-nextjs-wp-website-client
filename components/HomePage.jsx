@@ -198,7 +198,6 @@ export default function HomePage({ pageData, headerData, footerData }) {
                 {renderContent(pageContent["paragraph-intro-bold"], styles.introBold)}
                 <WPImage className={styles.imgLogoText} image={pageContent["logo-with-text"]} />
               </div>
-              <WPImage className={styles.imageSide} image={pageContent["img-side-left"]} />
 
               <svg className={styles.backgroundSVG} xmlns="http://www.w3.org/2000/svg" width="812" height="990" viewBox="0 0 812 990" fill="none">
                 <path d="M657.843 38C618.676 159.667 1140.53 586.727 245.5 447C-331 357 482 634.5 459.343 952" stroke="url(#paint0_linear_116_245)" strokeWidth="75" strokeLinecap="round"/>
@@ -230,6 +229,7 @@ export default function HomePage({ pageData, headerData, footerData }) {
                 </div>
                 <WPImage className={styles.imgProduitsPiment} image={pageContent["img-produits-piment"]} />
               </div>
+              <WPImage className={styles.imageSide} image={pageContent["img-side-left"]} />
             </div>
           </section>
 

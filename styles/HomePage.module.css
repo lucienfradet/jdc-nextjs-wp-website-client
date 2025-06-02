@@ -313,14 +313,14 @@
   position: relative;
   background-color: var(--red);
   color: var(--beige);
-  padding: 80px 0;
-  overflow: hidden;
+  padding-top: 60px;
+  z-index: 2;
 }
 
 .pimentContainer {
-  max-width: 1200px;
+  max-width: 1000px; /* Limit the width of the content */
   margin: 0 auto;
-  padding: 0 60px;
+  padding: 0 0px;
   position: relative;
 }
 
@@ -330,7 +330,7 @@
   grid-template-columns: 1fr 2fr 1fr;
   gap: 40px;
   align-items: center;
-  margin-bottom: 80px;
+  margin-bottom: 0px;
   position: relative;
 }
 
@@ -397,6 +397,7 @@
   gap: 60px;
   align-items: center;
   margin-top: 60px;
+  padding-bottom: 60px;
 }
 
 .pimentProductsText {
