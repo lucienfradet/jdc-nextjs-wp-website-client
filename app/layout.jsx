@@ -18,7 +18,7 @@ export async function generateMetadata() {
       default: 'Le Jardin des chefs',
       template: '%s | Le Jardin des chefs'
     },
-    description: `Ferme maraîchère familiale située en Charlevoix, Le Jardin des
+    description: `Ferme maraîchère familiale située à Charlevoix, Le Jardin des
                   Chefs est dirigé par trois jeunes passionnés alliant expertise agricole et
                   sensibilité gastronomique. Surplombant le fleuve Saint-Laurent, notre ferme
                   cultive des produits de qualité tout en valorisant les partenariats locaux et
@@ -35,6 +35,18 @@ export async function generateMetadata() {
       type: 'website',
       locale: 'fr_CA',
       siteName: 'Le Jardin des chefs',
+      images: [
+        {
+          url: '/og-image-default.jpg',
+          width: 1200,
+          height: 630,
+          alt: 'Le Jardin des chefs - Ferme maraîchère à Charlevoix',
+        }
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      images: ['/og-image-default.jpg'],
     }
   };
 }

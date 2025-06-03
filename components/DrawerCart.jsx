@@ -47,6 +47,9 @@ export default function DrawerCart({ trigger }) {
         open={open} 
         anchor="right" 
         onClose={handleClose}
+        sx={{
+          zIndex: 99999,
+        }}
         slotProps={{
           paper: {
             className: styles.drawer
