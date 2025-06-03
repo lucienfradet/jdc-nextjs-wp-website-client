@@ -25,7 +25,7 @@ export default function Footer({ pageData }) {
               <NavigationLink href="/evenements">{pageContent["evenements"]}</NavigationLink>
             </div>
             <div className={styles.linkColumn}>
-              <NavigationLink href="/abonnement">{pageContent["abonnement"]}</NavigationLink>
+              <NavigationLink href="/produits">{pageContent["abonnement"]}</NavigationLink>
               <NavigationLink href="/contact">{pageContent["contact"]}</NavigationLink>
               {/*<a href="/unsubscribe">Se désabonner</a>*/}
             </div>

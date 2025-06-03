@@ -11,6 +11,7 @@ import HomePageSvgTitleSection from "@/components/svg/HomePageSvgTitleSection";
 import EventsSection from "@/components/events/EventsSection";
 import PageRevealAnimation from "./loading/PageRevealAnimation";
 import Link from "next/link";
+import NavigationLink from "./NavigationLink";
 import styles from '@/styles/HomePage.module.css';
 import { convertLineBreaksToHtml, renderContent } from '@/lib/textUtils';
 import useIntersectionObserver from '@/lib/useIntersectionObserver'; // Import the hook
@@ -226,13 +227,24 @@ export default function HomePage({ pageData, headerData, footerData }) {
               <div className={styles.pimentProductsSection}>
                 <div className={styles.pimentProductsText}>
                   {renderContent(pageContent["paragraph-produits-piment"])}
+                  <NavigationLink 
+                    href={pageContent["btn-piment-url"] || "/produits"} 
+                    className={styles.voirPlusButton}
+                  >
+                    En savoir plus
+                  </NavigationLink>
                 </div>
-                <WPImage className={styles.imgProduitsPiment} image={pageContent["img-produits-piment"]} />
+
+                <NavigationLink 
+                  href={pageContent["btn-piment-url"] || "/produits"} 
+                >
+                  <WPImage className={styles.imgProduitsPiment} image={pageContent["img-produits-piment"]} />
+                </NavigationLink>
               </div>
             </div>
           </section>
 
-          <section className={`${styles.produitsSection} reveal-on-scroll`} ref={addScrollRef}>
+          <section id="trouver-nos-produits" className={`${styles.produitsSection} reveal-on-scroll`} ref={addScrollRef}>
             <div className={styles.produitsContainer}>
               <WPImage className={styles.imageSide} image={pageContent["img-side-left"]} />
               <h2>{pageContent["h2-produits"]}</h2>

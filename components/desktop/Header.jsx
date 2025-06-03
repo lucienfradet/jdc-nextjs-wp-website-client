@@ -58,7 +58,7 @@ export default function Header({ pageData }) {
           {pageContent["a-propos"]}
         </NavigationLink>
         <NavigationLink 
-          href="/abonnement" 
+          href="/produits" 
           className={pathname === '/abonnement' ? styles.active : ''}
         >
           {pageContent["abonnement"]}
