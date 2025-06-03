@@ -8,6 +8,7 @@ import MobileHeader from "@/components/mobile/Header";
 import DesktopFooter from "@/components/desktop/Footer";
 import MobileFooter from "@/components/mobile/Footer";
 import HomePageSvgTitleSection from "@/components/svg/HomePageSvgTitleSection";
+import HomePageSvgPimentSection from "@/components/svg/HomePageSvgPimentSection";
 import EventsSection from "@/components/events/EventsSection";
 import PageRevealAnimation from "./loading/PageRevealAnimation";
 import Link from "next/link";
@@ -242,6 +243,7 @@ export default function HomePage({ pageData, headerData, footerData }) {
                 </NavigationLink>
               </div>
             </div>
+            <HomePageSvgPimentSection/>
           </section>
 
           <section id="trouver-nos-produits" className={`${styles.produitsSection} reveal-on-scroll`} ref={addScrollRef}>
