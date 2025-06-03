@@ -271,21 +271,6 @@
   z-index: 2;
 }
 
-/* Side Image */
-.imageSide {
-  position: absolute !important;
-  bottom: 0; /* Place halfway outside the section at the bottom */
-  transform: translateY(50%);
-  left: 0; /* Hug the left side of the viewport */
-  width: 35vw; /* Adjust size */
-  max-width: 400px; /* Ensure it's not too large */
-  z-index: 1;
-}
-
-.imageSide img {
-  border-radius: 10px;
-}
-
 /* Background SVG */
 .backgroundSVG {
   position: absolute;
@@ -314,7 +299,7 @@
   background-color: var(--red);
   color: var(--beige);
   padding-top: 60px;
-  z-index: 2;
+  z-index: 1;
 }
 
 .pimentContainer {
@@ -328,16 +313,16 @@
 .pimentMainContent {
   display: grid;
   grid-template-columns: 1fr 2fr 1fr;
-  gap: 40px;
+  gap: 60px;
   align-items: center;
   margin-bottom: 0px;
   position: relative;
 }
 
 .imgPiment1 {
-  width: 100%;
-  max-width: 250px;
-  height: 300px;
+  width: 130%;
+  max-width: 500px;
+  height: 450px;
   object-fit: cover;
   border-radius: 12px;
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
@@ -350,9 +335,9 @@
 }
 
 .imgPiment2 {
-  width: 100%;
-  max-width: 250px;
-  height: 300px;
+  width: 130%;
+  max-width: 500px;
+  height: 450px;
   object-fit: cover;
   border-radius: 12px;
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
@@ -394,16 +379,18 @@
 .pimentProductsSection {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 60px;
+  gap: 10px;
   align-items: center;
   margin-top: 60px;
-  padding-bottom: 60px;
+  padding-bottom: 120px;
 }
 
 .pimentProductsText {
   font-size: clamp(1rem, 1.5vw, 1.2rem);
+  font-weight: bold;
   line-height: 1.7;
   padding: 20px;
+  text-align: right;
 }
 
 .pimentProductsText p {
@@ -418,7 +405,7 @@
   border-radius: 15px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
   transition: transform 0.3s ease;
-  justify-self: end;
+  justify-self: left;
 }
 
 .imgProduitsPiment:hover {
@@ -429,15 +416,30 @@
   border-radius: 15px;
 }
 
-
-
 /* 
 * Produits Section 
 */
+
+/* Side Image */
+.imageSide {
+  position: absolute !important;
+  top: 0; /* Place halfway outside the section at the bottom */
+  transform: translateY(-50%);
+  left: 0; /* Hug the left side of the viewport */
+  width: 35vw; /* Adjust size */
+  max-width: 400px; /* Ensure it's not too large */
+  z-index: 1;
+}
+
+.imageSide img {
+  border-radius: 10px;
+}
+
 .produitsSection {
   position: relative; /* Enable positioning for child elements */
   background-color: var(--orange); /* Section background color */
   color: var(--beige); /* Text color */
+  z-index: 2;
 }
 
 .produitsContainer {
@@ -941,8 +943,9 @@
 
   .imgPiment1,
   .imgPiment2 {
-    max-width: 200px;
-    height: 250px;
+    max-width: 600px;
+    width: 60vw;
+    height: 200px;
     margin: 0 auto;
     transform: none;
   }
@@ -965,12 +968,18 @@
     grid-template-columns: 1fr;
     gap: 40px;
     text-align: center;
+    padding-bottom: 20px;
+  }
+
+  .pimentProductsText {
+    text-align: center;
   }
 
   .imgProduitsPiment {
     justify-self: center;
-    max-width: 350px;
-    height: 300px;
+    max-width: 450px;
+    height: 400px;
+    width: 60vw;
   }
 
 
@@ -1189,12 +1198,6 @@
     margin-bottom: 50px;
   }
 
-  .imgPiment1,
-  .imgPiment2 {
-    max-width: 180px;
-    height: 220px;
-  }
-
   .pimentTextContent h2 {
     font-size: clamp(1.5rem, 7vw, 2.5rem);
     margin-bottom: 20px;
@@ -1365,12 +1368,6 @@
 
   .pimentSection {
     padding: 40px 0;
-  }
-
-  .imgPiment1,
-  .imgPiment2 {
-    max-width: 150px;
-    height: 180px;
   }
 
   .pimentTextContent h2 {

@@ -229,12 +229,12 @@ export default function HomePage({ pageData, headerData, footerData }) {
                 </div>
                 <WPImage className={styles.imgProduitsPiment} image={pageContent["img-produits-piment"]} />
               </div>
-              <WPImage className={styles.imageSide} image={pageContent["img-side-left"]} />
             </div>
           </section>
 
           <section className={`${styles.produitsSection} reveal-on-scroll`} ref={addScrollRef}>
             <div className={styles.produitsContainer}>
+              <WPImage className={styles.imageSide} image={pageContent["img-side-left"]} />
               <h2>{pageContent["h2-produits"]}</h2>
               <div className={styles.columnsWrapper}>
                 <div className={styles.column}>
