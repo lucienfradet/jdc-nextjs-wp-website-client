@@ -60,8 +60,8 @@ export function middleware(request) {
     // Referrer policy - more restrictive than your nginx config
     'Referrer-Policy': 'strict-origin-when-cross-origin',
     
-    // UPDATED: Feature policy - allow payment for self and Stripe domains
-    'Permissions-Policy': 'camera=(), microphone=(), geolocation=(), payment=(self "https://js.stripe.com" "https://*.stripe.com")',
+    // Feature policy - allow payment for self, Google, Apple and Stripe domains
+    'Permissions-Policy': 'camera=(), microphone=(), geolocation=(), payment=(self "https://js.stripe.com" "https://*.stripe.com" "https://www.google.com" "https://pay.google.com" "https://www.gstatic.com" "https://apple.com" "https://*.apple.com")',
     
     // HSTS - enforce HTTPS (31536000 = 1 year, 63072000 = 2 years)
     // HSTS - enforce HTTPS only in production
