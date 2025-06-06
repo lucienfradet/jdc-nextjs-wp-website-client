@@ -156,11 +156,13 @@
 /* Left-aligned product (image on left, description on right) */
 .productLeft {
   flex-direction: row;
+  text-align: left !important;
 }
 
 /* Right-aligned product (image on right, description on left) */
 .productRight {
   flex-direction: row-reverse;
+  text-align: right !important;
 }
 
 .productImageContainer {
@@ -266,7 +268,7 @@
 
   .productItem {
     flex-direction: column !important; /* Override left/right for mobile */
-    text-align: center;
+    text-align: center !important;
     gap: 2rem;
     margin-bottom: 4rem;
     padding: 0 1.5rem;
