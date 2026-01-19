@@ -397,7 +397,7 @@ Route in `./app/api/cron/cleanup-expired-intents/route.js` cleans up expired Val
 
 ## Releases
 
-**Latest production build**: v1.1 (31/05/25)
+**Latest production build**: v1.3 (19/01/26)
 
 ### Release Process
 
