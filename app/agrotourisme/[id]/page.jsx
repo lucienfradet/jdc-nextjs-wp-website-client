@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import { stripHtml } from '@/lib/textUtils';
 import { cache } from 'react';
 
+export const dynamic = 'force-dynamic'; // we are fetching nextjs api on build! can't be static!
 export const revalidate = 1800;
 // 0 for testing
 // export const revalidate = 0;
