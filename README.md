@@ -1,6 +1,7 @@
 # SITE WEB - LE JARDIN DES CHEFS
 
 Documentation for the website of [jardindeschefs.ca](https://jardindeschefs.ca)
+
 See full [README](https://github.com/lucienfradet/jdc-nextjs-wp-website)
 
 ### Frontend
