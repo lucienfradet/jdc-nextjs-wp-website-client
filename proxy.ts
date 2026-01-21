@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 
 // Middleware function to handle all requests
-export function middleware(request) {
+export function proxy(request) {
   // Get the existing response
   const response = NextResponse.next();
 
