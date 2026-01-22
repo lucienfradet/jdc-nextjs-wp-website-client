@@ -53,7 +53,7 @@ RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
 # Install curl for health checks, prisma CLI for migrations
-RUN apk add --no-cache curl \
+RUN apk add --no-cache curl && \
     npm install -g prisma@6
 
 COPY --from=builder /app/public ./public
