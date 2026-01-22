@@ -12,4 +12,4 @@ See full [README](https://github.com/lucienfradet/jdc-nextjs-wp-website)
 
 ## Releases
 
-**Latest production build**: v1.3.0 (19/01/26)
+**Latest production build**: v1.3 (19/01/26)
