@@ -1,0 +1,31 @@
+version: 2
+updates:
+  # Enable version updates for npm
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"  # or "daily" if you want more frequent checks
+      day: "monday"
+      time: "09:00"
+      timezone: "America/Montreal"
+    open-pull-requests-limit: 10
+    reviewers:
+      - "lucienfradet"  # Replace with your username
+    labels:
+      - "dependencies"
+      - "security"
+    # Group updates to reduce PR spam
+    groups:
+      production-dependencies:
+        patterns:
+          - "*"
+        exclude-patterns:
+          - "@types/*"
+          - "eslint*"
+          - "prettier"
+      development-dependencies:
+        dependency-type: "development"
+        patterns:
+          - "*"
+    # Auto-merge minor and patch updates (optional - use with caution)
+    # See auto-merge section below
