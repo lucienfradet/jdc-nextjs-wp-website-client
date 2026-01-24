@@ -10,10 +10,20 @@ updates:
       timezone: "America/Montreal"
     open-pull-requests-limit: 10
     reviewers:
-      - "lucienfradet"  # Replace with your username
+      - "lucienfradet"
+    # assignees:
+    #   - "lucienfradet"
     labels:
       - "dependencies"
       - "security"
+
+    # Ignore specific packages
+    ignore:
+      - dependency-name: "prisma"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "@prisma/client"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+
     # Group updates to reduce PR spam
     groups:
       production-dependencies:
@@ -23,9 +33,9 @@ updates:
           - "@types/*"
           - "eslint*"
           - "prettier"
+          - "prisma"
+          - "@prisma/client"
       development-dependencies:
         dependency-type: "development"
         patterns:
           - "*"
-    # Auto-merge minor and patch updates (optional - use with caution)
-    # See auto-merge section below
