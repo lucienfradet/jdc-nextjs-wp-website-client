@@ -1,0 +1,34 @@
+name: Retag PR Image as Latest
+
+on:
+  pull_request:
+    types: [closed]
+    branches: [main, master]
+
+permissions:
+  packages: write
+
+jobs:
+  retag:
+    # Only run if PR was merged (not just closed) and build passed
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - name: Login to GHCR
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Retag PR image as latest
+        run: |
+          PR_NUM="${{ github.event.pull_request.number }}"
+          IMAGE="ghcr.io/${{ github.repository }}"
+          
+          echo "Pulling ${IMAGE}:pr-${PR_NUM}"
+          docker pull "${IMAGE}:pr-${PR_NUM}"
+          
+          docker tag "${IMAGE}:pr-${PR_NUM}" "${IMAGE}:latest"
+          docker tag "${IMAGE}:pr-${PR_NUM}" "${IMAGE}:main-pr-${PR_NUM}"
+          
+          docker push "${IMAGE}:latest"
+          docker push "${IMAGE}:main-pr-${PR_NUM}"
+          
+          echo "✅ Tagged as latest and main-pr-${PR_NUM}"

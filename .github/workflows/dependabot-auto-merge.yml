@@ -1,9 +1,9 @@
 name: Dependabot Auto-Merge
 on: pull_request
+
 permissions:
   contents: write
   pull-requests: write
-  packages: write  # Added for retagging
 
 jobs:
   dependabot:
@@ -25,27 +25,6 @@ jobs:
           PR_URL: ${{ github.event.pull_request.html_url }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Retag image as latest after merge
-        if: |
-          steps.metadata.outputs.update-type == 'version-update:semver-patch' ||
-          steps.metadata.outputs.update-type == 'version-update:semver-minor'
-        run: |
-          # Wait for merge to complete
-          sleep 30
-          
-          # Login to GHCR
-          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-          
-          # Pull the PR image and retag as latest
-          PR_TAG="pr-${{ github.event.pull_request.number }}"
-          IMAGE="ghcr.io/${{ github.repository }}"
-          
-          docker pull "${IMAGE}:${PR_TAG}"
-          docker tag "${IMAGE}:${PR_TAG}" "${IMAGE}:latest"
-          docker tag "${IMAGE}:${PR_TAG}" "${IMAGE}:main"
-          docker push "${IMAGE}:latest"
-          docker push "${IMAGE}:main"
-      
       - name: Comment on major updates
         if: steps.metadata.outputs.update-type == 'version-update:semver-major'
         run: |
