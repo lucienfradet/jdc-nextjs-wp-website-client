@@ -36,7 +36,3 @@ updates:
           - "prettier"
           - "prisma"
           - "@prisma/client"
-      development-dependencies:
-        dependency-type: "development"
-        patterns:
-          - "*"
