@@ -4,11 +4,11 @@ updates:
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
-      interval: "daily"
-      # interval: "weekly"  # or "daily" if you want more frequent checks
-      # day: "monday"
-      # time: "09:00"
-      # timezone: "America/Montreal"
+      # interval: "daily"
+      interval: "weekly"  # or "daily" if you want more frequent checks
+      day: "monday"
+      time: "09:00"
+      timezone: "America/Montreal"
     open-pull-requests-limit: 10
     reviewers:
       - "lucienfradet"
