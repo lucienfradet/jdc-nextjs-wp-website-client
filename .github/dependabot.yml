@@ -28,6 +28,8 @@ updates:
         update-types: ["version-update:semver-major"]
       - dependency-name: "eslint/*"
         update-types: ["version-update:semver-major"]
+      - dependency-name: "eslint/js"
+        update-types: ["version-update:semver-major"]
 
     # Group updates to reduce PR spam
     groups:
@@ -38,6 +40,7 @@ updates:
           - "@types/*"
           - "eslint*"
           - "eslint/*"
+          - "eslint/js"
           - "prettier"
           - "prisma"
           - "@prisma/client"
