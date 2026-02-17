@@ -1,6 +1,16 @@
 import Image from "next/image";
 
 export default function WPImage({ image, className, forceFullSize = false }) {
+  if (!image || typeof image !== 'object') {
+    return (
+      <div className={className ? `image-wrapper ${className}` : 'image-wrapper'}>
+        <div className="image-placeholder">
+          Image manquante...
+        </div>
+      </div>
+    );
+  }
+
   const { alt, sizes } = image;
 
   return (

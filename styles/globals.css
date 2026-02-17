@@ -103,6 +103,23 @@ input.disabled {
   object-position: center;
 }
 
+.image-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  min-height: 200px;
+  background-color: #fff3cd;
+  border: 2px dashed #e63946;
+  color: #e63946;
+  font-weight: bold;
+  font-size: 0.9rem;
+  text-align: center;
+  padding: 1rem;
+  border-radius: 4px;
+}
+
 @media (prefers-color-scheme: dark) {
   html {
     color-scheme: dark;
