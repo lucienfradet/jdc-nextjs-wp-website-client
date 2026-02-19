@@ -3,6 +3,26 @@ const nextConfig = {
   output: 'standalone',
   reactStrictMode: true,
   basePath: process.env.NEXT_PUBLIC_BASE_PATH === 'undefined' ? undefined : process.env.NEXT_PUBLIC_BASE_PATH,
+
+  async headers() {
+    return [
+      {
+        // All HTML/dynamic pages — never cache
+        source: "/((?!_next/static|_next/image|favicon.ico).*)",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "no-store, no-cache, must-revalidate, proxy-revalidate",
+          },
+          {
+            key: "CDN-Cache-Control",  // Cloudflare-specific override
+            value: "no-store",
+          },
+        ],
+      },
+    ];
+  },
+
   images: {
     remotePatterns: [
       // Development - localhost

@@ -72,6 +72,10 @@ export function proxy(request) {
     'X-DNS-Prefetch-Control': 'on',
     'X-Download-Options': 'noopen',
     'X-Permitted-Cross-Domain-Policies': 'none',
+
+    // Caching rules for better Cloudflare integration
+    'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+    'CDN-Cache-Control': 'no-store',
   };
 
   // Add the headers to the response
