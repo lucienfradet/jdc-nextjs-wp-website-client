@@ -26,6 +26,9 @@ export default function WPImage({ image, className, forceFullSize = false }) {
           .join(", ")}
         className="image-content"
         priority
+        // UNOPTIMIZED! as wordpress already optimises on uploads! next/image
+        // optimization is redundant in this case.
+        unoptimized 
       />
     </div>
   );
