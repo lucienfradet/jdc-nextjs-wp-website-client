@@ -26,7 +26,7 @@ async function handlePostRequest(request) {
 
     // Get and sanitize request body
     const body = await request.json();
-    const { amount, paymentMethodType, currency, metadata, idempotencyKey, orderData, recaptchaToken } = sanitizeObject(body);
+    const { amount, paymentMethodType, currency, metadata, idempotencyKey, orderData, recaptchaToken } = body;
 
     // Verify reCAPTCHA token
     const recaptchaResult = await verifyReCaptchaToken(recaptchaToken, 'payment_intent_creation');
@@ -88,11 +88,15 @@ async function handlePostRequest(request) {
       ...sanitizedMetadata
     };
 
+
+    const ALLOWED_PAYMENT_METHODS = ['card'];
+    const method = ALLOWED_PAYMENT_METHODS.includes(paymentMethodType) ? paymentMethodType : 'card';
+
     // Create the payment intent with validated amount
     const paymentIntent = await stripe.paymentIntents.create({
       amount: Math.round(validatedAmount * 100), // Stripe expects amount in cents
       currency: sanitizeString(currency || 'cad'),
-      payment_method_types: [sanitizeString(paymentMethodType || 'card')],
+      payment_method_types: method,
       metadata: updatedMetadata
     }, {
       idempotencyKey: sanitizeString(idempotencyKey || '')
@@ -122,7 +126,7 @@ async function handlePostRequest(request) {
   } catch (error) {
     console.error('Error creating payment intent:', error);
     return Response.json({ 
-      error: error.message 
+      error: 'Erreur de serveur interne.' 
     }, { status: 500 });
   }
 }
