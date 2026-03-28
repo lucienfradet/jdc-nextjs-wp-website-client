@@ -115,13 +115,13 @@ async function handlePostRequest(request) {
       console.error('Newsletter subscription error:', data);
       return Response.json({ 
         success: false, 
-        message: data.message || "Échec de l'abonnement à la newsletter"
+        message: data.message || "Échec de l'abonnement à l'infolettre"
       }, { status: response.status });
     }
     
     return Response.json({
       success: true,
-      message: 'Abonnement à la newsletter réussi'
+      message: "Abonnement à l'infolettre réussi"
     });
   } catch (error) {
     console.error('Newsletter API error:', error);
