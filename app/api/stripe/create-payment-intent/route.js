@@ -96,7 +96,7 @@ async function handlePostRequest(request) {
     const paymentIntent = await stripe.paymentIntents.create({
       amount: Math.round(validatedAmount * 100), // Stripe expects amount in cents
       currency: sanitizeString(currency || 'cad'),
-      payment_method_types: method,
+      payment_method_types: [method],
       metadata: updatedMetadata
     }, {
       idempotencyKey: sanitizeString(idempotencyKey || '')
