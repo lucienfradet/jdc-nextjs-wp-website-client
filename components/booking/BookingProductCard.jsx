@@ -4,6 +4,7 @@ import NavigationLink from '@/components/NavigationLink'; // Change this import
 import WPImage from '@/components/WPImage';
 import styles from '@/styles/booking/BookingProductCard.module.css';
 import { renderContent, stripHtml } from '@/lib/textUtils';
+import { processImageId } from '@/lib/api';
 
 export default function BookingProductCard({ product, buttonText, buttonLink }) {
   // Get the first image

@@ -1,6 +1,7 @@
 import { getPageFieldsByName } from '@/lib/cachedApi';
 import AgrotourismePage from '@/components/AgrotourismePage';
 import { notFound } from 'next/navigation';
+import { processProductImages } from '@/lib/api';
 
 export const dynamic = 'force-dynamic'; // we are fetching nextjs api on build! can't be static!
 export const revalidate = 3600;
@@ -53,7 +54,10 @@ export default async function Page() {
     console.error("Error fetching products");
   }
 
-  const products = await productsRes.json();
+  const productsRaw = await productsRes.json();
+  console.log(productsRaw);
+  const products = await processProductImages(productsRaw);
+  console.log(products);
 
   return (
     <AgrotourismePage
