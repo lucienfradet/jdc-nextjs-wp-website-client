@@ -115,7 +115,7 @@
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
   position: sticky;
   top: calc(var(--header-height) + 2rem);
-  align-self: flex-start;
+  align-self: flex-center;
 }
 
 .bookingForm h2 {
