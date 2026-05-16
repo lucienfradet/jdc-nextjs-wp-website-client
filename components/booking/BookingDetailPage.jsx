@@ -413,33 +413,26 @@ export default function BookingDetailPage({ headerData, footerData, product }) {
               </div>
             ) : (
               <>
-                <div className={styles.calendarContainer}>
-                  <h3>Sélectionnez une date</h3>
-                  {loadingMonths.size > 0 ? (
-                    <div className={styles.loadingMessage}>
-                      Chargement des disponibilités...
-                    </div>
-                    ) : isRateLimited ? (
-                        <div className={styles.errorMessage}>
-                          Trop de requêtes. Veuillez attendre 1 minute avant de réessayer.
-                          <button 
-                            className={styles.retryButton}
-                            onClick={handleRetry}
-                          >
-                            Réessayer
-                          </button>
-                        </div>
-                      ) : (
-                    <BookingCalendar 
-                        availableDates={availableDates}
-                        unavailableDates={unavailableDates}
-                        selectedDate={selectedDate}
-                        onDateSelect={handleDateSelect}
-                        loadingMonths={loadingMonths}
-                        onMonthChange={handleMonthChange}
-                    />
-                  )}
+              <div className={styles.calendarContainer}>
+              <h3>Sélectionnez une date</h3>
+              {isRateLimited ? (
+                <div className={styles.errorMessage}>
+                Trop de requêtes. Veuillez attendre 1 minute avant de réessayer.
+                <button className={styles.retryButton} onClick={handleRetry}>
+                Réessayer
+                </button>
                 </div>
+              ) : (
+                <BookingCalendar
+                availableDates={availableDates}
+                unavailableDates={unavailableDates}
+                selectedDate={selectedDate}
+                onDateSelect={handleDateSelect}
+                loadingMonths={loadingMonths}
+                onMonthChange={handleMonthChange}
+                />
+              )}
+              </div>
 
                 {selectedDate && (
                   <>

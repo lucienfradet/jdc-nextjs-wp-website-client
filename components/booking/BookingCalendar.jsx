@@ -30,6 +30,16 @@ export default function BookingCalendar({
     }
   }, [availableDates]);
 
+  // Trigger fetch when user navigates to a new month
+  const handleActiveStartDateChange = useCallback(({ activeStartDate, view }) => {
+    if (view === 'month') {
+      setCalendarDate(activeStartDate);
+      if (onMonthChange) {
+        onMonthChange(activeStartDate.getFullYear(), activeStartDate.getMonth());
+      }
+    }
+  }, [onMonthChange]);
+
   const isDateEnabled = (date) => {
     return bookableDates.some(bookableDate =>
       bookableDate.getDate() === date.getDate() &&
@@ -45,14 +55,6 @@ export default function BookingCalendar({
       unavailableDate.getFullYear() === date.getFullYear()
     );
   };
-
-  // Trigger fetch when user navigates to a new month
-  const handleActiveStartDateChange = useCallback(({ activeStartDate, view }) => {
-    // Only trigger on month view — ignore year/decade navigation
-    if (onMonthChange && view === 'month') {
-      onMonthChange(activeStartDate.getFullYear(), activeStartDate.getMonth());
-    }
-  }, [onMonthChange]);
 
   // Disable tiles if the month is loading, not bookable, or fully booked
   const tileDisabled = ({ date }) => {
@@ -88,8 +90,7 @@ export default function BookingCalendar({
   };
 
   // Check if the currently viewed month is loading
-  const currentMonthKey = `${calendarDate.getFullYear()}-${calendarDate.getMonth()}`;
-  const isCurrentMonthLoading = loadingMonths.has(currentMonthKey);
+  const isCurrentMonthLoading = loadingMonths.size > 0;
 
   return (
     <div className={styles.calendarWrapper}>
