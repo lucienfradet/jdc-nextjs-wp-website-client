@@ -55,9 +55,7 @@ export default async function Page() {
   }
 
   const productsRaw = await productsRes.json();
-  console.log(productsRaw);
   const products = await processProductImages(productsRaw);
-  console.log(products);
 
   return (
     <AgrotourismePage

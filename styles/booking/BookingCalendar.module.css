@@ -2,6 +2,39 @@
 .calendarWrapper {
   margin-bottom: 1.5rem;
   color: var(--green);
+  position: relative;
+  display: inline-block;
+  width: 100%;
+}
+
+.calendarLoadingOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.85);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  pointer-events: none; /* Let clicks fall through if needed, or remove to block */
+}
+
+.loadingSpinner {
+  width: 24px;
+  height: 24px;
+  border: 3px solid #e0e0e0;
+  border-top: 3px solid #0070f3;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 8px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 /* Custom styling for the react-calendar component */

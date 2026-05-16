@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useNavigation } from '@/context/NavigationContext';
 import NavigationLink from '@/components/NavigationLink';
@@ -30,15 +30,14 @@ export default function BookingDetailPage({ headerData, footerData, product }) {
   
   // Availability state
   const [maxBookingPerSlot, setMaxBookingPerSlot] = useState(0);
-  const [isLoadingAvailability, setIsLoadingAvailability] = useState(false);
   const [availabilityData, setAvailabilityData] = useState(null);
   const [availableTimeSlots, setAvailableTimeSlots] = useState([]);
   const [selectedSlotAvailability, setSelectedSlotAvailability] = useState(null);
   
-  // New state for preloading all availability data
-  const [isLoadingAllAvailability, setIsLoadingAllAvailability] = useState(true);
-  const [allAvailabilityData, setAllAvailabilityData] = useState({});
-  const [unavailableDates, setUnavailableDates] = useState([]);
+  const [allAvailabilityData, setAllAvailabilityData]   = useState({});
+  const [unavailableDates, setUnavailableDates]         = useState([]);
+  const [loadingMonths, setLoadingMonths]               = useState(new Set()); // months currently fetching
+  const [loadedMonths, setLoadedMonths]                 = useState(new Set()); // months already fetched
 
   // Add rate limit state
   const [isRateLimited, setIsRateLimited] = useState(false);
@@ -86,94 +85,90 @@ export default function BookingDetailPage({ headerData, footerData, product }) {
     fetchMaxBooking();
   }, [product.id, defaultMaxPeople]);
 
-  // Fetch availability for all dates upfront
-  useEffect(() => {
-    const fetchAllAvailability = async () => {
-      if (!availableDates || availableDates.length === 0 || isOutOfStock) {
-        setIsLoadingAllAvailability(false);
-        return;
-      }
-      
-      setIsLoadingAllAvailability(true);
-      setIsRateLimited(false); // Reset rate limit state when starting a new fetch
-      
-      try {
-        // Create an array of promises to fetch availability for each date
-        const availabilityPromises = availableDates.map(async (date) => {
-          const formattedDate = formatDate(date);
-          try {
-            const response = await fetch('/api/booking/availability', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                productId: product.id,
-                date: formattedDate
-              }),
-            });
-            
-            // Check if we hit rate limit
-            if (response.status === 429) {
-              setIsRateLimited(true);
-              throw new Error('Rate limited');
-            }
-            
-            return await response.json();
-          } catch (error) {
-            console.error(`Error fetching availability for date ${formattedDate}:`, error);
-            // Return empty availability for this date
-            return { availability: [] };
-          }
-        });
-        
-        // If already rate limited, don't try to resolve all promises
-        if (isRateLimited) {
-          return;
-        }
-        
-        // Wait for all promises to resolve
-        const results = await Promise.all(availabilityPromises);
-        
-        // Process the results
-        const availabilityMap = {};
-        const unavailableDatesArray = [];
-        
-        results.forEach((result, index) => {
-          const date = formatDate(availableDates[index]);
-          availabilityMap[date] = result;
+  const fetchMonthAvailability = useCallback(async (year, month) => {
+    const monthKey = `${year}-${month}`;
 
-          // Check if all product timeSlots are represented in the availability data
-          // If not, then there might be available slots not recorded in the database yet
-          const allTimeSlotsAccounted = timeSlots.every(slot => {
-            const slotKey = `${slot.from} - ${slot.to}`;
-            return result.availability && 
-              result.availability.some(a => a.timeSlot === slotKey);
+    // Skip if already loaded or currently loading
+    if (loadedMonths.has(monthKey) || loadingMonths.has(monthKey)) return;
+
+    // Only fetch dates that fall in this month
+    const datesInMonth = availableDates.filter(
+      d => d.getFullYear() === year && d.getMonth() === month
+    );
+
+    // Mark loaded immediately even if no dates (nothing to fetch)
+    if (datesInMonth.length === 0 || isOutOfStock) {
+      setLoadedMonths(prev => new Set(prev).add(monthKey));
+      return;
+    }
+
+    setLoadingMonths(prev => new Set(prev).add(monthKey));
+
+    try {
+      const results = await Promise.all(
+        datesInMonth.map(async (date) => {
+          const formattedDate = formatDate(date);
+          const response = await fetch('/api/booking/availability', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ productId: product.id, date: formattedDate }),
           });
 
-          // Only mark as unavailable if there's actual availability data AND all defined slots exist AND all slots are full
-          const isDateUnavailable = result.availability && 
-            result.availability.length > 0 && 
-            allTimeSlotsAccounted &&
-            result.availability.every(slot => slot.available === 0);
-
-          if (isDateUnavailable) {
-            unavailableDatesArray.push(availableDates[index]);
+          if (response.status === 429) {
+            setIsRateLimited(true);
+            throw new Error('Rate limited');
           }
+
+          return { date, data: await response.json() };
+        })
+      );
+
+      const newAvailability = {};
+      const newUnavailable  = [];
+
+      results.forEach(({ date, data }) => {
+        const formattedDate = formatDate(date);
+        newAvailability[formattedDate] = data;
+
+        const allTimeSlotsAccounted = timeSlots.every(slot => {
+          const slotKey = `${slot.from} - ${slot.to}`;
+          return data.availability?.some(a => a.timeSlot === slotKey);
         });
-        
-        setAllAvailabilityData(availabilityMap);
-        setUnavailableDates(unavailableDatesArray);
-      } catch (error) {
-        console.error('Error fetching all availability data:', error);
-        if (error.message === 'Rate limited') {
-          setIsRateLimited(true);
-        }
-      } finally {
-        setIsLoadingAllAvailability(false);
-      }
-    };
-    
-    fetchAllAvailability();
-  }, []);
+
+        const isFullyBooked =
+          data.availability?.length > 0 &&
+          allTimeSlotsAccounted &&
+          data.availability.every(slot => slot.available === 0);
+
+        if (isFullyBooked) newUnavailable.push(date);
+      });
+
+      setAllAvailabilityData(prev => ({ ...prev, ...newAvailability }));
+      setUnavailableDates(prev => [...prev, ...newUnavailable]);
+      setLoadedMonths(prev => new Set(prev).add(monthKey));
+
+    } catch (error) {
+      console.error(`Error fetching availability for ${year}-${month}:`, error);
+    } finally {
+      setLoadingMonths(prev => {
+        const next = new Set(prev);
+        next.delete(monthKey);
+        return next;
+      });
+    }
+  }, [loadedMonths, loadingMonths, availableDates, product.id, timeSlots, isOutOfStock]);
+
+  // Fetch the first month that has available dates on mount
+  useEffect(() => {
+    if (!availableDates || availableDates.length === 0 || isOutOfStock) return;
+    const first = availableDates[0]; // already sorted ascending in BookingCalendar
+    fetchMonthAvailability(first.getFullYear(), first.getMonth());
+  }, []); // intentionally runs once — fetchMonthAvailability handles dedup internally
+
+  // Called by BookingCalendar when the user navigates to a new month
+  const handleMonthChange = useCallback((year, month) => {
+    fetchMonthAvailability(year, month);
+  }, [fetchMonthAvailability]);
 
   // Function to retry after rate limit
   const handleRetry = () => {
@@ -211,17 +206,10 @@ export default function BookingDetailPage({ headerData, footerData, product }) {
       setAvailableTimeSlots(availableSlots);
       setSelectedTimeSlot(null); // Reset selected time slot when date changes
     } else {
-      // Fallback to traditional method if cache fails
-      setIsLoadingAvailability(true);
-      
-      try {
-        // Filter available time slots
-        const allTimeSlots = timeSlots || [];
-        setAvailableTimeSlots(allTimeSlots);
-        setSelectedTimeSlot(null);
-      } finally {
-        setIsLoadingAvailability(false);
-      }
+      // Fallback if cache misses (month not yet loaded)
+      const allTimeSlots = timeSlots || [];
+      setAvailableTimeSlots(allTimeSlots);
+      setSelectedTimeSlot(null);
     }
   };
 
@@ -427,7 +415,7 @@ export default function BookingDetailPage({ headerData, footerData, product }) {
               <>
                 <div className={styles.calendarContainer}>
                   <h3>Sélectionnez une date</h3>
-                  {isLoadingAllAvailability ? (
+                  {loadingMonths.size > 0 ? (
                     <div className={styles.loadingMessage}>
                       Chargement des disponibilités...
                     </div>
@@ -443,11 +431,12 @@ export default function BookingDetailPage({ headerData, footerData, product }) {
                         </div>
                       ) : (
                     <BookingCalendar 
-                      availableDates={availableDates}
-                      unavailableDates={unavailableDates}
-                      selectedDate={selectedDate}
-                      onDateSelect={handleDateSelect}
-                      isLoading={isLoadingAllAvailability}
+                        availableDates={availableDates}
+                        unavailableDates={unavailableDates}
+                        selectedDate={selectedDate}
+                        onDateSelect={handleDateSelect}
+                        loadingMonths={loadingMonths}
+                        onMonthChange={handleMonthChange}
                     />
                   )}
                 </div>
@@ -457,7 +446,7 @@ export default function BookingDetailPage({ headerData, footerData, product }) {
                     <div className={styles.timeSlotContainer}>
                       <h3>Sélectionnez un créneau horaire</h3>
                       
-                      {isLoadingAvailability ? (
+                      {loadingMonths.size > 0 ? (
                         <div className={styles.loadingMessage}>
                           Vérification de la disponibilité...
                         </div>
