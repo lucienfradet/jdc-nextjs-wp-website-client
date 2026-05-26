@@ -51,6 +51,9 @@
 
 .postImage {
   margin-bottom: 1rem;
+  /* Added this because the post image seems to conflict with banners... */
+  visibility: hidden;
+  display: none;
 }
 
 .postImage img {
