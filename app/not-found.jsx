@@ -11,16 +11,29 @@ function NotFoundContent() {
         <h1 className={styles.title}>
           404 - Page Non Trouvée
         </h1>
-        
+
         <p className={styles.message}>
           Désolé, la page que vous recherchez n&apos;existe pas ou a été déplacée.
         </p>
-        
+
         <Link href="/" className={styles.button}>
           Retourner à l&apos;accueil
         </Link>
       </div>
     </div>
+
+    // <div className={styles.container}>
+    //   <div className={styles.card}>
+    //     <h1 className={styles.title}>
+    //       404 - Page Non Trouvée
+    //     </h1>
+    //
+    //     <p className={styles.message}>
+    //       Désolé, ce site est temporairement hors d&apos;usage.<br/>
+    //       Veuillez réessayer plus tard.
+    //     </p>
+    //   </div>
+    // </div>
   );
 }
 
